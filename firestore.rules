@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore — à publier dans Console Firebase > Firestore > Règles.
+// Section "users" : module Utilisateurs. Chaque module ajoute ici ses propres collections.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{uid} {
+      // Le profil (avec l'e-mail) n'est lisible que par son propriétaire et les administrateurs.
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+
+      // Inscription : on ne peut créer que son propre profil, et jamais avec le rôle admin.
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role in ['proprietaire', 'prestataire', 'refuge']
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.city is string
+        && request.resource.data.bio.size() <= 300;
+
+      // Modification de son profil ; le rôle, l'e-mail et l'uid ne changent pas.
+      allow update: if (signedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['displayName', 'city', 'phone', 'bio', 'notificationPrefs',
+                         'passwordChangedAt', 'updatedAt'])
+          && request.resource.data.displayName.size() > 0
+          && request.resource.data.get('bio', '').size() <= 300)
+        || isAdmin();
+
+      // Suppression de son propre compte (ou par un administrateur).
+      allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
+    }
+
+    match /notifications/{id} {
+      // Chacun ne voit que ses propres notifications.
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+
+      // Tout utilisateur connecté peut notifier un autre utilisateur (réservation,
+      // candidature, information sur une annonce…), mais en son propre nom.
+      allow create: if signedIn()
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.userId is string
+        && request.resource.data.type in ['rendez-vous', 'rappel', 'sante', 'adoption',
+                                          'perdu-trouve', 'service', 'compte']
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.body is string
+        && request.resource.data.body.size() <= 1000
+        && request.resource.data.read == false
+        && request.resource.data.keys().hasOnly(['userId', 'type', 'title', 'body', 'link',
+             'actionLabel', 'read', 'senderId', 'createdAt', 'showAt']);
+
+      // Le destinataire peut seulement la marquer comme lue, ou la supprimer.
+      allow update: if signedIn() && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

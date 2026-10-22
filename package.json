@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:firebase": "node scripts/test-firebase.mjs",
+    "deploy:rules": "npx --yes firebase-tools@14 deploy --only firestore:rules",
+    "seed:notifications": "node scripts/seed-notifications.mjs"
   },
   "dependencies": {
+    "firebase": "^13.1.0",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"

@@ -1,0 +1,46 @@
+[
+  {
+    "type": "rappel",
+    "title": "Rappel vaccin de Milo",
+    "body": "Rappel annuel prévu demain à 14h30 chez le Dr. Mercier. N'oubliez pas son carnet de santé.",
+    "minutesAgo": 10
+  },
+  {
+    "type": "adoption",
+    "title": "Nouvelle candidature pour Nala",
+    "body": "Sami B. souhaite adopter Nala. Il habite une maison avec jardin à Tunis.",
+    "link": "/profil",
+    "actionLabel": "Consulter la candidature",
+    "minutesAgo": 120
+  },
+  {
+    "type": "perdu-trouve",
+    "title": "Chat roux aperçu près de chez vous",
+    "body": "Un chat correspondant à une annonce de perte a été signalé près de l'avenue Habib Bourguiba.",
+    "minutesAgo": 240
+  },
+  {
+    "type": "rendez-vous",
+    "title": "Toilettage de Milo confirmé",
+    "body": "Toilettage Amine a confirmé votre rendez-vous du samedi à 10h00.",
+    "minutesAgo": 1560
+  },
+  {
+    "type": "sante",
+    "title": "Traitement antiparasitaire enregistré",
+    "body": "Le traitement de Milo a été ajouté à son carnet. Prochaine prise conseillée dans 30 jours.",
+    "minutesAgo": 4320
+  },
+  {
+    "type": "service",
+    "title": "Votre profil prestataire est en cours de validation",
+    "body": "Un administrateur vérifie vos informations. Vous serez notifié dès sa publication.",
+    "minutesAgo": 7200
+  },
+  {
+    "type": "rappel",
+    "title": "Rappel programmé : promenade de Rex",
+    "body": "Ce rappel était programmé : il apparaît une dizaine de minutes après l'ajout des notifications de démo.",
+    "minutesAgo": -15
+  }
+]
