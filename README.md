@@ -44,6 +44,9 @@ Les couleurs, tailles de texte et espacements de `src/app/globals.css` reprennen
 (`bg-surface-container-low`, `text-on-surface`, `font-label-lg`…) : le HTML exporté par Stitch fonctionne tel quel.
 Icônes : `<Icon name="pets" />` ([liste des icônes Material Symbols](https://fonts.google.com/icons)).
 
+Les maquettes sont dans `designs/stitch/` : un dossier par écran, avec la capture (`screen.png`) et le HTML exporté (`code.html`).
+Le guide du design system est dans `designs/stitch/petcare_community/DESIGN.md`.
+
 ## Module Utilisateurs — à utiliser dans les autres modules
 
 **Utilisateur connecté**

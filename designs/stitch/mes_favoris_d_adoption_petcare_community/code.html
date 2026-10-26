@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-white font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-sm"><a aria-label="Mes favoris" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors relative" data-path="mes-favoris" href="#" title="Mes favoris"><span class="material-symbols-outlined text-[22px]">favorite</span></a><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Lina Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Content Container -->
+<div class="w-full max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg pt-space-lg pb-space-2xl">
+<!-- Fil d'Ariane (Breadcrumb) -->
+<nav aria-label="Fil d'ariane" class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm mb-space-md">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span>Accueil</span>
+</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Communauté</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="text-on-surface font-label-md text-label-md">Mes favoris</span>
+</nav>
+<!-- Header Section with bespoke layout & counts -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg pb-space-lg">
+<div class="max-w-2xl space-y-space-xs">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Mes favoris</h1>
+<span class="px-space-sm py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm flex items-center gap-1 shadow-sm" id="fav-count-badge">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            4 animaux sauvegardés
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Retrouvez ici les compagnons que vous avez ajoutés à votre liste de cœur. Recevez des notifications directes sur l’évolution de leur parcours et statut d’adoption.
+        </p>
+</div>
+<!-- Quick interactive switches -->
+<div class="flex items-center gap-space-sm self-start lg:self-auto">
+<button class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors shadow-sm cursor-pointer" id="toggle-empty-view-btn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">visibility</span>
+<span>Aperçu état vide</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>Partager ma liste</span>
+</button>
+</div>
+</div>
+<!-- Controls & Filter Toolbar -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-space-md mb-space-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<!-- Species Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto w-full md:w-auto pb-1 md:pb-0" id="filter-pills">
+<button class="filter-pill active px-space-md py-space-xs rounded-full bg-primary-container text-white font-label-md text-label-md shadow-sm transition-all flex items-center gap-1.5" type="button">
+<span>Tous</span>
+<span class="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">4</span>
+</button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5" type="button">
+<span>Chiens</span>
+<span class="w-4 h-4 rounded-full bg-surface-variant text-[10px] flex items-center justify-center">1</span>
+</button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5" type="button">
+<span>Chats</span>
+<span class="w-4 h-4 rounded-full bg-surface-variant text-[10px] flex items-center justify-center">2</span>
+</button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all flex items-center gap-1.5" type="button">
+<span>Petits mammifères</span>
+<span class="w-4 h-4 rounded-full bg-surface-variant text-[10px] flex items-center justify-center">1</span>
+</button>
+</div>
+<!-- Sorting Selector & Alerts Quick Status -->
+<div class="flex items-center gap-space-md w-full md:w-auto justify-between md:justify-end">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+<span class="hidden sm:inline">Trier par :</span>
+<select aria-label="Trier par" class="bg-surface-container rounded-lg px-space-sm py-1 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option>Ajout récent</option>
+<option>Nom (A-Z)</option>
+<option>Statut d’adoption</option>
+<option>Plus urgent d’abord</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Active Grid: 4-Column Responsive Layout -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter-md transition-all" id="favorites-grid">
+<!-- Card 1: Nala (Disponible) -->
+<article class="pet-card bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group relative">
+<!-- Image Area -->
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up photography of an adorable young tabby european cat named Nala, with expressive golden-green eyes and soft patterned fur, resting peacefully by a sunlit window sill indoors, warm domestic lighting, photorealistic editorial pet portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDbRM56-oCC9hxqS-FHHLPhzbfJhNnI3VCro41O2hwUVhALmOIDjqwZhcnQnkhY5AofhaGSmG19FWiP22X-PXCJBkUgDo2qWE5SQ8O9b7yRN3Fn724xU8B4cOKZ64uKD7JjR5cvIgGiK2cutci8aIvuJgy3p0ZfokVzTYNgnekhI7GJVtpH-DquD5mIB5Z2X7evV9HVI7zh-2uL1DUzAWq-6EQtH99xBPXYOf6UuKU9ZWKfGF8S6G0"/>
+<!-- Floating Heart Action (FILLED with Coral) -->
+<button aria-label="Retirer Nala des favoris" class="fav-heart-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-secondary-container hover:scale-110 shadow-sm transition-transform cursor-pointer" title="Retirer des favoris" type="button">
+<span class="material-symbols-outlined text-[24px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Status Badge -->
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-emerald-50 text-emerald-800 font-label-sm text-label-sm shadow-sm backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Disponible
+            </span>
+</div>
+<!-- Location Indicator Overlay -->
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+<span class="px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-[11px] font-label-sm flex items-center gap-1 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+              Paris 11e (75)
+            </span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between mb-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Nala</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">2 ans · Femelle</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-space-sm">
+              Chatte européenne tigrée douce et observatrice
+            </p>
+<!-- Trait Badges -->
+<div class="flex flex-wrap gap-1.5 mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Appartement</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Calme</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Entente chats OK</span>
+</div>
+<!-- Shelter / Association -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm pt-space-xs mb-space-lg">
+<span class="material-symbols-outlined text-[16px] text-primary">volunteer_activism</span>
+<span class="truncate">Refuge Les Amis · Foyer d’accueil</span>
+</div>
+</div>
+<!-- Action Button -->
+<a class="w-full h-11 rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors shadow-sm" href="#">
+<span>Demande d’adoption</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 2: Oscar (Réservé / Visite en cours) -->
+<article class="pet-card bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group relative">
+<!-- Image Area -->
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Warm golden hour outdoor portrait of Oscar, a joyful and friendly young Golden Retriever cross dog panting gently with a relaxed happy expression on lush green lawn, warm natural sunlight, empathetic shelter adoption portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFACZGQmF3E0Lnu7xmFvEcLi3AyeoFOOAoL1eTTU9QKhZsvk_dIDNJQFappPXzbSsFcvJoUlIUyvlvLwwcxsSRs8QkRb_M5GUgd9PEJtqan822Co-WDYViWVxQsKgLQm75f7Eb5e28EAvibIQ9yFMhRnmt1GlmX2KZFrMCa-vFgkQhhfvrvj3ue0metxH_mONm5HQ8tvMbfygHlt-pb-kjZdDkdbFzAK06ykpEM3jEWMTuKqR0DItK"/>
+<!-- Floating Heart Action -->
+<button aria-label="Retirer Oscar des favoris" class="fav-heart-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-secondary-container hover:scale-110 shadow-sm transition-transform cursor-pointer" title="Retirer des favoris" type="button">
+<span class="material-symbols-outlined text-[24px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Status Badge -->
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-amber-50 text-amber-900 font-label-sm text-label-sm shadow-sm backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              Réservé · Visite en cours
+            </span>
+</div>
+<!-- Location Indicator -->
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+<span class="px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-[11px] font-label-sm flex items-center gap-1 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+              Lyon Est (69)
+            </span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between mb-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Oscar</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">1 an · Mâle</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-space-sm">
+              Golden Retriever croisé énergique et affectueux
+            </p>
+<!-- Trait Badges -->
+<div class="flex flex-wrap gap-1.5 mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Jardin requis</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Joueur</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">OK Enfants</span>
+</div>
+<!-- Shelter / Association -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm pt-space-xs mb-space-lg">
+<span class="material-symbols-outlined text-[16px] text-primary">domain</span>
+<span class="truncate">Refuge Sans Frontières</span>
+</div>
+</div>
+<!-- Action Button: Secondary for Reserved -->
+<a class="w-full h-11 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors shadow-sm" href="#">
+<span>Consulter le dossier</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">description</span>
+</a>
+</div>
+</article>
+<!-- Card 3: Filou (Disponible) -->
+<article class="pet-card bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group relative">
+<!-- Image Area -->
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Charming and delicate portrait of Filou, a small floppy-eared dwarf lop rabbit with caramel and white coat, sitting peacefully on clean natural hay bedding, soft diffused ambient room lighting, high resolution pet welfare photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPw9qPndf5e0yJEy5jTFEH8O_itN42HntufayRrGk1_neTwranMAYXZzdjsIFoGoiwrmezips2Q9Ypa9YoCQpg-L02NlgK9RwPAj1Ukxg8GfuQWwzwQ2MxzcjHtpAyBog1jkZVwwZAD_yWH6-R0I0LJeAuVkukeNGfiNn2vL6PhV00Pi0S1mmHIm9KkzJ9BSMW5Pu9lT03Og0I2OYv2walMuvTBTL2Ppq6hGr7KYiFTkDgVmWHJ5_F"/>
+<!-- Floating Heart Action -->
+<button aria-label="Retirer Filou des favoris" class="fav-heart-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-secondary-container hover:scale-110 shadow-sm transition-transform cursor-pointer" title="Retirer des favoris" type="button">
+<span class="material-symbols-outlined text-[24px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Status Badge -->
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-emerald-50 text-emerald-800 font-label-sm text-label-sm shadow-sm backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Disponible
+            </span>
+</div>
+<!-- Location Indicator -->
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+<span class="px-2 py-0.5 rounded-full bg-inverse-surface/80 text-inverse-on-surface text-[11px] font-label-sm flex items-center gap-1 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+              Lille Métropole (59)
+            </span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col flex-1 justify-between">
+<div>
+<div class="flex items-baseline justify-between mb-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Filou</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">8 mois · Mâle</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-space-sm">
+              Lapin bélier nain curieux, propre et habitué aux câlins
+            </p>
+<!-- Trait Badges -->
+<div class="flex flex-wrap gap-1.5 mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Vie en intérieur</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Affectueux</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Stérilisé</span>
+</div>
+<!-- Shelter / Association -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm pt-space-xs mb-space-lg">
+<span class="material-symbols-outlined text-[16px] text-primary">cottage</span>
+<span class="truncate">Association Petits Poils</span>
+</div>
+</div>
+<!-- Action Button -->
+<a class="w-full h-11 rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors shadow-sm" href="#">
+<span>Demande d’adoption</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Card 4: Maya (FADED / HEUREUSEMENT ADOPTÉE) -->
+<article class="pet-card bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group relative opacity-90">
+<!-- Image Area with subtle desaturation filter for adopted state -->
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover filter saturate-75 brightness-95" data-alt="Serene adoption portrait of Maya, an inquisitive tortoiseshell colored cat looking softly at the camera, warm home setting with gentle cushions, soft natural illumination, peaceful cozy atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1TrbYAC3apAO3kVaNYVrnhz_q5pLv1X1LmfnkBT1EhZGfEEo_1wH0lxC8MOHWwO10kMNl6mdtACugxqVByVIirjmKPDgEbOWBlve0nSghiX_ts_v6488IIM5Mq9PI7kTFmcDO8jOAF4XG8wvn_HlhRFwbjrK0YgasSS3eO-zvDxT7I7Ba3rxSzSjTwhwBHUP-iNedqJJZezp9euEvNVxAHaddpDQ3xaAdWXTlxMMuYO9MFNaU2Yil"/>
+<!-- Floating Heart Action (Subtle filled favorite) -->
+<button aria-label="Retirer Maya des favoris" class="fav-heart-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-secondary hover:scale-110 shadow-sm transition-transform cursor-pointer" title="Retirer des favoris" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Prominent Adopted Badge -->
+<div class="absolute top-3 left-3">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-rose-50 text-rose-800 font-label-sm text-label-sm shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] text-rose-600">celebration</span>
+              Adoptée ! 🎉
+            </span>
+</div>
+<!-- Bottom Banner: Success story note -->
+<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/50 to-transparent p-3 pt-6 text-white text-[11px] font-body-sm leading-tight">
+            Famille trouvée pour la vie le 14 octobre !
+          </div>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg flex flex-col flex-1 justify-between bg-surface-bright/50">
+<div>
+<div class="flex items-baseline justify-between mb-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Maya</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">3 ans · Femelle</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-space-sm">
+              Chatte écaille de tortue au tempérament doux et joueur
+            </p>
+<!-- Trait Badges -->
+<div class="flex flex-wrap gap-1.5 mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Adoptée</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Foyer comblé</span>
+</div>
+<!-- Congratulatory message callout -->
+<div class="p-2.5 rounded-xl bg-secondary-fixed/40 text-on-secondary-fixed text-[12px] font-body-sm mb-space-md flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary flex-shrink-0 mt-0.5">favorite</span>
+<span>Maya a rejoint sa nouvelle famille grâce au réseau PetCare.</span>
+</div>
+</div>
+<!-- Dual soft action: See story or remove -->
+<div class="flex items-center gap-2">
+<a class="flex-1 h-10 rounded-full bg-secondary-container hover:bg-secondary text-white font-label-md text-label-md flex items-center justify-center gap-1 transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span>Son histoire</span>
+</a>
+<button aria-label="Retirer des favoris" class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors shadow-sm" title="Retirer des favoris" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Demonstration Section: Empty State Preview (Integrated & Collapsible) -->
+<section class="mt-space-2xl pt-space-lg" id="empty-state-preview-section">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">preview</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Simulation de la vue vide</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-label-sm">Mode prévisualisation</span>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface text-body-sm font-label-md flex items-center gap-1 cursor-pointer" id="close-empty-demo-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">keyboard_arrow_up</span>
+<span>Masquer</span>
+</button>
+</div>
+<!-- Empty State Card -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-space-xl md:p-space-2xl shadow-sm text-center flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Subtle background tint shape -->
+<div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-surface-container-low opacity-60 pointer-events-none blur-3xl"></div>
+<div class="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-secondary-fixed opacity-40 pointer-events-none blur-3xl"></div>
+<!-- Warm SVG Illustration: Cozy empty pet bed & gentle heart -->
+<div class="w-36 h-36 mb-space-md relative flex items-center justify-center">
+<svg class="w-full h-full text-primary" fill="none" viewbox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Warm outer aura ring -->
+<circle cx="80" cy="80" fill="#F4A58A" fill-opacity="0.12" r="70" stroke="#F4A58A" stroke-dasharray="4 4" stroke-opacity="0.25" stroke-width="1.5"></circle>
+<!-- Soft pet cushion / basket -->
+<ellipse cx="80" cy="106" fill="#0F766E" fill-opacity="0.08" rx="52" ry="24"></ellipse>
+<path d="M38 102C38 88 56 78 80 78C104 78 122 88 122 102C122 116 104 126 80 126C56 126 38 116 38 102Z" fill="#E6EEFF"></path>
+<path d="M44 98C44 87 60 79 80 79C100 79 116 87 116 98C116 109 100 117 80 117C60 117 44 109 44 98Z" fill="#FFFFFF"></path>
+<!-- Floating Warm Coral Heart -->
+<path d="M80 58C80 58 68 44 56 52C44 60 48 76 80 94C112 76 116 60 104 52C92 44 80 58 80 58Z" fill="#F4A58A" stroke="#E07A5F" stroke-linejoin="round" stroke-width="2"></path>
+<!-- Paw print in heart -->
+<circle cx="80" cy="74" fill="#FFFFFF" r="3.5"></circle>
+<circle cx="73" cy="65" fill="#FFFFFF" r="2.2"></circle>
+<circle cx="87" cy="65" fill="#FFFFFF" r="2.2"></circle>
+<circle cx="68" cy="72" fill="#FFFFFF" r="1.8"></circle>
+<circle cx="92" cy="72" fill="#FFFFFF" r="1.8"></circle>
+</svg>
+</div>
+<!-- Typography -->
+<h3 class="font-headline-md text-headline-md text-on-surface mb-space-xs">
+          Aucun favori pour l'instant
+        </h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg mb-space-lg">
+          Explorez nos annonces de loulous à la recherche d’un foyer aimant et cliquez sur le cœur pour les garder précieusement de côté.
+        </p>
+<!-- Primary Discovery CTA -->
+<div class="flex flex-col sm:flex-row items-center gap-space-sm mb-space-xl">
+<a class="h-11 px-space-xl rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<span>Découvrir les animaux</span>
+</a>
+<a class="h-11 px-space-lg rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">near_me</span>
+<span>Refuges à proximité</span>
+</a>
+</div>
+<!-- Educational Benefit Strip -->
+<div class="max-w-xl p-space-md rounded-2xl bg-surface-container-low text-left flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px] flex-shrink-0 mt-0.5">lightbulb</span>
+<div class="space-y-0.5">
+<p class="font-label-md text-label-md text-on-surface">Le saviez-vous ?</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Sauvegarder un animal dans vos favoris vous permet de recevoir des alertes en temps réel sur les urgences d'accueil temporaire ou les visites libres organisées par le refuge.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Mutual-Aid & Solidarity Banner -->
+<div class="mt-space-2xl bg-gradient-to-r from-primary-container to-primary rounded-2xl p-space-xl text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center flex-shrink-0 text-white">
+<span class="material-symbols-outlined text-[30px]">volunteer_activism</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-white">Devenez Famille d'Accueil bénévole</h4>
+<p class="font-body-md text-body-md text-white/90 max-w-xl">
+            Vous ne pouvez pas adopter de manière permanente ? Ouvrez temporairement votre foyer pour sauver une vie en transition.
+          </p>
+</div>
+</div>
+<a class="whitespace-nowrap px-space-xl h-11 rounded-full bg-white text-primary hover:bg-surface-container-lowest font-label-md text-label-md transition-colors flex items-center gap-2 shadow-sm flex-shrink-0" href="#">
+<span>En savoir plus</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Inline Micro-Interactions Script -->
+<script>
+    (function() {
+      // Toggle favorite hearts state
+      const heartButtons = document.querySelectorAll('.fav-heart-btn');
+      const badge = document.getElementById('fav-count-badge');
+      let currentCount = 4;
+
+      heartButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const icon = this.querySelector('.material-symbols-outlined');
+          const isFilled = icon.style.fontVariationSettings.includes("'FILL' 1");
+          
+          if (isFilled) {
+            // Unfavorite transition
+            icon.style.fontVariationSettings = "'FILL' 0";
+            icon.classList.remove('text-tertiary-container', 'text-secondary');
+            icon.classList.add('text-outline');
+            this.setAttribute('title', 'Ajouter aux favoris');
+            currentCount = Math.max(0, currentCount - 1);
+          } else {
+            // Re-favorite transition
+            icon.style.fontVariationSettings = "'FILL' 1";
+            icon.classList.remove('text-outline');
+            icon.classList.add('text-tertiary-container');
+            this.setAttribute('title', 'Retirer des favoris');
+            currentCount++;
+          }
+          if (badge) {
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> ${currentCount} animaux sauvegardés`;
+          }
+        });
+      });
+
+      // Filter pills active toggle
+      const pills = document.querySelectorAll('.filter-pill');
+      pills.forEach(pill => {
+        pill.addEventListener('click', function() {
+          pills.forEach(p => {
+            p.classList.remove('bg-primary-container', 'text-white');
+            p.classList.add('bg-surface-container', 'text-on-surface');
+          });
+          this.classList.remove('bg-surface-container', 'text-on-surface');
+          this.classList.add('bg-primary-container', 'text-white');
+        });
+      });
+
+      // Toggle Empty State demo section visibility
+      const toggleBtn = document.getElementById('toggle-empty-view-btn');
+      const previewSec = document.getElementById('empty-state-preview-section');
+      const closeDemoBtn = document.getElementById('close-empty-demo-btn');
+
+      if (toggleBtn && previewSec) {
+        toggleBtn.addEventListener('click', function() {
+          previewSec.scrollIntoView({ behavior: 'smooth' });
+          previewSec.classList.remove('hidden');
+        });
+      }
+
+      if (closeDemoBtn && previewSec) {
+        closeDemoBtn.addEventListener('click', function() {
+          previewSec.classList.add('hidden');
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span>— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide &amp; Support</a></div></div></footer></body></html>

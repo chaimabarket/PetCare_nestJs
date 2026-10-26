@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-white font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Lina Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full pb-16">
+<!-- Top Fil d'Ariane -->
+<section class="max-w-7xl mx-auto w-full px-margin md:px-margin-md lg:px-margin-lg pt-4 pb-2">
+<nav class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span>Accueil</span>
+</a>
+<span class="text-outline-variant font-medium">/</span>
+<a class="hover:text-primary transition-colors" href="#">Communauté</a>
+<span class="text-outline-variant font-medium">/</span>
+<a class="hover:text-primary transition-colors" href="#">Mes annonces d'adoption</a>
+<span class="text-outline-variant font-medium">/</span>
+<span class="text-on-surface font-label-md text-label-md truncate">Candidatures reçues pour Nala</span>
+</nav>
+</section>
+<!-- En-tête de section Nala -->
+<section class="max-w-7xl mx-auto w-full px-margin md:px-margin-md lg:px-margin-lg my-3">
+<div class="bg-surface-container-lowest rounded-2xl p-space-md md:p-space-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover shadow-sm ring-4 ring-primary-container/10" data-alt="Close-up portrait of Nala, a graceful European tabby cat with calm hazel-green eyes, warm lighting, fine fur texture and teal-tinted background, refined pet portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxMEbARY71o-mLDbM4egS62v_IhuBZa2HMxPAh6u-n_UfxfEUz-RKtkGC_BbaTCGMLZJrKWaaro8jGa5mEeeFKamsFx2d1j3BScVZtDflHe4iZyKvJpff6Y6Qm3QIVmg9ijYi5CBbhPfK36cqNJ3eNZpq1Zp0jFpuBL3KRefhROHijWeEwmkf-2XPDehogyjo37t8muzhnalGCAfFLhCnJTbZl-32LzsWygtThjNWzaWtOSX4J7fjl"/>
+<span class="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white ring-2 ring-white">
+<span class="material-symbols-outlined text-[13px]">check</span>
+</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Nala</h1>
+<span class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Disponible / En cours
+            </span>
+<span class="font-label-sm text-label-sm bg-surface-container px-2.5 py-0.5 rounded-full text-on-surface-variant">
+              Réf : #AD-2024-884
+            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+<strong class="font-label-md text-on-surface">8 candidatures reçues</strong> dont <span class="text-secondary font-label-md">3 nouvelles</span> à étudier
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-end md:self-center">
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-md text-label-md transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Retour aux annonces
+        </button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+          Exporter la sélection
+        </button>
+</div>
+</div>
+</section>
+<!-- Layout Master-Detail (2 Colonnes) -->
+<section class="max-w-7xl mx-auto w-full px-margin md:px-margin-md lg:px-margin-lg mt-2">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md lg:gap-gutter-md items-start">
+<!-- COLONNE GAUCHE (Master - 4 colonnes desktop) -->
+<aside class="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm">
+<!-- Contrôles de liste : Recherche & Tri -->
+<div class="space-y-3 mb-space-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Rechercher un candidat..." type="text"/>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Trier par</span>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-primary">sort</span>
+<select class="bg-transparent font-label-sm text-label-sm text-on-surface focus:outline-none cursor-pointer">
+<option selected="">Compatibilité décroissante</option>
+<option>Date d'envoi</option>
+<option>Nom du candidat</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Pilules de statut -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-space-sm">
+<button class="px-2.5 py-1 rounded-full bg-primary-container text-white font-label-sm text-label-sm whitespace-nowrap shadow-xs" type="button">
+              Toutes (8)
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors" type="button">
+              Non examinées (3)
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors" type="button">
+              En étude (3)
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors" type="button">
+              Acceptée (1)
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm whitespace-nowrap transition-colors" type="button">
+              Refusée (1)
+            </button>
+</div>
+<!-- Liste des cartes candidats -->
+<div class="flex flex-col gap-2.5 mt-2">
+<!-- Carte 1 : Active (Thomas Bernard) -->
+<div class="group relative rounded-xl p-3.5 bg-surface-container-low/60 hover:bg-surface-container-low transition-all cursor-pointer shadow-xs shadow-primary/10">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover ring-2 ring-primary-container" data-alt="Portrait of a smiling young couple, Thomas and Celine Bernard, warm natural lighting in a home environment with soft modern colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaKpxteFpt-pR3-UmLAtPyIOBQHuc2kZp7pQyrzs6Vh56ji1nFs6jPCe3ps53zMeFRrILa_Sieq449DVo2nDwGOeTngvS6dzQdAydcN_GHj2ikP2Qzt_0f-OPPtGYn4htE6DdkFj75Qr2E2pO5XAvnJTdPc5fXB_Z2WRGQmuschpfJutADejb_C4Ryf_hlRTeMH9cYT9tjJ9BgWqwe6WeCqEeXeH7EO13-uVP2FPCzfirS7vdTaIOP"/>
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary text-white rounded-full flex items-center justify-center text-[10px]">
+<span class="material-symbols-outlined text-[11px]">verified</span>
+</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h4 class="font-headline-sm text-[15px] leading-tight text-on-surface truncate">Thomas Bernard</h4>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">La Marsa (Tunis)</p>
+<p class="font-label-sm text-[11px] text-outline">Il y a 2 jours</p>
+</div>
+</div>
+<!-- Jauge circulaire 85% -->
+<div class="shrink-0 flex flex-col items-center">
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="w-12 h-12 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="85, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-md text-label-md text-primary font-bold">85%</span>
+</div>
+</div>
+</div>
+<!-- Micro indicateurs -->
+<div class="flex items-center gap-1.5 mt-2.5 flex-wrap">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Jardin / Balcon
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Enfants
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">warning</span> Présence modérée
+                </span>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 text-[11px]">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> En étude
+                </span>
+<span class="text-primary font-label-sm flex items-center gap-0.5">
+                  Détails ouverts <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</div>
+<!-- Carte 2 : Camille Martin -->
+<div class="group rounded-xl p-3.5 bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer shadow-xs">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-11 h-11 rounded-full object-cover shrink-0" data-alt="Portrait of a friendly young woman, Camille Martin, smiling in natural light with urban apartment background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYC-cRfCeB-g_6XR9-5RRs-qvS3fhKar4mtcPyxY8xccoY078WZy971IBF-imY-MaJL4CBQI2ccSIYAk0-L4f4oCt-99ZohXwVC_ilfnXzE0NIZErTdBLaaRkKSuOYryB_O_WiZnbWvTtkfsPhJVONIX3s9i6ufBgawbb9gtYPcLWUt1y_L0lxxYc1W2buAinfd5kg948C_SNwhTS5iiOlnvrJlv9GR2WfXTJ47F9ZQ3R_M2G-d-7z"/>
+<div class="min-w-0">
+<h4 class="font-headline-sm text-[15px] leading-tight text-on-surface truncate">Camille Martin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Ariana</p>
+<p class="font-label-sm text-[11px] text-outline">Il y a 1 jour</p>
+</div>
+</div>
+<div class="shrink-0 flex flex-col items-center">
+<div class="relative w-11 h-11 flex items-center justify-center">
+<svg class="w-11 h-11 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-amber-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute font-label-md text-label-md text-amber-600 font-bold">60%</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1.5 mt-2.5 flex-wrap">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">warning</span> Pas de jardin
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Pas d'autres chats
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Télétravail
+                </span>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 text-[11px]">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Nouvelle
+                </span>
+<span class="text-on-surface-variant font-label-sm flex items-center gap-0.5 group-hover:text-primary">
+                  Voir fiche <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</div>
+<!-- Carte 3 : Karim Ben Salah -->
+<div class="group rounded-xl p-3.5 bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer opacity-85 hover:opacity-100 shadow-xs">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-11 h-11 rounded-full object-cover shrink-0" data-alt="Portrait of a middle aged man, Karim Ben Salah, wearing casual shirt, confident expression, outdoor courtyard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuY17VRe602lic_o1iHQfBualj3QBymlKZGsUproOQAHlEJF33P3CU0xgsO5nAkGq2SC7DitAH998gi96WyhW6uDLvFd8eL7AMNDsG_jYxdOmSGvA_gpVv_1ZNam2-zdSqEKYjQC1ERq2BI_-bdWp2k8ejh4Roo5Dyhve3b_b8otUtatoSBp67rTDbsh-Trubx5pYQFtEewheQfaEE52Tk4khOXygwNkjWidX4_5hpVkqGnoVuO9bV"/>
+<div class="min-w-0">
+<h4 class="font-headline-sm text-[15px] leading-tight text-on-surface truncate">Karim Ben Salah</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Carthage</p>
+<p class="font-label-sm text-[11px] text-outline">Il y a 3 jours</p>
+</div>
+</div>
+<div class="shrink-0 flex flex-col items-center">
+<div class="relative w-11 h-11 flex items-center justify-center">
+<svg class="w-11 h-11 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-outline" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="35, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute font-label-md text-label-md text-outline font-bold">35%</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1.5 mt-2.5 flex-wrap">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">close</span> Chiens actifs
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">schedule</span> Absence &gt; 9h
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Spacieux
+                </span>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 text-[11px]">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm">
+                  Non retenue
+                </span>
+<span class="text-outline font-label-sm">Classée</span>
+</div>
+</div>
+<!-- Carte 4 : Sophie Laurent -->
+<div class="group rounded-xl p-3.5 bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer shadow-xs">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-11 h-11 rounded-full object-cover shrink-0" data-alt="Portrait of Sophie Laurent, a smiling blonde woman sitting outdoors in a leafy green patio, bright warm colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUHHZbXMJ_v31hJQBpEdq3o7AwZ-y-i-SZ5lSplEHv9bFqVDFkpGawT40gvnnb3ngPssCnWjkhUjnVtp8pJvm5z1UgWUeXllVDwMBMH6vZbiksG6NRGrysm9Q-Il69D2uCZA417pMlY5WSbwEmo2YTH4x8gVftEOVE-ryjuYT7HEyhgTRaQyFJVCQylIBhl9qSu98Tjgga4dGzcpbxLDjb53WbyeCY6F-rJ02cJf-fplflNI4MEtEp"/>
+<div class="min-w-0">
+<h4 class="font-headline-sm text-[15px] leading-tight text-on-surface truncate">Sophie Laurent</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Gammarth</p>
+<p class="font-label-sm text-[11px] text-outline">Il y a 5 jours</p>
+</div>
+</div>
+<div class="shrink-0 flex flex-col items-center">
+<div class="relative w-11 h-11 flex items-center justify-center">
+<svg class="w-11 h-11 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute font-label-md text-label-md text-primary font-bold">75%</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1.5 mt-2.5 flex-wrap">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Calme
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">check</span> Jardin clos
+                </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-label-sm text-[11px]">
+<span class="material-symbols-outlined text-[13px]">warning</span> Enfant bas âge
+                </span>
+</div>
+<div class="flex items-center justify-between mt-3 pt-2 text-[11px]">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> En attente d'échange
+                </span>
+<span class="text-on-surface-variant font-label-sm flex items-center gap-0.5 group-hover:text-primary">
+                  Voir fiche <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 text-center">
+<button class="font-label-sm text-label-sm text-primary hover:underline inline-flex items-center gap-1" type="button">
+<span>Afficher les 4 candidatures archivées</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- COLONNE DROITE (Detail - 8 colonnes desktop) -->
+<main class="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md">
+<!-- 6. Encart État Accepté (Bannière interactive / post-validation) -->
+<div class="bg-emerald-50/90 rounded-2xl p-space-md md:p-space-lg shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-emerald-950 font-bold">
+                  Candidature acceptée – Nala est réservée pour Thomas &amp; Céline Bernard
+                </h3>
+<p class="font-body-sm text-body-sm text-emerald-800 mt-1">
+                  Le statut de Nala est passé en <span class="font-semibold text-emerald-900">« Réservée »</span>. Les 7 autres candidats ont reçu une notification bienveillante d'attente de décision finale.
+                </p>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end md:self-center shrink-0">
+<button class="px-3.5 py-2 rounded-full bg-white hover:bg-emerald-100/60 text-emerald-900 font-label-md text-label-md transition-colors shadow-xs" type="button">
+                Annuler l'acceptation
+              </button>
+<button class="px-4 py-2 rounded-full bg-secondary text-white hover:bg-tertiary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-colors" type="button">
+<span>Confirmer l'adoption définitive</span>
+<span class="material-symbols-outlined text-[18px]">pets</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 1. En-tête du candidat sélectionné -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md md:p-space-lg shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="relative shrink-0">
+<img class="w-20 h-20 rounded-2xl object-cover shadow-sm ring-2 ring-primary-container/20" data-alt="Warm natural portrait of Thomas and Celine Bernard, middle-aged smiling couple with authentic, welcoming expression, high resolution photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZvrcEFu7_lxRWkoAaFrczgLagWv2LkQRsk86p74GXWtn5uYmsiqASuiyuxnMDCP3QRvx691RaCvPNDtXDFnbg9vHhwDRyxVv8kTqgyuutwv6OKWTYOqwM92Fb1vFnWZRxrMtkg63sLkU9j-fHfjaIchfYKTA3HG-97ljthggwD8oOFbw2fezaJF5L_eJjUoC9aFHtzS5OPVEIOUSB8vKcaVNRmlk2AiDyujfwkmFdTbIiTrrWFUGB"/>
+<span class="absolute -top-1.5 -right-1.5 bg-primary text-white text-[11px] font-label-sm px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-xs">
+<span class="material-symbols-outlined text-[12px]">verified</span> Vérifié
+                </span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2 flex-wrap">
+<h2 class="font-headline-lg text-headline-md text-on-surface">Thomas &amp; Céline Bernard</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">
+                    Dossier 100% complet
+                  </span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant font-body-sm text-body-sm flex-wrap">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+                    La Marsa, Tunis (à 8 km du refuge)
+                  </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">shield</span>
+                    Membre PetCare depuis 2 ans
+                  </span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-sm text-body-sm pt-0.5">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">call</span> +216 98 420 •••</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">mail</span> t.bernard.archi@***.tn</span>
+</div>
+</div>
+</div>
+<!-- Boutons contact rapide -->
+<div class="flex sm:flex-col lg:flex-row items-center gap-2 shrink-0">
+<button class="flex-1 sm:w-full lg:w-auto px-3.5 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">phone</span>
+                Appeler
+              </button>
+<button class="flex-1 sm:w-full lg:w-auto px-3.5 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">chat</span>
+                Message
+              </button>
+<button class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Télécharger le dossier complet" type="button">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Bloc Jauge de compatibilité & IA Bienveillante -->
+<div class="bg-gradient-to-br from-primary-container/10 via-surface-container-lowest to-surface-container-lowest rounded-2xl p-space-md md:p-space-lg shadow-sm">
+<div class="flex flex-col md:flex-row items-center gap-space-lg">
+<!-- Anneau de score grand format -->
+<div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
+<svg class="w-28 h-28 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="85, 100" stroke-linecap="round" stroke-width="3.2"></path>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="font-display-lg text-[26px] leading-none text-primary-container font-extrabold">85%</span>
+<span class="font-label-sm text-[10px] uppercase text-outline tracking-wider mt-0.5">Adéquation</span>
+</div>
+</div>
+<!-- Descriptif bienveillant -->
+<div class="space-y-1.5 flex-1 text-center md:text-left">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-emerald-700">arrow_back_ios_new</span>
+                Très forte adéquation avec les besoins spécifiques de Nala
+              </div>
+<p class="font-body-md text-body-md text-on-surface">
+                Le foyer réunit les critères prioritaires identifiés par l'équipe : habitat sécurisé, grande sérénité domestique et budget vétérinaire provisionné.
+              </p>
+<div class="flex items-center gap-2 pt-1 text-outline font-body-sm text-body-sm italic">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Aide à la décision, pas un verdict — L'intuition humaine du refuge et la pré-visite restent déterminantes.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Carte "Points de compatibilité" : Analyse détaillée Nala vs Candidat -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md md:p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">checklist_rtl</span>
+              Analyse des critères : Profil Nala vs Foyer Bernard
+            </h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2.5 py-1 rounded-full">
+              4 critères validés • 2 points d'attention
+            </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<!-- Critère vert 1 -->
+<div class="p-3.5 rounded-xl bg-emerald-50/50 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-emerald-950 font-bold">Logement adapté &amp; sécurisé</h4>
+<p class="font-body-sm text-body-sm text-emerald-900 leading-snug">
+                  Appartement avec balcon équipé d'un filet de sécurité homologué pour félins, évitant tout risque de chute.
+                </p>
+</div>
+</div>
+<!-- Critère vert 2 -->
+<div class="p-3.5 rounded-xl bg-emerald-50/50 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-emerald-950 font-bold">Enfants calmes &amp; sensibilisés</h4>
+<p class="font-body-sm text-body-sm text-emerald-900 leading-snug">
+                  Enfants respectueux de 8 et 11 ans habitués au contact des chats et formés aux signaux d'apaisement.
+                </p>
+</div>
+</div>
+<!-- Critère vert 3 -->
+<div class="p-3.5 rounded-xl bg-emerald-50/50 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-emerald-950 font-bold">Aucun autre animal résident</h4>
+<p class="font-body-sm text-body-sm text-emerald-900 leading-snug">
+                  Absence totale de chiens ou chats territoriaux, optimal pour le profil calme et exclusif de Nala.
+                </p>
+</div>
+</div>
+<!-- Critère vert 4 -->
+<div class="p-3.5 rounded-xl bg-emerald-50/50 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-emerald-950 font-bold">Budget &amp; rigueur vétérinaire</h4>
+<p class="font-body-sm text-body-sm text-emerald-900 leading-snug">
+                  Capacité financière attestée, engagement pour vaccins annuels et assurance santé souscrite.
+                </p>
+</div>
+</div>
+<!-- Attention 1 -->
+<div class="p-3.5 rounded-xl bg-amber-50/70 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">priority_high</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-amber-950 font-bold">Temps d'absence en journée</h4>
+<p class="font-body-sm text-body-sm text-amber-900 leading-snug">
+                  Nala apprécie une présence régulière. Absence estimée à ~5h en journée, compensée par 2 jours complets de télétravail hebdomadaire.
+                </p>
+</div>
+</div>
+<!-- Attention 2 -->
+<div class="p-3.5 rounded-xl bg-amber-50/70 flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">priority_high</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-label-md text-label-md text-amber-950 font-bold">Vérification de la fixation du balcon</h4>
+<p class="font-body-sm text-body-sm text-amber-900 leading-snug">
+                  Nala est curieuse et agile : s'assurer lors de la visite que les crochets du filet couvrent l'intégralité du garde-corps supérieur.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. Cartes des réponses au questionnaire -->
+<div class="space-y-3">
+<h3 class="font-headline-md text-headline-sm text-on-surface px-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">description</span>
+            Détail du questionnaire d'adoption
+          </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Logement -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-2">
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">apartment</span>
+                Logement
+              </div>
+<ul class="font-body-sm text-body-sm text-on-surface-variant space-y-1.5 pt-1">
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Type :</span>
+<span class="font-medium text-on-surface text-right">Appartement T4 (95 m²)</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Statut :</span>
+<span class="font-medium text-on-surface text-right">Locataire (accord bailleur OK)</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Extérieur :</span>
+<span class="font-medium text-on-surface text-right">Balcon 12 m² avec filet</span>
+</li>
+</ul>
+</div>
+<!-- Foyer -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-2">
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+                Composition du foyer
+              </div>
+<ul class="font-body-sm text-body-sm text-on-surface-variant space-y-1.5 pt-1">
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Membres :</span>
+<span class="font-medium text-on-surface text-right">2 adultes &amp; 2 enfants</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Âges enfants :</span>
+<span class="font-medium text-on-surface text-right">8 ans et 11 ans</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Allergies :</span>
+<span class="font-medium text-emerald-700 text-right">Aucune connue</span>
+</li>
+</ul>
+</div>
+<!-- Mode de vie -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-2">
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">work_history</span>
+                Mode de vie
+              </div>
+<ul class="font-body-sm text-body-sm text-on-surface-variant space-y-1.5 pt-1">
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Rythme :</span>
+<span class="font-medium text-on-surface text-right">Calme / Soir &amp; WE</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Présence :</span>
+<span class="font-medium text-on-surface text-right">Télétravail partiel (2j)</span>
+</li>
+<li class="flex items-start justify-between gap-2">
+<span class="text-outline">Vacances :</span>
+<span class="font-medium text-on-surface text-right">Grands-parents proches</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Motivation style citation avec accents corail -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md md:p-space-lg shadow-sm relative overflow-hidden">
+<div class="absolute -right-3 -top-3 text-secondary/10 pointer-events-none select-none font-serif text-8xl leading-none">
+              “
+            </div>
+<div class="relative space-y-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">format_quote</span>
+<span class="font-label-md text-label-md text-secondary font-semibold uppercase tracking-wider">Lettre de motivation des adoptants</span>
+</div>
+<blockquote class="font-body-lg text-body-lg text-on-surface italic pl-2 border-l-2 border-secondary/40">
+                « Nous avons eu un coup de cœur unanime pour Nala lors de sa publication sur PetCare. Ayant perdu notre précédent chat de vieillesse l'an dernier après quatorze années de bonheur partagé, notre foyer est de nouveau prêt à accueillir avec tendresse, patience et respect une compagne de vie pour les quinze prochaines années. »
+              </blockquote>
+<div class="pt-1 flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>Rédigé avec soin par Céline &amp; Thomas</span>
+<span class="text-outline">Envoyé le 12 octobre 2024 à 18:42</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. Barre d'action basse pour la décision du refuge -->
+<div class="sticky bottom-4 z-20 bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl p-space-md shadow-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span>Dossier examiné par <strong>Dr. Nadia (Vétérinaire Référente)</strong></span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end flex-wrap">
+<button class="px-3.5 py-2.5 rounded-full bg-surface-container text-rose-700 hover:bg-rose-50 font-label-md text-label-md transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+              Refuser la candidature
+            </button>
+<button class="px-4 py-2.5 rounded-full bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+              Demander des précisions / Pré-visite
+            </button>
+<button class="px-5 py-2.5 rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-label-md shadow-md transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">thumb_up</span>
+              Accepter la candidature
+            </button>
+</div>
+</div>
+</main>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span>— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide &amp; Support</a></div></div></footer></body></html>

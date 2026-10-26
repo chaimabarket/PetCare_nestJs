@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a aria-current="page" class="transition-colors bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Subtle decorative ambient background elements -->
+<div class="relative w-full max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg py-space-xl">
+<div class="absolute -top-12 -left-16 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -right-20 w-80 h-80 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Breadcrumb & Page Meta -->
+<div class="relative flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-xl">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors" href="#">Accueil</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-label-md text-label-md">Mon profil</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Espace Membre</h1>
+<span class="px-space-sm py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Actif
+          </span>
+</div>
+</div>
+<div class="text-on-surface-variant font-body-sm text-body-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">verified_user</span>
+        Dernière synchronisation : Aujourd'hui à 10:42
+      </div>
+</div>
+<!-- Main Layout Grid (2 Columns) -->
+<div class="relative grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN (Profile Card + Navigation Menu) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Profile Identity Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col items-center text-center relative overflow-hidden">
+<!-- Top subtle tint highlight -->
+<div class="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-primary-container/10 to-transparent"></div>
+<!-- Avatar Area with overlay button -->
+<div class="relative mt-space-sm mb-space-md group">
+<div class="w-28 h-28 rounded-full overflow-hidden shadow-md ring-4 ring-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close-up portrait of Lina Martin, a smiling friendly French woman in her early thirties wearing a warm teal knit sweater outdoors in a sunlit garden with soft golden hour light, genuine caring expression, natural aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPfDaa2cYJO2Jl1YRBXQhg9yy9szpClBm4HcdKv6nmDgJPJmme25LYzqIIXocjrtkEFh16uKDjeetP6WeVzvqDMlLRbVN4O_BcfGHBfZx-IOVHqeAesmVt772EZIumgn7Gnykh75kjj60cF_Y2dfUGK_8nkIFRPR-SfkeXBqBiQoswq-Uy6N9o5drEtjF3lkm7i3Df_t6x6lnCuxaXyYa1ZrIekyMAmMWIyIIZzZdU3rvnC94Y3WTz"/>
+</div>
+<button aria-label="Changer la photo" class="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md hover:bg-primary transition-colors cursor-pointer" title="Changer ma photo de profil" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</button>
+</div>
+<!-- Name & Primary Meta -->
+<h2 class="font-headline-md text-headline-md text-on-surface">Lina Martin</h2>
+<div class="flex items-center gap-space-xs mt-space-xs mb-space-sm">
+<span class="px-space-md py-0.5 rounded-full bg-primary-fixed/40 text-on-primary-fixed font-label-md text-label-md flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">pets</span>
+              Propriétaire vérifiée
+            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[18px] text-primary">location_on</span>
+            Bordeaux, France (33000)
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg">
+            lina.martin@email.com
+          </p>
+<!-- Quick Stats Counter Strip -->
+<div class="w-full grid grid-cols-2 gap-space-sm bg-surface-container-low rounded-xl p-space-sm mb-space-xs">
+<div class="flex flex-col items-center justify-center py-space-xs">
+<span class="font-headline-sm text-headline-sm text-primary">3</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Compagnons</span>
+</div>
+<div class="flex flex-col items-center justify-center py-space-xs bg-surface-container-lowest/70 rounded-lg">
+<span class="font-headline-sm text-headline-sm text-secondary">Mars 2023</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Membre fidèle</span>
+</div>
+</div>
+</div>
+<!-- Account Actions & Navigation Panel -->
+<nav aria-label="Menu du compte" class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col gap-1.5">
+<div class="px-space-sm py-space-xs text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+            Gestion du compte
+          </div>
+<!-- Mes Annonces -->
+<a class="flex items-center justify-between p-space-sm rounded-xl hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Mes annonces</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">2</span>
+</a>
+<!-- Mes Candidatures -->
+<a class="flex items-center justify-between p-space-sm rounded-xl hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Mes candidatures</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              1 en attente
+            </span>
+</a>
+<!-- Mes Favoris -->
+<a class="flex items-center justify-between p-space-sm rounded-xl hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary group-hover:bg-secondary-container group-hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Mes favoris</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/30 text-secondary font-label-sm text-label-sm">5 animaux</span>
+</a>
+<!-- Notifications Direct Link -->
+<a class="flex items-center justify-between p-space-sm rounded-xl hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Centre de notifications</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</a>
+<!-- Divider -->
+<div class="h-px bg-surface-container my-space-xs"></div>
+<!-- Changer mot de passe -->
+<button class="w-full flex items-center justify-between p-space-sm rounded-xl hover:bg-surface-container-low transition-colors text-left group" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface">Changer le mot de passe</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">chevron_right</span>
+</button>
+<!-- Se déconnecter (Alerte Rouge) -->
+<button class="w-full flex items-center justify-between p-space-sm rounded-xl hover:bg-error-container/30 transition-colors text-left group cursor-pointer" onclick="confirmLogout()" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-error-container/40 text-error flex items-center justify-center group-hover:bg-error group-hover:text-on-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</div>
+<span class="font-label-lg text-label-lg text-error">Se déconnecter</span>
+</div>
+<span class="material-symbols-outlined text-error text-[18px]">arrow_forward</span>
+</button>
+</nav>
+<!-- Trust & Community Badge Box -->
+<div class="bg-gradient-to-br from-primary-fixed/20 to-surface-container-low rounded-2xl p-space-md flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[28px] shrink-0 mt-0.5">volunteer_activism</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Refuge & Famille d'accueil</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Vous avez accumulé 14 heures de bénévolat et gardé 2 pensionnaires cette année. Merci pour eux !
+            </p>
+</div>
+</div>
+</aside>
+<!-- RIGHT COLUMN (Forms & Preferences) -->
+<section class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- CARD 1: Informations Personnelles (Editable Form) -->
+<form class="bg-surface-container-lowest rounded-2xl p-space-lg md:p-space-xl shadow-sm flex flex-col gap-space-lg" id="profileForm" onsubmit="handleFormSubmit(event)">
+<!-- Card Header with dynamic state switch -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Informations personnelles</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Mettez à jour vos coordonnées publiques et privées utilisées par la communauté.
+              </p>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs h-10 px-space-lg rounded-full bg-surface-container-low text-primary hover:bg-primary-container hover:text-on-primary font-label-md text-label-md transition-all self-start sm:self-auto cursor-pointer" id="editToggleBtn" onclick="toggleFormEditMode()" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+<span>Modifier</span>
+</button>
+</div>
+<!-- Form Fields Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Prénom -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="firstName">
+<span>Prénom</span>
+<span class="text-on-surface-variant text-[11px]">Requis</span>
+</label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="firstName" name="firstName" required="" type="text" value="Lina"/>
+</div>
+</div>
+<!-- Nom -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="lastName">
+<span>Nom</span>
+<span class="text-on-surface-variant text-[11px]">Requis</span>
+</label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="lastName" name="lastName" required="" type="text" value="Martin"/>
+</div>
+</div>
+<!-- Adresse Email avec badge vérifié -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="email">
+<span>Adresse email</span>
+<span class="text-emerald-700 font-label-sm text-[11px] flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Vérifiée
+                </span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-11 pl-10 pr-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="email" name="email" required="" type="email" value="lina.martin@email.com"/>
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">mail</span>
+</div>
+</div>
+<!-- Téléphone -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="phone">
+<span>Numéro de téléphone</span>
+<span class="text-on-surface-variant text-[11px]">Visibilité membres</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-11 pl-10 pr-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="phone" name="phone" type="tel" value="+33 6 12 34 56 78"/>
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">call</span>
+</div>
+</div>
+<!-- Ville / Code Postal -->
+<div class="md:col-span-2 flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="location">
+<span>Ville et Code Postal</span>
+<span class="text-on-surface-variant text-[11px]">Pour l'entraide locale</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-11 pl-10 pr-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="location" name="location" type="text" value="Bordeaux (33000)"/>
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">location_on</span>
+</div>
+</div>
+<!-- Biographie / Présentation -->
+<div class="md:col-span-2 flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-medium flex items-center justify-between" for="bio">
+<span>Biographie / Présentation</span>
+<span class="text-on-surface-variant text-[11px]">118 / 300 caractères</span>
+</label>
+<textarea class="w-full p-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none disabled:opacity-85 disabled:cursor-not-allowed" disabled="" id="bio" name="bio" rows="3">Passionnée par le bien-être de nos amis à 4 pattes. Propriétaire heureuse de Milo (Golden Retriever) et Luna (Chat européen).</textarea>
+</div>
+</div>
+<!-- Notification toast message after save -->
+<div class="hidden p-space-sm bg-emerald-50 text-emerald-800 rounded-xl font-body-sm text-body-sm items-center gap-space-xs" id="saveFeedback">
+<span class="material-symbols-outlined text-[18px] text-emerald-600">check_circle</span>
+            Vos informations ont été enregistrées avec succès.
+          </div>
+<!-- Bottom Action Buttons in Form -->
+<div class="hidden flex-wrap items-center justify-end gap-space-sm pt-space-xs" id="formActionsGroup">
+<button class="h-11 px-space-lg rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md cursor-pointer" onclick="cancelFormEdit()" type="button">
+              Annuler
+            </button>
+<button class="h-11 px-space-xl rounded-full bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg shadow-sm transition-all flex items-center gap-space-xs cursor-pointer" type="submit">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Enregistrer les modifications</span>
+</button>
+</div>
+</form>
+<!-- CARD 2: Préférences & Sécurité -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg md:p-space-xl shadow-sm flex flex-col gap-space-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Préférences et sécurité</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+              Gérez la fréquence de vos alertes solidaires et vos options de sécurité.
+            </p>
+</div>
+<!-- Notification Toggles Group -->
+<div class="flex flex-col gap-space-sm">
+<h3 class="font-label-lg text-label-lg text-on-surface font-semibold">Canaux de communication</h3>
+<!-- Email Toggle Row -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">outgoing_mail</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Notifications par email</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Messages directs, réponses aux annonces et résumé hebdomadaire</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- SMS Alerts Toggle Row -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">sms</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Alertes SMS d'urgence</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Uniquement pour les signalements d'animaux perdus dans votre zone (Bordeaux)</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Rappels de vaccins Toggle Row -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/50 flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[22px]">vaccines</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Rappels de soins & vaccins</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Alertes calendaires automatiques pour Milo et Luna</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- Password & Security quick box -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md p-space-md bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Mot de passe de connexion</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Modifié il y a 3 mois</p>
+</div>
+</div>
+<button class="h-9 px-space-md rounded-full bg-surface-container-lowest text-on-surface hover:text-primary hover:bg-surface-container font-label-sm text-label-sm transition-colors self-start sm:self-auto shadow-xs" type="button">
+              Mettre à jour
+            </button>
+</div>
+<!-- Bottom Security Footer Actions -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xs border-t border-surface-container-low">
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Compte sécurisé par double facteur (2FA actif)
+            </span>
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<button class="h-11 px-space-lg rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md" type="button">
+                Annuler
+              </button>
+<button class="h-11 px-space-xl rounded-full bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg shadow-sm transition-all" onclick="savePreferences()" type="button">
+                Enregistrer les préférences
+              </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<script>
+  let isEditing = false;
+
+  function toggleFormEditMode() {
+    isEditing = !isEditing;
+    const form = document.getElementById('profileForm');
+    const inputs = form.querySelectorAll('input, textarea');
+    const actionsGroup = document.getElementById('formActionsGroup');
+    const toggleBtn = document.getElementById('editToggleBtn');
+
+    inputs.forEach(input => {
+      input.disabled = !isEditing;
+      if (isEditing) {
+        input.classList.remove('bg-surface-container-low');
+        input.classList.add('bg-surface-container-lowest', 'shadow-xs');
+      } else {
+        input.classList.add('bg-surface-container-low');
+        input.classList.remove('bg-surface-container-lowest', 'shadow-xs');
+      }
+    });
+
+    if (isEditing) {
+      actionsGroup.classList.remove('hidden');
+      toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">close</span><span>Fermer</span>';
+      document.getElementById('firstName').focus();
+    } else {
+      actionsGroup.classList.add('hidden');
+      toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">edit</span><span>Modifier</span>';
+    }
+  }
+
+  function cancelFormEdit() {
+    isEditing = true;
+    toggleFormEditMode();
+  }
+
+  function handleFormSubmit(event) {
+    event.preventDefault();
+    toggleFormEditMode();
+    const feedback = document.getElementById('saveFeedback');
+    feedback.classList.remove('hidden');
+    feedback.classList.add('flex');
+    setTimeout(() => {
+      feedback.classList.add('hidden');
+      feedback.classList.remove('flex');
+    }, 4000);
+  }
+
+  function savePreferences() {
+    alert("Vos préférences de notifications et de sécurité ont bien été mises à jour !");
+  }
+
+  function confirmLogout() {
+    if (confirm("Êtes-vous sûr(e) de vouloir vous déconnecter de PetCare Community ?")) {
+      window.location.href = "#";
+    }
+  }
+</script></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span>— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide & Support</a></div></div></footer></body></html>

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Les maquettes Stitch (designs/) ne font pas partie du site : Tailwind ne doit pas les analyser. */
+@source not "../../designs";
+
 /*
  * Design system PetCare Community (export Stitch, commun aux six modules).
  * Les noms reprennent ceux des maquettes Stitch : le code HTML exporté

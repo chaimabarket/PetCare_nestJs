@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-white font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="bg-primary-container text-white font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm flex items-center gap-1" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Lina Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Main Grid Container -->
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg py-space-xl w-full">
+<!-- Top Breadcrumb & Page Title -->
+<header class="mb-space-xl">
+<nav aria-label="Fil d'Ariane" class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm mb-space-xs">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span>Accueil</span>
+</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Adoption</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-label-sm text-label-sm font-semibold">Créer une annonce</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-sm mb-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">volunteer_activism</span>
+              Espace Solidarité
+            </span>
+<span class="text-on-surface-variant text-body-sm">• Validation sous 12h</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+            Publier une annonce d'adoption
+          </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-1">
+            Chaque détail compte. Votre annonce sera relue avec bienveillance pour connecter votre compagnon à la famille idéale et lui garantir un foyer chaleureux.
+          </p>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors shadow-sm self-start md:self-auto" type="button">
+<span class="material-symbols-outlined text-primary text-[20px]">help</span>
+<span>Aide &amp; conseils de publication</span>
+</button>
+</div>
+</header>
+<!-- 2 Columns Layout: Form & Live Preview Sticky -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-gutter-md items-start">
+<!-- Left Column: Step-by-Step Structured Form (7 Cols ~60%) -->
+<section class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- 1. Section: Choisir un animal enregistré -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-lg text-label-lg font-bold">1</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Choisir un animal</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sélectionnez le profil existant ou créez-en un nouveau</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">Étape requise</span>
+</div>
+<!-- Horizontal Animal Pills Selector -->
+<div class="flex items-center gap-space-md overflow-x-auto pb-2 scrollbar-none">
+<!-- Selected Animal: Oscar -->
+<button class="flex items-center gap-space-sm pl-1.5 pr-space-md py-1.5 rounded-full bg-primary/10 text-on-surface shadow-sm cursor-pointer transition-all shrink-0" type="button">
+<div class="w-11 h-11 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a cheerful young Golden Retriever cross dog looking affectionately at the camera with gentle amber eyes, bathed in soft outdoor morning sunlight, soft natural bokeh background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgnzuvYyVkkqciCW7gNBAliSv6fRIq5_SMW0NpPfzBrPsiCP2mWqpmFJUGPs_521gawVCLC4DuIPgVX7jRdvs4xvE1HV-fue-vFRlaGrIpBFRfc1JKxwibbXEW01VGf_z-bGz9j083YiOHDG7YgAEPruCjvAGamvJv2vkRmtFMonpSJb7W_zhLekoVor0mK9CXBBoQyLCzydZGLLxZOX7R3EjdGTTCfO7OtXNcL4aEnsdEtfwrzbn5"/>
+</div>
+<div class="text-left pr-1">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg font-bold text-primary">Oscar</span>
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Golden croisé • 1 an</span>
+</div>
+</button>
+<!-- Maya (Cat) -->
+<button class="flex items-center gap-space-sm pl-1.5 pr-space-md py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant cursor-pointer transition-all shrink-0" type="button">
+<div class="w-11 h-11 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up photograph of Maya, a sleek European shorthair tabby cat with luminous green eyes lying comfortably on a soft pastel blanket in a warm indoor home." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb3mRFlwNXl3Upo29T1aV2hPv-T6IgUGjNkbeXpnBWGIgIvqJ4BtTdWDKMyI9_5tElavWtrlBnrlSQeio2uu1I5N6rlg8s0Ccjz5ND-vR4Y750uAqpKzblYrZS1MmUGaNsMVxzOKfJKbFANTNnf3HUB4hHKSl7VXu9OixUcXFvYqD4FXLjHogT2Cyw2Dms4StkTusfLctu2nCp9Whtu-jOGe0RRmClW4_TRvK8Asb31mLBfOpPlYSh"/>
+</div>
+<div class="text-left pr-1">
+<span class="font-label-lg text-label-lg font-medium text-on-surface block">Maya</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Chatte européenne • 3 ans</span>
+</div>
+</button>
+<!-- Filou (Rabbit) -->
+<button class="flex items-center gap-space-sm pl-1.5 pr-space-md py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant cursor-pointer transition-all shrink-0" type="button">
+<div class="w-11 h-11 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A sweet fluffy lop-eared rabbit named Filou nestled softly beside a bowl of fresh greens with gentle daylight and cozy neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAISWdOOb8GW9lwxPIZ6EeBQuqS_5wioV4cTg75-bfKbiOPTCSeollRVZAH2js9UbTl8jvDOF2gMPud3YAfO6q46M1cuApuBGycieVPPF0k3g_pl0znCihOpnp4BObOh6k8YhS7HzDWi7QGBGkil1lS8Kie-3QSmRZP1o0wUBdxZidrYovKczNOMlGjGsyvvL14iw2MMmJ-L4vkiOV42-ihnQU68m2cUkWxrmnp4kGofZMhs09yszv3"/>
+</div>
+<div class="text-left pr-1">
+<span class="font-label-lg text-label-lg font-medium text-on-surface block">Filou</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Lapin bélier • 8 mois</span>
+</div>
+</button>
+<!-- Add new animal -->
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md transition-colors shrink-0" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Nouvel animal</span>
+</button>
+</div>
+</article>
+<!-- 2. Section: Photos de l'animal -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-lg text-label-lg font-bold">2</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Photos de l'animal</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ajoutez jusqu'à 5 photos valorisantes de son quotidien</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4/5 photos</span>
+</div>
+<!-- Photo Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
+<!-- Primary Cover Photo (Span 2x2) -->
+<div class="col-span-2 row-span-2 relative rounded-xl overflow-hidden group shadow-sm bg-surface-container aspect-square sm:aspect-auto">
+<img class="w-full h-full object-cover" data-alt="High quality vibrant portrait of Oscar, a smiling golden retriever mix dog lying happily on fresh green lawn grass with his tongue out, wearing a friendly teal collar." id="main-photo-slot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTKMJM16rtOX3OMfTz2jCZDcVOeCfUmE9bR969DLUyJ3X_J3g9BSdBUMtXIVVRSYccfykwl95ukqPFvcusgonPy0suW9UJ6sNt3azUF97t4nzmO8LzJzThKpOWuf84KavlEkdCfFuddbQVyNwyZHCknQFkeFnRE-u7327u8GTAwTn0hk46tsoH6t5LCft6ZotVvZZFl8_zStthIXsdsL-SS6f3V5ap3x10EOoBaFD4LJEPwoftlGBA"/>
+<!-- Cover Badge -->
+<div class="absolute top-3 left-3 flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1 rounded-full shadow-sm text-on-surface font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>Photo principale</span>
+</div>
+<!-- Action overlays -->
+<div class="absolute bottom-3 right-3 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+<button aria-label="Remplacer la photo de couverture" class="w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface hover:text-primary flex items-center justify-center shadow-md transition-transform hover:scale-105" type="button">
+<span class="material-symbols-outlined text-[18px]">cached</span>
+</button>
+<button aria-label="Supprimer la photo" class="w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-error hover:bg-error hover:text-on-error flex items-center justify-center shadow-md transition-all hover:scale-105" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Thumbnail 2 -->
+<div class="relative rounded-xl overflow-hidden aspect-square bg-surface-container group shadow-xs">
+<img class="w-full h-full object-cover" data-alt="Playful Golden retriever cross puppy running playfully in an autumn park with fallen orange and golden leaves, vibrant natural dynamic action." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeLFsD862mINBLxTLyXLRQYZyB9Om661TCzFjWrv2Nn5t4hIuyRvHjPexvk1nNEnaqomG8VbJJzu54Rb8TRUX0f_Hq-UfDJxUqU1a4OSWMYLTIlSsLkNdpJLCIvQt-FMsWxB94fBw9IemmjSjL8DuR9Lv_dgqypqNs0D40PnvqspKMFhC04w5KWmY3okSGE3OpbSY2-kipkZEqiV-jBnKfefTuyTYyvn6oqPwXGwsInlPwQRqtLanj"/>
+<button class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Thumbnail 3 -->
+<div class="relative rounded-xl overflow-hidden aspect-square bg-surface-container group shadow-xs">
+<img class="w-full h-full object-cover" data-alt="Side profile shot of a gentle golden retriever resting peacefully on a modern Scandinavian living room rug, calm natural light coming through a window." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATcyq0aPlDLmUCFuD6yz-HhKMRj6o3eSb4C1Lh0rSrV3HmJYfZ6oF2P_uI_nBiX6QkwrdzaNKoLlHql5okj5jf8OFq7igXiurApO1fmfqMXEuJaOT-pOCzqojVdWSoJ0p6K9hy8xz5WpW_LQwBkW_Ag612bYW7AMErECDx7kfYCxQY3z0WGy1uSHztTqxKbBwBqYoWaGAKFgcS6H-aJomHRj0uZ_aqDgzrAkKBSE0hgB5Ke-JZpgCw"/>
+<button class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Thumbnail 4 -->
+<div class="relative rounded-xl overflow-hidden aspect-square bg-surface-container group shadow-xs">
+<img class="w-full h-full object-cover" data-alt="Intimate cute photo of the dog Oscar receiving a gentle warm chin scratch from his foster volunteer with friendly domestic warmth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh4vJCSgPFOap5tYPuot4YuWmHU1HxviVpHLfOejlL7RSCD6gdCAjahPQQ328l2GMQNnEi4lonndobms-u8DpJLlEm60ol0OtUQYeFApl1nes7o8UA3ipzDasO9NyEDLhuBrUfsPat04_cvesvxLLHKLg9JhB-y1tNOesbjAZUitFz2h8e396Q9KTCv8s_g2NudCQR7qg8CcZIr6m_3TtYo4UcmVzYf-8hkDx_rhT2LGa8yqLQPNL-"/>
+<button class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface-variant hover:text-error flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Thumbnail 5: Empty Slot / Upload trigger -->
+<button class="flex flex-col items-center justify-center aspect-square rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group p-2 text-center" type="button">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-primary">Ajouter</span>
+<span class="font-body-sm text-[10px] text-on-surface-variant mt-0.5">JPG, PNG (5 Mo)</span>
+</button>
+</div>
+</article>
+<!-- 3. Section: Informations principales & Histoire -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-center gap-space-sm mb-space-md">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-lg text-label-lg font-bold">3</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Informations principales &amp; Histoire</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Donnez envie aux adoptants avec une présentation touchante et sincère</p>
+</div>
+</div>
+<div class="space-y-space-md">
+<!-- Titre de l'annonce -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1.5" for="announcement-title">
+                Titre de l'annonce <span class="text-secondary">*</span>
+</label>
+<input class="w-full h-11 px-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all" id="announcement-title" placeholder="Ex : Moka, jeune chiot curieux et débordant de tendresse" type="text" value="Oscar, jeune chien affectueux et joueur cherche sa famille pour la vie"/>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Un titre évocateur augmente la visibilité de 40%.</p>
+</div>
+<!-- Son histoire & caractère (Textarea) -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label-lg text-label-lg text-on-surface" for="announcement-story">
+                  Son histoire &amp; ses habitudes <span class="text-secondary">*</span>
+</label>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="story-counter">342 / 1000 caractères</span>
+</div>
+<textarea class="w-full p-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all resize-y" id="announcement-story" placeholder="Racontez d'où il vient, ce qu'il aime par-dessus tout (les caresses sur le ventre, les balades matinales), comment il se comporte à la maison..." rows="5">Recueilli avec bienveillance par notre réseau de bénévoles, Oscar est un jeune Golden Retriever croisé plein de vie et extrêmement doux. Très proche de l'humain, il adore apprendre de nouveaux tours et poser sa tête sur vos genoux le soir après une belle sortie. Il marche parfaitement en laisse et sait rester calme lors des moments de repos.</textarea>
+</div>
+<!-- Badges de personnalité Multi-select -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1">
+                Traits de caractère majeurs (Sélectionnez jusqu'à 5 badges)
+              </label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+                Ces mots-clés aident les familles à identifier la compatibilité avec leur mode de vie.
+              </p>
+<!-- 12 Chips -->
+<div class="flex flex-wrap gap-space-xs" id="personality-chips-container">
+<!-- 1. Affectueux (Active) -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs" data-active="true" data-label="Affectueux" type="button">
+<span>🐾</span>
+<span>Affectueux</span>
+</button>
+<!-- 2. Joueur (Active) -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs" data-active="true" data-label="Joueur" type="button">
+<span>🎾</span>
+<span>Joueur</span>
+</button>
+<!-- 3. Calme -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Calme" type="button">
+<span>🧘</span>
+<span>Calme</span>
+</button>
+<!-- 4. Curieux -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Curieux" type="button">
+<span>💡</span>
+<span>Curieux</span>
+</button>
+<!-- 5. Protecteur -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Protecteur" type="button">
+<span>🛡️</span>
+<span>Protecteur</span>
+</button>
+<!-- 6. Dormeur -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Dormeur" type="button">
+<span>😴</span>
+<span>Dormeur</span>
+</button>
+<!-- 7. Gourmand (Active) -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs" data-active="true" data-label="Gourmand" type="button">
+<span>🍖</span>
+<span>Gourmand</span>
+</button>
+<!-- 8. Sociable (Active) -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs" data-active="true" data-label="Sociable" type="button">
+<span>🤝</span>
+<span>Sociable</span>
+</button>
+<!-- 9. Sportif -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Sportif" type="button">
+<span>🏃</span>
+<span>Sportif</span>
+</button>
+<!-- 10. Câlin (Active) -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs" data-active="true" data-label="Câlin" type="button">
+<span>🧸</span>
+<span>Câlin</span>
+</button>
+<!-- 11. Propre -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="Propre" type="button">
+<span>🌿</span>
+<span>Propre</span>
+</button>
+<!-- 12. À l'écoute -->
+<button class="personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface" data-active="false" data-label="À l'écoute" type="button">
+<span>🎓</span>
+<span>À l'écoute</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- 4. Section: Compatibilité & Cadre de vie -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-center gap-space-sm mb-space-md">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-lg text-label-lg font-bold">4</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Compatibilité &amp; Cadre de vie</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Précisez les ententes et l'environnement idéal pour son bien-être</p>
+</div>
+</div>
+<!-- Compatibility Switchers Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md mb-space-lg">
+<!-- OK Enfants -->
+<div class="flex items-center justify-between p-space-md bg-surface rounded-xl shadow-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">family_restroom</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">OK Enfants</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Doux et patient</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-kids" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- OK Chats -->
+<div class="flex items-center justify-between p-space-md bg-surface rounded-xl shadow-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">pets</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">OK Chats</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Curieux mais respectueux</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-cats" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- OK Chiens -->
+<div class="flex items-center justify-between p-space-md bg-surface rounded-xl shadow-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">sound_detection_dog_barking</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">OK Chiens</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Très sociable et joueur</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-dogs" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Jardin Requis -->
+<div class="flex items-center justify-between p-space-md bg-surface rounded-xl shadow-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[22px]">yard</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">Jardin requis</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">S'adapte en appartement</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="toggle-garden" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- Energy Level Selector -->
+<div class="mb-space-lg">
+<label class="block font-label-lg text-label-lg text-on-surface mb-2">Niveau d'énergie</label>
+<div class="grid grid-cols-3 gap-space-sm">
+<!-- Faible -->
+<label class="cursor-pointer">
+<input class="sr-only peer" name="energy-level" type="radio" value="low"/>
+<div class="p-space-md rounded-xl bg-surface peer-checked:bg-primary/10 peer-checked:shadow-sm text-center transition-all">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant peer-checked:text-primary mb-1 block">battery_1_bar</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Calme</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Courtes promenades</span>
+</div>
+</label>
+<!-- Moyen (Selected) -->
+<label class="cursor-pointer">
+<input checked="" class="sr-only peer" name="energy-level" type="radio" value="medium"/>
+<div class="p-space-md rounded-xl bg-surface peer-checked:bg-primary/10 peer-checked:shadow-sm text-center transition-all">
+<span class="material-symbols-outlined text-[24px] text-primary mb-1 block">battery_5_bar</span>
+<span class="font-label-md text-label-md font-semibold text-primary block">Modéré</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">1 à 2h d'activité/jour</span>
+</div>
+</label>
+<!-- Élevé -->
+<label class="cursor-pointer">
+<input class="sr-only peer" name="energy-level" type="radio" value="high"/>
+<div class="p-space-md rounded-xl bg-surface peer-checked:bg-primary/10 peer-checked:shadow-sm text-center transition-all">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant peer-checked:text-primary mb-1 block">bolt</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface block">Sportif</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Grand besoin de courir</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Slider: Tolérance à la solitude -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="alone-slider">
+                Peut rester seul (heures consécutives)
+              </label>
+<span class="font-label-md text-label-md px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold" id="alone-value-badge">
+                4 à 5h max / jour
+              </span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary" id="alone-slider" max="8" min="1" type="range" value="5"/>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant mt-1.5 px-1">
+<span>1h (très présent)</span>
+<span>4h (moyen)</span>
+<span>8h (journée de travail)</span>
+</div>
+</div>
+</article>
+<!-- 5. Section: Besoins spécifiques & Conditions -->
+<article class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-center gap-space-sm mb-space-md">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-label-lg text-label-lg font-bold">5</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Besoins spécifiques &amp; Conditions</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Détails d'adoption responsables et formalités</p>
+</div>
+</div>
+<div class="space-y-space-md">
+<!-- Besoins particuliers -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1" for="specific-needs">
+                Besoins particuliers ou de santé
+              </label>
+<textarea class="w-full p-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all resize-y" id="specific-needs" placeholder="Ex : Vermifugé, vaccins à jour, stérilisé, régime alimentaire spécifique ou suivi particulier..." rows="2">Identifié par puce, primo-vacciné et stérilisé. Certificat vétérinaire de bonne santé fourni lors de l'adoption.</textarea>
+</div>
+<!-- Conditions d'adoption -->
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1" for="adoption-terms">
+                Conditions d'adoption &amp; Participation solidaire
+              </label>
+<textarea class="w-full p-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all resize-y" id="adoption-terms" placeholder="Ex : Participation aux frais vétérinaires (180€), pré-visite du domicile et signature d'un contrat d'engagement..." rows="2">Participation solidaire de 190€ demandée pour couvrir les frais vétérinaires engagés. Questionnaire et pré-visite d'échange avec la famille.</textarea>
+</div>
+<!-- Ville & Localisation -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<div class="sm:col-span-2">
+<label class="block font-label-lg text-label-lg text-on-surface mb-1" for="city-location">
+                  Ville / Secteur <span class="text-secondary">*</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] absolute left-3 top-2.5">location_on</span>
+<input class="w-full h-11 pl-10 pr-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all" id="city-location" type="text" value="Lyon (69006)"/>
+</div>
+</div>
+<div>
+<label class="block font-label-lg text-label-lg text-on-surface mb-1" for="postal-code">
+                  Rayon d'adoption
+                </label>
+<select class="w-full h-11 px-space-md bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs transition-all cursor-pointer" id="postal-code">
+<option>Région (50 km)</option>
+<option selected="">France entière</option>
+<option>Département uniquement</option>
+</select>
+</div>
+</div>
+</div>
+</article>
+<!-- 6. Actions Bottom Bar -->
+<div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-space-md pt-space-xs pb-space-lg">
+<button class="w-full sm:w-auto px-space-xl h-11 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg transition-all shadow-xs flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Enregistrer le brouillon</span>
+</button>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-space-xl h-11 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-semibold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span>Publier l'annonce</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Right Column: Live Sticky Public Adoption Card (5 Cols ~40%) -->
+<aside class="lg:col-span-5 lg:sticky lg:top-20 space-y-space-md">
+<!-- Preview Indicator Header -->
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Aperçu en temps réel</span>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">
+            Rendu public
+          </span>
+</div>
+<!-- The Realistic PetCare Public Card -->
+<article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md transition-all hover:shadow-xl">
+<!-- Card Image & Floating Badges -->
+<div class="relative w-full aspect-4/3 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Warm centered hero photography of Oscar the dog looking gently towards viewer in a peaceful living room garden setting, natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3kr8jJYfqM93wzLVicpEQFSaWDeO90OHQoPqhvDHrSf0NDiGKgJ2X8wYWmtRITtrmEAWWr0niXkSIb3WPjyseDgn3klrQnElj9GcFZgpuEGAKTlqVj4SlQfvxnuPpHQaTPPzzyexBBzGMXgyONU3b2Hy-_IE7CmOzYoShZ5kCWdE7KK64JbHE5uq3y1ojagCpaGUlIS7qmoRpm2mmswn_42MOxEz6ndCT2hGwp6cXvehSUd47iVdk"/>
+<!-- Availability Badge Top Left -->
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/95 backdrop-blur-md text-primary font-label-sm text-label-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>À adopter</span>
+</div>
+<!-- Heart / Favorite Button Top Right (Coral accent) -->
+<button aria-label="Ajouter aux favoris" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-surface-container-lowest/95 backdrop-blur-md text-secondary hover:bg-secondary-fixed transition-all flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Bottom Image Overlay: Photo index -->
+<div class="absolute bottom-3 right-3 px-2 py-0.5 rounded-full bg-inverse-surface/60 backdrop-blur-md text-inverse-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+<span>4 photos</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-lg flex flex-col gap-space-sm">
+<!-- Main Title & Location -->
+<div>
+<div class="flex items-baseline justify-between gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface tracking-tight" id="preview-pet-name">
+                  Oscar
+                </h3>
+<span class="font-label-md text-label-md text-primary font-semibold">Mâle • 1 an</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span id="preview-location">Lyon (69006) • Golden Retriever croisé</span>
+</p>
+</div>
+<!-- Compatibility Badges Pills -->
+<div class="flex flex-wrap gap-1.5 py-1">
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Enfants OK
+              </span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Chats OK
+              </span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Chiens OK
+              </span>
+</div>
+<!-- Story / Catchy summary -->
+<p class="font-body-md text-body-md text-on-surface line-clamp-3 italic text-on-surface-variant" id="preview-story-excerpt">
+              “Recueilli avec bienveillance par notre réseau de bénévoles, Oscar est un jeune Golden Retriever croisé plein de vie et extrêmement doux. Très proche de l'humain, il adore apprendre...”
+            </p>
+<!-- Active Selected Personality Tags -->
+<div class="flex flex-wrap gap-1 pt-1" id="preview-badges-list">
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px]">🐾 Affectueux</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px]">🎾 Joueur</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px]">🧸 Câlin</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px]">🍖 Gourmand</span>
+</div>
+<!-- Publisher Info Box -->
+<div class="pt-space-sm mt-space-xs border-t-0 bg-surface rounded-xl p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<img class="w-9 h-9 rounded-full object-cover" data-alt="Portrait of Sarah D, a benevolent volunteer foster caregiver with a gentle smile wearing casual knitwear, warm friendly tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDimsFeo77yeDqCeyBshZ-Q_xVwWt0kAA40AYNvSQZEDtOvloSMdjiETFe9GWv8Bkm_uv_VFPtERxsw99TVCQMnSgslZlpAJSKf5HI_XZ86l53oUmxDU6zzUzUc_qpyVujypUBQSagyFpJtBsBxdwKIz7-nlM-mwasmihiB4VjOhHCu5Nu3oOChhWOzbLep-Jrellb2XV8OnyKhe0T3Lb1YMuMIEUyUA1wiahCSX9j8BymoATq2Pg6R"/>
+<div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block">Sarah D.</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Famille d'accueil certifiée</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]" title="Identité vérifiée">verified</span>
+</div>
+<!-- Fake Action Button on Card -->
+<button class="w-full mt-space-xs h-10 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 cursor-not-allowed opacity-90" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>Demande d'adoption</span>
+</button>
+</div>
+</article>
+<!-- Advice & Quality Box Below Card -->
+<div class="p-space-md rounded-2xl bg-surface-container-high/60 backdrop-blur-sm text-on-surface space-y-2 shadow-xs">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">lightbulb</span>
+<div>
+<span class="font-label-lg text-label-lg font-bold block mb-1">Le saviez-vous ?</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface font-semibold">87% des adoptions réussies</strong> comportent au moins 3 photographies lumineuses et un texte détaillant les moments de tendresse du quotidien.
+              </p>
+</div>
+</div>
+<div class="pt-1 flex items-center gap-2 text-on-surface-variant font-body-sm text-[11px]">
+<span class="material-symbols-outlined text-primary text-[14px]">format_image_left</span>
+<span>PetCare vérifie manuellement les profils pour la sécurité des animaux.</span>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</div>
+<script>
+  // Simple interactive micro-behaviors for chips and character counter
+  (function() {
+    const chips = document.querySelectorAll('.personality-chip');
+    const previewBadgesContainer = document.getElementById('preview-badges-list');
+    const textareaStory = document.getElementById('announcement-story');
+    const storyCounter = document.getElementById('story-counter');
+    const previewStoryExcerpt = document.getElementById('preview-story-excerpt');
+    const aloneSlider = document.getElementById('alone-slider');
+    const aloneBadge = document.getElementById('alone-value-badge');
+    const cityInput = document.getElementById('city-location');
+    const previewLocation = document.getElementById('preview-location');
+
+    // Toggle Personality Chips
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const isActive = chip.getAttribute('data-active') === 'true';
+        if (isActive) {
+          chip.setAttribute('data-active', 'false');
+          chip.className = 'personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-surface-container text-on-surface-variant hover:text-on-surface';
+        } else {
+          // Limit selection to 5
+          const currentActive = document.querySelectorAll('.personality-chip[data-active="true"]');
+          if (currentActive.length >= 5) {
+            return;
+          }
+          chip.setAttribute('data-active', 'true');
+          chip.className = 'personality-chip px-3 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 bg-primary-fixed text-primary font-semibold shadow-xs';
+        }
+        updatePreviewChips();
+      });
+    });
+
+    function updatePreviewChips() {
+      if (!previewBadgesContainer) return;
+      const activeChips = document.querySelectorAll('.personality-chip[data-active="true"]');
+      let html = '';
+      activeChips.forEach(c => {
+        const emoji = c.querySelector('span:first-child').innerText;
+        const text = c.getAttribute('data-label');
+        html += `<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-[11px]">${emoji} ${text}</span>`;
+      });
+      previewBadgesContainer.innerHTML = html;
+    }
+
+    // Dynamic story sync & counter
+    if (textareaStory && storyCounter && previewStoryExcerpt) {
+      textareaStory.addEventListener('input', () => {
+        const len = textareaStory.value.length;
+        storyCounter.textContent = `${len} / 1000 caractères`;
+        previewStoryExcerpt.textContent = `“${textareaStory.value.slice(0, 160)}${len > 160 ? '...' : ''}”`;
+      });
+    }
+
+    // Dynamic Slider sync
+    if (aloneSlider && aloneBadge) {
+      aloneSlider.addEventListener('input', () => {
+        const val = aloneSlider.value;
+        if (val <= 2) {
+          aloneBadge.textContent = '1 à 2h max / jour';
+        } else if (val <= 4) {
+          aloneBadge.textContent = '3 à 4h max / jour';
+        } else if (val <= 6) {
+          aloneBadge.textContent = '5 à 6h max / jour';
+        } else {
+          aloneBadge.textContent = '7 à 8h max / jour';
+        }
+      });
+    }
+
+    // City sync
+    if (cityInput && previewLocation) {
+      cityInput.addEventListener('input', () => {
+        previewLocation.textContent = `${cityInput.value} • Golden Retriever croisé`;
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span class="">— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide &amp; Support</a></div></div></footer>
+</body></html>

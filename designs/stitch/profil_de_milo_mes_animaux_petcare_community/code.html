@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-white font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Lina Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Dynamic Styles & Keyframes for micro-interactions -->
+<style>
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .hover-lift {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hover-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(15, 118, 110, 0.08), 0 8px 10px -6px rgba(15, 118, 110, 0.04);
+    }
+  </style>
+<!-- Content Container -->
+<div class="max-w-7xl mx-auto w-full px-margin md:px-margin-md lg:px-margin-lg py-space-md lg:py-space-xl flex flex-col gap-space-lg">
+<!-- Breadcrumb & Top Utility Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<nav aria-label="Fil d'Ariane" class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+          Accueil
+        </a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<a class="hover:text-primary transition-colors font-medium" href="#">Mes animaux</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="text-on-surface font-semibold bg-surface-container px-2 py-0.5 rounded-full text-label-sm">Milo</span>
+</nav>
+<div class="flex items-center gap-space-sm text-label-md text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1.5 bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Profil vérifié I-CAD
+        </span>
+<span class="hidden sm:inline-block text-outline-variant">•</span>
+<span class="hidden sm:inline-block">Dernière mise à jour : hier à 18h20</span>
+</div>
+</div>
+<!-- Main Two-Column Profile Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-md items-start">
+<!-- ================= LEFT COLUMN : Visuals & Quick ID ================= -->
+<section class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Main Media Showcase Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm border border-black/[0.04] flex flex-col gap-space-md">
+<!-- Featured Large Picture with Floating Tags -->
+<div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-high group">
+<img alt="Milo assis sur le rebord de fenêtre" class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" data-alt="Milo the domestic European short-hair ginger and white cat sitting gracefully on a rustic wooden windowsill beside green potted houseplants and autumn garden view softly lit by morning sun" id="main-pet-photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3HKBUP6QrRb3oNBM7HSd0JA1lFlVKfCaQ4U_CCuoHz5ZUMLCft8glL4o8d1UHILMCxcKtM1kMHUTowYF63aI3xMK8nwwGvg8k8YXuJL_hqfnpnwWmxi83Nkba9zQvnrOlwZPZ-Yr0uXva9GwRZApK3uNKTNJtWxwwZ8pTs7bXZKXAN7SjgFUl1A0qShGoHkjIhh1-ljD6vp-gY9zhgEbGBEKichIEYy3JIQRE_GB-sMDx4L3tChGd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none"></div>
+<!-- Floating Favorite Heart and Status -->
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full font-label-md text-label-md text-primary font-semibold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">pets</span>
+                Chat de famille
+              </span>
+</div>
+<button aria-label="Ajouter aux favoris" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-tertiary-container hover:bg-tertiary-fixed transition-all shadow-sm group/btn" id="fav-btn" onclick="this.classList.toggle('text-rose-600'); const ico = this.querySelector('span'); ico.textContent = ico.textContent === 'favorite' ? 'favorite_border' : 'favorite';" type="button">
+<span class="material-symbols-outlined text-[20px] transition-transform active:scale-125" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Bottom overlay detail -->
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-body-sm drop-shadow">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+                Photo principale de référence
+              </span>
+<button class="px-2.5 py-1 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md font-label-sm text-label-sm transition-colors flex items-center gap-1" onclick="alert('Agrandissement en haute définition');" type="button">
+<span class="material-symbols-outlined text-[14px]">fullscreen</span>
+                Zoom
+              </button>
+</div>
+</div>
+<!-- Thumbnails Row (4 Photos + 1 Add Button) -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1" id="photo-gallery">
+<!-- Thumb 1 (Active) -->
+<button aria-label="Sélectionner la photo 1" class="thumbnail-btn relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-2 ring-primary ring-offset-2 transition-all opacity-100 focus:outline-none" data-src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&amp;fit=crop&amp;w=800&amp;q=80" type="button">
+<img alt="Milo près de la fenêtre" class="w-full h-full object-cover" data-alt="Milo resting peacefully on a sunlit rustic oak window frame looking alert and curious with green eyes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmoWi2j9l9yCHvp2WYWuyjcJrj5c7DYy27y4nQBO3wC-jImCOo-7BkUuTy3PINYJiHAtFX7he_ie8wFct1aDvWLL6FmxuYm0gQ6ElTcr7XKPkg4m-LOHRFzGtEKFavQocgrEK5TYHawRIXjpTbpDR6HGix_aWbCrNWLvPfY3hEjpDX0A8zcieYA76fS1Z50eIhto36R9d8Nclhf2AnxdSd0XdiNhZNNGTms0Kr7txMRs6Sboba7ht7"/>
+</button>
+<!-- Thumb 2 -->
+<button aria-label="Sélectionner la photo 2" class="thumbnail-btn relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-1 ring-black/10 hover:ring-primary/60 transition-all opacity-80 hover:opacity-100 focus:outline-none" data-src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&amp;fit=crop&amp;w=800&amp;q=80" type="button">
+<img alt="Milo avec pelote" class="w-full h-full object-cover" data-alt="Ginger fluffy cat playfully batting a textured blue wool yarn ball across a cozy beige living room rug" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8iQvmLZWxhV2vOhG5Ycckxns7euWT0y1sOjGlg5FRhf24_BQBB6K7-PhjRjcn9VEfvpjDqs-Dj1xgVEDFX200j8VkIXLB_SDG6XgdQ-ny4lYXIH3jt6jDRMAQ4OvdmEVaOh--3Zl-KEgOAqPxAm5uNnuJGOd9jaHVfga9KejqCNPIsqhFrZcnnmlurZeRo_RvHrvf4I7KSnWspt5tvbtVbcjcQO46y4h6XfBY8wjDBiQeHVg4SIXK"/>
+</button>
+<!-- Thumb 3 -->
+<button aria-label="Sélectionner la photo 3" class="thumbnail-btn relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-1 ring-black/10 hover:ring-primary/60 transition-all opacity-80 hover:opacity-100 focus:outline-none" data-src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&amp;fit=crop&amp;w=800&amp;q=80" type="button">
+<img alt="Milo endormi" class="w-full h-full object-cover" data-alt="Orange tabby cat deeply asleep curled in a soft knitted wool blanket with warm bedroom ambient light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2sKWgBH83Jp-8ZAdUnklWzmzusT6xqYa9gZZv_3vD2mw-BhkhQm3rLNCrdr2dtoLGFijb254q0CVC7wmTV-qiGzOdbsFIaruumA7rw32AGcAcZcr0_JhaSrlNYYKJfanUmD9RDOoW-5Liz0xqk1hvzRlkrEgZoHN0yG7_4M14h3g8K9DkZ-khxt5tHWwoiKJTaOf11Vs9ZUgW8TFmuReMYPpoc8i8f782eF0m2hrJwx8-CwaNHK8b"/>
+</button>
+<!-- Thumb 4 -->
+<button aria-label="Sélectionner la photo 4" class="thumbnail-btn relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-1 ring-black/10 hover:ring-primary/60 transition-all opacity-80 hover:opacity-100 focus:outline-none" data-src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&amp;fit=crop&amp;w=800&amp;q=80" type="button">
+<img alt="Milo chez le vétérinaire" class="w-full h-full object-cover" data-alt="Alert ginger cat sitting calmly on a stainless steel veterinary examination table with smiling friendly vet in scrubs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX7UWALKJiLo01cymy84bYeKtrHVQ3XUCuvdXrjLx-9QY0n0qk5wO5jwPBfMAOLDk9YgafDUrh1ozz_l_pZAL4MN1pw46BDYDzCzBL7p_Uqkjh3DLLcj5BOF87n7u5rwfc1_W3zs7OqxqAjKtcQU51ndwDBEkoycIku3MwDBcWAlLM7hn9njiakxTiquG4CfrMvOh76y6IVuxQyjOBCUweQWl6py8jdPIHuBrCL2GHRYyQDzchBs1R"/>
+</button>
+<!-- Thumb 5: Add Photo action button -->
+<button class="flex-shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-outline-variant hover:border-primary bg-surface-container-low hover:bg-primary-fixed/20 text-on-surface-variant hover:text-primary flex flex-col items-center justify-center gap-0.5 transition-colors focus:outline-none group" onclick="alert('Sélecteur d\'image : formats JPG, PNG, WEBP acceptés');" title="Ajouter une nouvelle photo" type="button">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">add_a_photo</span>
+<span class="font-label-sm text-[10px] uppercase font-bold tracking-tight">Ajouter</span>
+</button>
+</div>
+</div>
+<!-- Quick Identity & Official Registry Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border border-black/[0.04] flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">badge</span>
+              Carte d'identité &amp; Statut
+            </h2>
+<span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/30 px-2.5 py-0.5 rounded-full">
+              Actif
+            </span>
+</div>
+<!-- Microchip & Legal ID -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between text-body-sm text-on-surface-variant font-medium">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">nfc</span>
+                Puce électronique / I-CAD
+              </span>
+<button class="text-primary hover:underline font-label-sm flex items-center gap-1" onclick="navigator.clipboard.writeText('250269608123456'); alert('Numéro de puce copié dans le presse-papiers !');" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+                Copier
+              </button>
+</div>
+<div class="font-mono text-body-lg text-on-surface font-bold tracking-wider select-all">
+              250 269 608 123 456
+            </div>
+<div class="text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
+              Enregistré au fichier national I-CAD France
+            </div>
+</div>
+<!-- Health Badges -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-label-md text-label-md border border-emerald-200/50">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Stérilisé
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 text-teal-800 font-label-md text-label-md border border-teal-200/50">
+<span class="material-symbols-outlined text-[16px] text-teal-700">health_and_safety</span>
+              Vaccins à jour
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 font-label-md text-label-md border border-amber-200/50">
+<span class="material-symbols-outlined text-[16px] text-amber-700">medical_services</span>
+              Régime spécifique
+            </span>
+</div>
+<!-- Referent Veterinarian -->
+<div class="pt-space-xs flex flex-col gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+              Vétérinaire référent
+            </span>
+<div class="flex items-start gap-space-md bg-surface-container-low/70 p-3.5 rounded-xl hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">stethoscope</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Dr. Sophie Martin</span>
+<span class="text-body-sm text-on-surface-variant truncate">Clinique Féline République</span>
+<span class="text-body-sm text-outline flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                  18 rue de Malte, 75011 Paris
+                </span>
+</div>
+<a class="w-9 h-9 rounded-full bg-white text-primary flex items-center justify-center shadow-sm hover:bg-primary hover:text-white transition-all shrink-0" href="tel:+33143570000" title="Appeler la clinique">
+<span class="material-symbols-outlined text-[18px]">call</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= RIGHT COLUMN : Details, Weight Curve & Quick Actions ================= -->
+<section class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Pet Profile Header Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border border-black/[0.04] flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pb-space-sm border-b border-surface-container">
+<!-- Name & Species -->
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<div class="w-14 h-14 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary font-bold text-headline-lg shadow-inner">
+                  M
+                </div>
+<span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[13px] font-bold ring-2 ring-white" title="Mâle">
+                  ♂
+                </span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface tracking-tight leading-none">
+                    Milo
+                  </h1>
+<span class="px-3 py-1 rounded-full bg-surface-container-high font-label-md text-label-md text-on-surface font-medium">
+                    Chat Européen
+                  </span>
+</div>
+<p class="text-body-md text-on-surface-variant mt-1">
+                  Chat de salon curieux &amp; affectueux • Identifiant #MC-2022-09
+                </p>
+</div>
+</div>
+<!-- Profile Actions Dropdown & Edit -->
+<div class="flex items-center gap-space-xs self-start sm:self-center">
+<button class="inline-flex items-center gap-1.5 px-4 h-10 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" onclick="alert('Ouverture de l\'éditeur de profil complet pour Milo');" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                Modifier le profil
+              </button>
+<!-- Dropdown Menu Wrapper -->
+<div class="relative inline-block text-left" id="more-actions-wrapper">
+<button aria-expanded="false" aria-haspopup="true" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" id="more-btn" onclick="const menu = document.getElementById('context-menu'); menu.classList.toggle('hidden');" type="button">
+<span class="material-symbols-outlined text-[22px]">more_vert</span>
+</button>
+<!-- Contextual Menu -->
+<div class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-surface-container-lowest shadow-xl border border-black/[0.08] py-1.5 z-20" id="context-menu">
+<button class="w-full px-4 py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2.5 transition-colors" onclick="alert('Fiche de santé générée en PDF sécurisé'); document.getElementById('context-menu').classList.add('hidden');" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">share</span>
+                    Partager la fiche de soins
+                  </button>
+<button class="w-full px-4 py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2.5 transition-colors" onclick="alert('Historique des ordonnances exporté'); document.getElementById('context-menu').classList.add('hidden');" type="button">
+<span class="material-symbols-outlined text-[18px] text-outline">download</span>
+                    Exporter le carnet médical
+                  </button>
+<div class="h-px bg-surface-container my-1"></div>
+<button class="w-full px-4 py-2 text-left font-body-sm text-body-sm text-error hover:bg-error-container/30 flex items-center gap-2.5 transition-colors" onclick="if(confirm('Souhaitez-vous vraiment archiver la fiche de Milo ?')){alert('Fiche archivée');}; document.getElementById('context-menu').classList.add('hidden');" type="button">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+                    Archiver la fiche
+                  </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Civil Status & Attributes (Clean Grid) -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-space-md pt-space-xs">
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Espèce</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">Chat (Felis catus)</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Robe / Pelage</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">Tigré roux et blanc</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Sexe &amp; Statut</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">Mâle castré</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Date de naissance</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">12 mai 2022</span>
+<span class="text-[11px] text-on-surface-variant font-medium">(2 ans et 5 mois)</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Passeport UE</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5 font-mono">FR-948201</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm text-outline font-medium">Gabarit / Poids</span>
+<span class="font-label-lg text-label-lg text-primary font-bold mt-0.5">4,6 kg (Stable)</span>
+</div>
+</div>
+<!-- Caring Notes & Particularities -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md flex items-start gap-space-md mt-space-xs">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+</div>
+<div class="flex flex-col gap-1 text-on-surface">
+<span class="font-label-md text-label-md font-semibold text-secondary">Notes bienveillantes &amp; Particularités de Milo</span>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Très affectueux et joueur avec les ficelles en laine. Sensible aux transitions alimentaires : suit un <strong class="text-on-surface font-medium">régime strict sans céréales</strong> recommandé par le vétérinaire. Craint le bruit de l'aspirateur et les claquements de porte. Adore les caresses prolongées sous le menton et passer des heures à la fenêtre.
+              </p>
+</div>
+</div>
+</div>
+<!-- Weight Tracking & Evolution Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border border-black/[0.04] flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">scale</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Poids &amp; Courbe d'évolution</h2>
+<p class="text-body-sm text-on-surface-variant">Mesures régulières sur les 6 derniers mois</p>
+</div>
+</div>
+<!-- Current Weight Pill & Button -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-baseline gap-1.5 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-200/50">
+<span class="font-display-lg text-headline-lg font-bold leading-none">4,6</span>
+<span class="font-label-md text-label-md font-medium">kg</span>
+<span class="text-[11px] font-semibold text-emerald-700 bg-white px-1.5 py-0.5 rounded-full ml-1">
+                  -100g ce mois-ci
+                </span>
+</div>
+<button class="inline-flex items-center gap-1 px-3.5 py-2 rounded-full bg-primary-container text-white font-label-md text-label-md hover:bg-primary transition-colors shadow-sm" onclick="promptNewWeight();" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="hidden sm:inline">Ajouter une mesure</span>
+</button>
+</div>
+</div>
+<!-- Refined SVG Line Chart of 6 Months Weight -->
+<div class="w-full bg-surface-container-low/40 rounded-xl p-space-md flex flex-col gap-2">
+<!-- Chart Legend & Benchmark Range -->
+<div class="flex flex-wrap items-center justify-between text-body-sm text-on-surface-variant px-1">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="font-medium">Milo (kg)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-1.5 bg-emerald-300 rounded-sm"></span>
+<span>Fourchette idéale (4,4 - 4,8 kg)</span>
+</div>
+</div>
+<span class="text-emerald-700 font-semibold bg-emerald-100/60 px-2 py-0.5 rounded text-label-sm">
+                Statut : Poids de forme optimal
+              </span>
+</div>
+<!-- Interactive Inline SVG Visualization -->
+<div class="relative w-full h-48 sm:h-56 mt-2">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 700 240">
+<defs>
+<!-- Gradient below trend line -->
+<lineargradient id="weightGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#0F766E" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Pattern for ideal range zone -->
+<lineargradient id="idealRangeGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#10B981" stop-opacity="0.10"></stop>
+<stop offset="100%" stop-color="#10B981" stop-opacity="0.04"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Horizontal Lines -->
+<line stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1" x1="50" x2="680" y1="30" y2="30"></line>
+<text fill="#94A3B8" font-family="Inter" font-size="11" text-anchor="end" x="40" y="34">5.0 kg</text>
+<line stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1" x1="50" x2="680" y1="80" y2="80"></line>
+<text fill="#94A3B8" font-family="Inter" font-size="11" text-anchor="end" x="40" y="84">4.8 kg</text>
+<line stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1" x1="50" x2="680" y1="130" y2="130"></line>
+<text fill="#94A3B8" font-family="Inter" font-size="11" text-anchor="end" x="40" y="134">4.6 kg</text>
+<line stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1" x1="50" x2="680" y1="180" y2="180"></line>
+<text fill="#94A3B8" font-family="Inter" font-size="11" text-anchor="end" x="40" y="184">4.4 kg</text>
+<!-- Ideal Weight Band Area: y=80 (4.8kg) to y=180 (4.4kg) -->
+<rect fill="url(#idealRangeGrad)" height="100" rx="6" width="630" x="50" y="80"></rect>
+<!-- Points & Path Data Coordinates:
+                     Mai: x=80,  4.8kg -> y=80
+                     Juin: x=200, 4.7kg -> y=105
+                     Juil: x=320, 4.6kg -> y=130
+                     Août: x=440, 4.5kg -> y=155
+                     Sept: x=560, 4.6kg -> y=130
+                     Oct: x=650,  4.6kg -> y=130
+                -->
+<!-- Area Fill -->
+<path d="M 80 80 Q 140 92, 200 105 T 320 130 T 440 155 T 560 130 L 650 130 L 650 200 L 80 200 Z" fill="url(#weightGrad)"></path>
+<!-- Smooth Curve Line -->
+<path d="M 80 80 Q 140 92, 200 105 T 320 130 T 440 155 T 560 130 L 650 130" fill="none" stroke="#0F766E" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Data Points with Tooltip micro-actions -->
+<!-- Mai -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-7" cx="80" cy="80" fill="#FFFFFF" r="5" stroke="#0F766E" stroke-width="3"></circle>
+<text fill="#121C2A" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="80" y="65">4.8</text>
+<text fill="#64748B" font-family="Inter" font-size="11" text-anchor="middle" x="80" y="215">Mai</text>
+</g>
+<!-- Juin -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-7" cx="200" cy="105" fill="#FFFFFF" r="5" stroke="#0F766E" stroke-width="3"></circle>
+<text fill="#121C2A" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="200" y="90">4.7</text>
+<text fill="#64748B" font-family="Inter" font-size="11" text-anchor="middle" x="200" y="215">Juin</text>
+</g>
+<!-- Juillet -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-7" cx="320" cy="130" fill="#FFFFFF" r="5" stroke="#0F766E" stroke-width="3"></circle>
+<text fill="#121C2A" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="320" y="115">4.6</text>
+<text fill="#64748B" font-family="Inter" font-size="11" text-anchor="middle" x="320" y="215">Juil</text>
+</g>
+<!-- Août -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-7" cx="440" cy="155" fill="#FFFFFF" r="5" stroke="#0F766E" stroke-width="3"></circle>
+<text fill="#121C2A" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="440" y="142">4.5</text>
+<text fill="#64748B" font-family="Inter" font-size="11" text-anchor="middle" x="440" y="215">Août</text>
+</g>
+<!-- Septembre -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-7" cx="560" cy="130" fill="#FFFFFF" r="5" stroke="#0F766E" stroke-width="3"></circle>
+<text fill="#121C2A" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="560" y="115">4.6</text>
+<text fill="#64748B" font-family="Inter" font-size="11" text-anchor="middle" x="560" y="215">Sept</text>
+</g>
+<!-- Octobre (Current) -->
+<g class="cursor-pointer group" tabindex="0">
+<circle class="transition-all group-hover:r-8 shadow" cx="650" cy="130" fill="#0F766E" r="6" stroke="#FFFFFF" stroke-width="3"></circle>
+<text fill="#0F766E" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle" x="650" y="112">4.6 kg</text>
+<text fill="#0F766E" font-family="Inter" font-size="11" font-weight="600" text-anchor="middle" x="650" y="215">Oct (Auj)</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+<!-- Shortcuts Split Row: "Carnet de Santé" and "Rendez-vous" -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-md">
+<!-- 1. Carnet de santé Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border border-black/[0.04] flex flex-col justify-between gap-space-md hover-lift">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-teal-50 text-teal-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Carnet de santé</h3>
+</div>
+<a class="text-primary hover:text-teal-800 text-label-md font-semibold flex items-center gap-1 group" href="#">
+                  Voir tout
+                  <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- Next Upcoming Medical Milestone -->
+<div class="bg-surface-container-low rounded-xl p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-label-sm uppercase tracking-wider text-outline font-semibold">Prochain rappel vaccinal</span>
+<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-sm font-semibold">
+                    Dans 3 semaines
+                  </span>
+</div>
+<div class="font-label-lg text-label-lg text-on-surface font-bold">
+                  Vaccin Typhus / Coryza
+                </div>
+<div class="text-body-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">event</span>
+                  Échéance : 18 novembre 2024
+                </div>
+</div>
+<!-- Last Parasite Treatment -->
+<div class="border-t border-surface-container pt-2.5 flex items-start justify-between text-body-sm">
+<div>
+<span class="text-outline block text-[11px] uppercase tracking-wide">Dernier antiparasitaire</span>
+<span class="font-medium text-on-surface">Pipette NexGard Combo</span>
+</div>
+<span class="text-on-surface-variant text-body-sm">05 oct. 2024</span>
+</div>
+</div>
+<!-- Add Health Record Action -->
+<button class="w-full mt-2 h-10 rounded-full border border-primary text-primary hover:bg-primary-fixed/20 font-label-md text-label-md transition-colors flex items-center justify-center gap-2" onclick="alert('Formulaire d\'ajout de soin : vaccin, vermifuge, traitement ou poids');" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+              Noter un soin
+            </button>
+</div>
+<!-- 2. Prochains Rendez-vous Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm border border-black/[0.04] flex flex-col justify-between gap-space-md hover-lift">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-orange-50 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Rendez-vous</h3>
+</div>
+<a class="text-primary hover:text-teal-800 text-label-md font-semibold flex items-center gap-1 group" href="#">
+                  Gérer
+                  <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- Next Scheduled Appointment -->
+<div class="bg-surface-container-low rounded-xl p-3.5 flex flex-col gap-2 relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-label-sm uppercase tracking-wider text-outline font-semibold">Consultation confirmée</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    Confirmé
+                  </span>
+</div>
+<div class="font-label-lg text-label-lg text-on-surface font-bold">
+                  Bilan annuel &amp; Détartrage préventif
+                </div>
+<div class="text-body-sm text-on-surface font-medium flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                  Mardi 19 nov. 2024 à 14h30
+                </div>
+<div class="text-body-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-outline">account_circle</span>
+                  Dr. Martin • Clinique Féline
+                </div>
+<div class="text-[11px] text-outline flex items-center gap-1 pt-1 border-t border-black/[0.04]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">notifications_active</span>
+                  Rappel SMS &amp; E-mail programmé (J-2)
+                </div>
+</div>
+</div>
+<!-- Book an Appointment Action -->
+<button class="w-full mt-2 h-10 rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-label-md transition-colors flex items-center justify-center gap-2 shadow-sm" onclick="alert('Module de prise de rendez-vous en ligne avec la Clinique Féline République');" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span>
+              Prendre rendez-vous
+            </button>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Client-side Interactive Script for Gallery Switching & Micro-actions -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Gallery thumbnail switcher
+      const mainImg = document.getElementById('main-pet-photo');
+      const thumbButtons = document.querySelectorAll('.thumbnail-btn');
+
+      thumbButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Reset rings
+          thumbButtons.forEach(b => {
+            b.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'opacity-100');
+            b.classList.add('ring-1', 'ring-black/10', 'opacity-80');
+          });
+
+          // Highlight selected
+          btn.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'opacity-100');
+          btn.classList.remove('ring-1', 'ring-black/10', 'opacity-80');
+
+          // Swap image source
+          const thumbImg = btn.querySelector('img');
+          if (thumbImg && mainImg) {
+            mainImg.src = thumbImg.src;
+            if (thumbImg.hasAttribute('data-alt')) {
+              mainImg.setAttribute('data-alt', thumbImg.getAttribute('data-alt'));
+            }
+          }
+        });
+      });
+
+      // Close dropdown if clicking outside
+      document.addEventListener('click', (e) => {
+        const moreWrapper = document.getElementById('more-actions-wrapper');
+        const menu = document.getElementById('context-menu');
+        if (moreWrapper && !moreWrapper.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+        }
+      });
+    });
+
+    function promptNewWeight() {
+      const val = prompt("Entrez la nouvelle mesure du poids de Milo (en kg) :", "4.6");
+      if (val !== null && val.trim() !== "") {
+        alert("Mesure de " + val.trim() + " kg enregistrée avec succès pour aujourd'hui !");
+      }
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span>— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide &amp; Support</a></div></div></footer></body></html>

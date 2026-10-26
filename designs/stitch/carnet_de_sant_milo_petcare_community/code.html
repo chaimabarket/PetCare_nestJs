@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","tertiary-container":"#a84f37","surface-bright":"#f8f9ff","secondary-fixed-dim":"#ffb59c","primary-container":"#0f766e","on-surface":"#121c2a","tertiary-fixed-dim":"#ffb4a1","surface-variant":"#d9e3f6","inverse-on-surface":"#eaf1ff","on-background":"#121c2a","on-primary-container":"#a3faef","on-error":"#ffffff","background":"#f8f9ff","surface-dim":"#d0dbed","on-tertiary":"#ffffff","surface-tint":"#006a63","outline-variant":"#bdc9c6","tertiary":"#893822","on-tertiary-fixed":"#3c0800","error-container":"#ffdad6","surface-container":"#e6eeff","on-tertiary-container":"#ffe4de","primary-fixed":"#9cf2e8","on-primary":"#ffffff","on-tertiary-fixed-variant":"#7c2e19","secondary-container":"#feae92","surface-container-high":"#dee9fc","on-secondary-fixed-variant":"#6f3723","tertiary-fixed":"#ffdbd2","inverse-surface":"#27313f","primary":"#005c55","surface-container-low":"#eff4ff","secondary-fixed":"#ffdbcf","inverse-primary":"#80d5cb","error":"#ba1a1a","on-secondary-container":"#793f2a","primary-fixed-dim":"#80d5cb","on-surface-variant":"#3e4947","on-error-container":"#93000a","secondary":"#8c4e38","on-primary-fixed":"#00201d","surface-container-lowest":"#ffffff","outline":"#6e7977","on-primary-fixed-variant":"#00504a","surface":"#f8f9ff","on-secondary-fixed":"#380d01","surface-container-highest":"#d9e3f6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-xl":"2rem","space-2xl":"3rem","gutter-md":"1.5rem","space-md":"1rem",margin:"1rem",gutter:"1rem","space-lg":"1.5rem","space-sm":"0.5rem","margin-lg":"3rem","margin-md":"2rem","space-xs":"0.25rem"},fontFamily:{"body-lg":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"label-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"display-lg-mobile":["Inter"],"label-md":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="accueil" href="#"><span class="material-symbols-outlined text-primary text-[28px]">pets</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">PetCare</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-primary text-on-primary font-label-md text-label-md rounded-full px-space-md py-space-xs shadow-sm"><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="accueil" href="#">Accueil</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="mes-animaux" href="#">Mes animaux</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="communaute" href="#">Communauté</a><a class="px-space-md py-space-xs rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="services" href="#">Services</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary"></span></button><div class="flex items-center pl-space-xs"><img alt="Lina Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VOA__DW-oHezocY8OlifUoSUNVVQR5eyGBi1tAaHL0Qhfu2jpzew5sKtKQajVxbeN30yJ_yut-zy8H8fUGrXCCjLvLLTBIsZOgtWaXBK29PIcVzaGGgM0iwI9wkvoPURAO2VjmEOuVv9Xh4gXkonZAje0bMODl2YQhO4iK5uINhzxJofU_rXk_RrMEvtTw6FGGANHzn1pu2hqM_920ekHB0lXhXmADa2A7rzbRx5_8LOR-n1XWlDrtR8s"/></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Breadcrumb & Pet Hero Header -->
+<section class="w-full bg-surface-bright pb-space-lg">
+<div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg pt-space-lg">
+<!-- Breadcrumb -->
+<nav aria-label="Fil d'Ariane" class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md mb-space-md">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+          Accueil
+        </a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Mes animaux</a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<a class="hover:text-primary transition-colors font-label-md text-on-surface" href="#">Milo</a>
+<span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+<span class="text-primary font-label-md text-label-md">Carnet de santé</span>
+</nav>
+<!-- Milo Header Banner Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-lg">
+<div class="flex items-center gap-space-lg">
+<div class="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Photographie portrait douce d'un chat roux et blanc aux yeux verts expressifs portant un collier bleu avec médaille gravée Milo, assis paisiblement près d'une fenêtre baignée de lumière naturelle chaleureuse" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1gMb7lVbekkQrpt2mYB4QLN2lvOBZOZ3RSHpepHuWof-0TsHiVx8ctV_sv-Bf7rwlZgigp0zPBpDrbhUZYcRDtV0Hakex52c_aD9aEaG6EAFW8_yiTM42IV4BPPlV9dhIu7lJgL86OE2XgEW36A4dhjcgxCRhFDSRRteO2ILNwGKejXKnkTkO7U4zu_T8rN3xQiUZl4ZOE41bkFfHIFUO8VXEmYClfk0GhtFvJKeZ1mcySiitb_mt"/>
+<div class="absolute bottom-1 right-1 w-4 h-4 bg-primary rounded-full ring-2 ring-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[10px]">check</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Milo</h1>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container-low font-label-sm text-label-sm text-primary">
+                Chat Européen · 2 ans et 5 mois
+              </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container-high font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+                Privé · Accessible uniquement par vous et les vétérinaires autorisés
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-space-md mt-1">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">badge</span>
+                Puce n° 250269608412894
+              </span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">monitor_weight</span>
+                4,7 kg (mai 2024)
+              </span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">male</span>
+                Mâle castré
+              </span>
+</p>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container font-label-md text-label-md text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+            Exporter le carnet PDF
+          </button>
+<button class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all hover:shadow-md" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            + Ajouter un soin
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main 3-Column Layout -->
+<div class="w-full max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg py-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- COLUMN 1: Left Sub-Menu / Categories (~240px equivalent) -->
+<aside class="lg:col-span-3 flex flex-col gap-space-lg">
+<!-- Medical Navigation Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col gap-space-xs">
+<p class="font-label-sm text-label-sm text-outline px-space-sm py-1 uppercase tracking-wider">Sections médicales</p>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl bg-primary text-on-primary font-label-md text-label-md transition-all text-left shadow-sm" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">dataset</span>
+<span>Tous les soins</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-on-primary/20 text-on-primary text-[11px] font-semibold">12</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">stethoscope</span>
+<span>Visites &amp; Consultations</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium">4</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">vaccines</span>
+<span>Vaccins</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px] font-semibold">1 rappel</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">biotech</span>
+<span>Examens &amp; Analyses</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium">2</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary">warning</span>
+<span>Allergies &amp; Vigilances</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-semibold">1</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">pill</span>
+<span>Traitements en cours</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[11px] font-semibold">1 actif</span>
+</button>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors text-left" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-outline">notes</span>
+<span>Notes &amp; Observations</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium">3</span>
+</button>
+</div>
+<!-- Referent Vet Quick Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Vétérinaire Référent</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<div class="flex items-center gap-space-sm mt-1">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary font-headline-sm font-semibold">
+              SM
+            </div>
+<div class="flex flex-col min-w-0">
+<h4 class="font-label-lg text-label-lg text-on-surface truncate">Dr. Sophie Martin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Clinique Féline République</p>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[15px] text-primary">phone</span>
+            01 42 68 90 12
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">location_on</span>
+            14 rue de Malte, 75011 Paris
+          </p>
+<button class="mt-2 w-full py-2 px-space-md rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+            Prendre contact
+          </button>
+</div>
+<!-- Health Summary Widget -->
+<div class="bg-surface-container-low rounded-2xl p-space-md shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Statut sanitaire global</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary-fixed">À JOUR</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            Dernier bilan le 14 mai 2024. Aucun suivi pathologique lourd renseigné.
+          </p>
+<div class="w-full bg-surface-container rounded-full h-2 mt-2 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 88%;"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-right">88% conformité préventive</span>
+</div>
+</aside>
+<!-- COLUMN 2: Center Main Timeline Stream (~600px) -->
+<main class="lg:col-span-6 flex flex-col gap-space-lg">
+<!-- Filter Toolbar -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Year Switcher -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-xl">
+<button class="px-space-md py-1 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-xs" type="button">2024</button>
+<button class="px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" type="button">2023</button>
+<button class="px-space-md py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" type="button">2022</button>
+</div>
+<!-- Search Input -->
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Rechercher un soin, vaccin..." type="text"/>
+</div>
+</div>
+<!-- Chronological Timeline -->
+<div class="relative pl-6 flex flex-col gap-space-lg before:content-[''] before:absolute before:left-2.5 before:top-4 before:bottom-4 before:w-0.5 before:bg-surface-container-high">
+<!-- Care Item 1 -->
+<article class="relative flex flex-col gap-space-sm bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<!-- Node dot -->
+<div class="absolute -left-[30px] top-6 w-5 h-5 rounded-full bg-primary ring-4 ring-surface-bright flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[11px]">medication</span>
+</div>
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">05 oct. 2024 · Antiparasitaire</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Traitement antiparasitaire externe</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                Administré
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Pipette NexGard Combo administrée à domicile. Protection complète puces, tiques et vers ronds renouvelée pour 4 semaines consécutives.
+            </p>
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-2">
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span>Dr. Sophie Martin · Clinique Féline</span>
+</div>
+<a class="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px] text-secondary">attachment</span>
+<span>Ordonnance_Nexgard.pdf</span>
+</a>
+</div>
+</article>
+<!-- Care Item 2 -->
+<article class="relative flex flex-col gap-space-sm bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<!-- Node dot -->
+<div class="absolute -left-[30px] top-6 w-5 h-5 rounded-full bg-primary ring-4 ring-surface-bright flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[11px]">stethoscope</span>
+</div>
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">14 mai 2024 · Examen Général</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Visite annuelle de routine &amp; Pesée</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm shrink-0">
+                Consultation clinique
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Examen clinique complet satisfaisant. Dents saines, oreilles propres sans signe de gale, auscultation cardiaque normale. Poids stabilisé à <strong class="text-on-surface font-semibold">4,7 kg</strong>. Pelage brillant, excellente vitalité générale.
+            </p>
+<div class="p-space-sm rounded-xl bg-surface-container-low flex items-start gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">tips_and_updates</span>
+<span><strong>Recommandation :</strong> maintenir le régime croquettes vétérinaires rénales préventives et surveiller l'apport d'eau fraîche (fontaine).</span>
+</div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant pt-1">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span>Dr. Sophie Martin · Clinique Féline République</span>
+</div>
+</article>
+<!-- Care Item 3 -->
+<article class="relative flex flex-col gap-space-sm bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<!-- Node dot -->
+<div class="absolute -left-[30px] top-6 w-5 h-5 rounded-full bg-secondary ring-4 ring-surface-bright flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary text-[11px]">shield</span>
+</div>
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-secondary font-semibold uppercase tracking-wider">18 nov. 2023 · Vaccination</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Rappel vaccinal Typhus / Coryza / Leucose</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm shrink-0 font-medium">
+                Injection validée
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Injection Purevax RCP-FeLV sans réaction immédiate ni inflammation locale. Prochain rappel attendu dans 1 an (novembre 2024). Lot officiel certifié #V98201.
+            </p>
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-2">
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span>Dr. Sophie Martin</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Passeport Européen tamponné p. 6</span>
+</div>
+</article>
+<!-- Care Item 4 -->
+<article class="relative flex flex-col gap-space-sm bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<!-- Node dot -->
+<div class="absolute -left-[30px] top-6 w-5 h-5 rounded-full bg-primary ring-4 ring-surface-bright flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[11px]">dentistry</span>
+</div>
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">22 août 2023 · Hygiène Dentaire</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Contrôle buccal &amp; Détartrage léger</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm shrink-0">
+                Terminé
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Nettoyage des gencives, léger tartre retiré sans anesthésie lourde. Aucun signe de gingivite chronique. Prescription d'une solution buccale en poudre à diluer dans la nourriture.
+            </p>
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant pt-1">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span>Dr. Marc Laurent · Centre Vétérinaire de l'Est</span>
+</div>
+</article>
+</div>
+<!-- Load Older Records Button -->
+<div class="flex justify-center pt-space-sm">
+<button class="inline-flex items-center gap-2 px-space-lg py-2.5 rounded-full bg-surface-container-lowest hover:bg-surface-container-low text-on-surface font-label-md text-label-md shadow-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+            Charger les soins antérieurs (2022)
+          </button>
+</div>
+</main>
+<!-- COLUMN 3: Right Health Alerts & Vigilances (~320px) -->
+<aside class="lg:col-span-3 flex flex-col gap-space-lg">
+<!-- Upcoming Vaccines / Priority Alert Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">event_upcoming</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Prochains vaccins</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+              1 urgent
+            </span>
+</div>
+<!-- Imminent Alert Sub-Card -->
+<div class="p-space-md rounded-xl bg-tertiary-fixed/30 flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-semibold text-tertiary">Rappel Rage (Triennal)</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-tertiary font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full shadow-xs">
+<span class="material-symbols-outlined text-[13px] text-tertiary">schedule</span>
+                Dans 3 semaines
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Échéance fixée au <strong class="text-on-surface">12 nov. 2024</strong>. Indispensable pour tout déplacement hors territoire national et pension.
+            </p>
+<button class="w-full mt-1 py-2 px-space-md rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-xs transition-all flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+              Prendre rendez-vous
+            </button>
+</div>
+<!-- Routine Vaccine Sub-Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Typhus / Coryza</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">18 nov. 2024</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Rappel régulier annuel à planifier avec Dr. Martin.
+            </p>
+</div>
+</div>
+<!-- Ongoing Treatments Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">healing</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Traitement en cours</h3>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary font-semibold">Vermifuge saisonnier</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-medium">Actif</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+              Milbemax chat adulte — 1 comprimé à renouveler début décembre.
+            </p>
+<div class="flex items-center gap-1.5 text-[11px] text-outline font-medium pt-1">
+<span class="material-symbols-outlined text-[14px]">event_repeat</span>
+              Fréquence : tous les 3 mois
+            </div>
+</div>
+</div>
+<!-- Known Allergies & Health Precautions Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[22px]">emergency</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Allergies &amp; Vigilances</h3>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Intolérance aux céréales (Gluten)</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Régime hypoallergénique strict à base de protéines animales uniques. Éviter friandises industrielles non certifiées sans céréales.
+              </p>
+</div>
+</div>
+</div>
+<!-- Community & Regulatory Reassurance Card -->
+<div class="bg-surface-container-high rounded-2xl p-space-md flex items-start gap-space-sm text-on-surface">
+<span class="material-symbols-outlined text-primary text-[24px] shrink-0 mt-0.5">verified_user</span>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md font-semibold">Conformité Sanitaire</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Carnet numérique conforme aux exigences vétérinaires de l'Ordre National et synchronisable instantanément avec les cliniques partenaires PetCare.
+            </p>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<!-- Floating Add Button (Bottom Right) -->
+<div class="fixed bottom-6 right-6 z-40">
+<button aria-label="Ajouter un soin" class="group flex items-center gap-2 px-space-lg py-3.5 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5" type="button">
+<span class="material-symbols-outlined text-[24px] transition-transform group-hover:rotate-90">add</span>
+<span>Ajouter un soin</span>
+</button>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl mt-space-2xl"><div class="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">pets</span><span class="font-label-md text-label-md text-on-surface">PetCare Communauté</span><span>— Plateforme solidaire d'entraide animale</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" href="#">Mentions légales</a><a class="hover:text-on-surface transition-colors" href="#">Politique de confidentialité</a><a class="hover:text-on-surface transition-colors" href="#">Aide &amp; Support</a></div></div></footer></body></html>
