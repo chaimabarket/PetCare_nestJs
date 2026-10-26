@@ -67,5 +67,133 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
       allow delete: if signedIn() && resource.data.userId == request.auth.uid;
     }
+
+    // ---------------------------------------------------------------------
+    // Module Adoption (membre 5)
+    // ---------------------------------------------------------------------
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function listingData(id) {
+      return get(/databases/$(database)/documents/adoptionListings/$(id)).data;
+    }
+
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function validListing() {
+      let d = request.resource.data;
+      return d.name is string && d.name.size() > 0 && d.name.size() <= 40
+        && d.species in ['chat', 'chien', 'oiseau', 'lapin', 'autre']
+        && d.photos is list && d.photos.size() <= 5
+        && d.story is string && d.story.size() <= 2000
+        && d.needs is string && d.needs.size() <= 1000
+        && d.conditions is string && d.conditions.size() <= 1000
+        && d.personality is list && d.personality.size() <= 12
+        && d.aloneHours is int && d.aloneHours >= 0 && d.aloneHours <= 10;
+    }
+
+    match /adoptionListings/{id} {
+      // Annonces en ligne visibles par tous (visiteurs compris) ; brouillons et archives par leur auteur.
+      allow read: if resource == null
+        || resource.data.status in ['disponible', 'reservee', 'adoptee']
+        || (signedIn() && (resource.data.ownerId == request.auth.uid || isAdmin()));
+
+      // Publication par un propriétaire ou un refuge, en son nom.
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.status in ['brouillon', 'disponible']
+        && userRole() in ['proprietaire', 'refuge']
+        && validListing();
+
+      // L'auteur gère son annonce (statut, réservation, adoption) sans en changer l'auteur.
+      allow update: if (signedIn() && resource.data.ownerId == request.auth.uid
+          && request.resource.data.ownerId == resource.data.ownerId
+          && request.resource.data.status in ['brouillon', 'disponible', 'reservee', 'adoptee', 'archivee']
+          && validListing())
+        || isAdmin();
+
+      allow delete: if signedIn()
+        && ((resource.data.ownerId == request.auth.uid && resource.data.status == 'brouillon') || isAdmin());
+    }
+
+    // Identifiant : {listingId}_{uid du candidat} → une seule candidature par annonce.
+    match /adoptionApplications/{id} {
+      allow read: if signedIn()
+        && (resource == null
+          || resource.data.applicantId == request.auth.uid
+          || resource.data.ownerId == request.auth.uid
+          || isAdmin());
+
+      allow create: if signedIn()
+        && id == request.resource.data.listingId + '_' + request.auth.uid
+        && request.resource.data.applicantId == request.auth.uid
+        && request.resource.data.status == 'envoyee'
+        && listingData(request.resource.data.listingId).status == 'disponible'
+        && request.resource.data.ownerId == listingData(request.resource.data.listingId).ownerId
+        && request.resource.data.ownerId != request.auth.uid
+        && request.resource.data.lifestyle.motivation is string
+        && request.resource.data.lifestyle.motivation.size() <= 1000;
+
+      // Le candidat peut seulement retirer une candidature en attente ;
+      // l'auteur de l'annonce fait avancer le statut, sans toucher aux réponses.
+      allow update: if signedIn() && (
+        (resource.data.applicantId == request.auth.uid
+          && resource.data.status in ['envoyee', 'en-etude']
+          && request.resource.data.status == 'retiree'
+          && changedOnly(['status', 'updatedAt', 'withdrawnAt']))
+        || (resource.data.ownerId == request.auth.uid
+          && resource.data.status != 'retiree'
+          && request.resource.data.status in ['en-etude', 'acceptee', 'refusee', 'adoptee']
+          && changedOnly(['status', 'updatedAt', 'reviewedAt', 'decidedAt', 'adoptedAt'])));
+
+      allow delete: if isAdmin();
+    }
+
+    // Identifiant : {uid}_{listingId}.
+    match /adoptionFavorites/{id} {
+      allow read, delete: if signedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && id == request.auth.uid + '_' + request.resource.data.listingId;
+    }
+
+    // Identifiant : {listingId} → une histoire par adoption, publiée par l'adoptant.
+    match /happyTails/{id} {
+      allow read: if true;
+
+      allow create: if signedIn()
+        && request.resource.data.adopterId == request.auth.uid
+        && request.resource.data.listingId == id
+        && listingData(id).adopterId == request.auth.uid
+        && request.resource.data.likedBy.size() == 0
+        && request.resource.data.story is string
+        && request.resource.data.story.size() > 0
+        && request.resource.data.story.size() <= 1500;
+
+      // « J'aime » : chacun ajoute ou retire uniquement son propre uid.
+      allow update: if (signedIn() && changedOnly(['likedBy'])
+          && ((request.resource.data.likedBy.toSet().difference(resource.data.likedBy.toSet()) == [request.auth.uid].toSet()
+               && request.resource.data.likedBy.size() == resource.data.likedBy.size() + 1)
+            || (resource.data.likedBy.toSet().difference(request.resource.data.likedBy.toSet()) == [request.auth.uid].toSet()
+               && request.resource.data.likedBy.size() == resource.data.likedBy.size() - 1)))
+        || isAdmin();
+
+      allow delete: if signedIn() && (resource.data.adopterId == request.auth.uid || isAdmin());
+    }
+
+    // Signalements d'annonces et d'histoires, traités par l'administration.
+    match /adoptionReports/{id} {
+      allow create: if signedIn()
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.targetType in ['annonce', 'happy-tail']
+        && request.resource.data.reason in ['Contenu inapproprié', 'Arnaque', 'Doublon', 'Autre']
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() <= 500;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

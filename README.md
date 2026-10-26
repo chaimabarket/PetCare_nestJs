@@ -91,5 +91,34 @@ Le destinataire voit la notification en temps réel (cloche + `/notifications`),
 |---|---|---|
 | `users/{uid}` | profil, rôle, préférences d'alerte | lecture/modification par le propriétaire (le rôle ne peut pas être changé) ; admin |
 | `notifications/{id}` | `userId`, `type`, `title`, `body`, `link`, `read`, `showAt`… | lecture/suppression par le destinataire ; création par tout utilisateur connecté en son nom |
+| `adoptionListings/{id}` | annonce d'adoption : animal, photos, histoire, compatibilité, `status`, `ownerId`, `adopterId`… | lecture publique (disponible, réservé, adopté) ; brouillons et archives par l'auteur ; création par un propriétaire ou un refuge |
+| `adoptionApplications/{listingId}_{uid}` | candidature : réponses Logement / Foyer / Mode de vie, `status` | lecture par le candidat et l'auteur de l'annonce ; le candidat peut seulement retirer, l'auteur fait avancer le statut |
+| `adoptionFavorites/{uid}_{listingId}` | favoris | propriétaire uniquement |
+| `happyTails/{listingId}` | histoire « avant / après », `likedBy` | lecture publique ; création par l'adoptant ; chacun ajoute/retire son cœur |
+| `adoptionReports/{id}` | signalements d'annonces et d'histoires | création par tout utilisateur connecté ; lecture admin |
+
+## Module Adoption
+
+Pages (`src/app/(app)/communaute/adoption/`) :
+
+| Route | Écran |
+|---|---|
+| `/communaute/adoption` | fil des annonces, recherche et filtres (5.1, 5.2) |
+| `/communaute/adoption/[id]` | fiche d'adoption (5.3) |
+| `/communaute/adoption/[id]/candidature` | candidature en 4 étapes (5.4 → 5.7) |
+| `/communaute/adoption/mes-candidatures` | suivi de mes candidatures (5.8) |
+| `/communaute/adoption/publier`, `/[id]/modifier` | publier / modifier une annonce (5.9) |
+| `/communaute/adoption/mes-annonces` | mes annonces (5.10) |
+| `/communaute/adoption/[id]/candidatures` | candidatures reçues, détail, confirmation d'adoption (5.11 → 5.13) |
+| `/communaute/adoption/favoris` | mes favoris (5.14) |
+| `/communaute/adoption/happy-tails`, `/[id]/happy-tail` | Happy Tails et partage d'une histoire (5.15, 5.16) |
+
+Code : `src/lib/adoption.ts` (données Firestore), `src/lib/adoption-compatibility.ts` (score de compatibilité,
+aide à la décision), `src/lib/images.ts` (photos compressées dans le navigateur et stockées dans Firestore,
+le projet n'utilisant pas Firebase Storage), `src/components/adoption/` (composants).
+
+Cycle d'une candidature : `envoyee` → `en-etude` (ouverture par l'auteur) → `acceptee` (l'animal passe « Réservé »)
+→ `adoptee` (les autres candidatures sont refusées automatiquement). Le candidat peut la retirer tant qu'elle est en attente.
+Chaque étape envoie une notification de type `adoption`.
 
 Pour donner le rôle admin : modifier le champ `role` du document `users/{uid}` dans la console Firebase.
