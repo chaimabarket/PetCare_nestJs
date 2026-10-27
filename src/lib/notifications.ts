@@ -93,8 +93,10 @@ export async function sendNotification(notification: NewNotification): Promise<s
   const sender = auth().currentUser;
   if (!sender) throw new Error("Vous devez être connecté pour envoyer une notification.");
   const { showAt, ...fields } = notification;
+  // Firestore refuse les champs `undefined` (ex. une notification sans lien).
+  const defined = Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== undefined));
   const ref = await addDoc(collection(db(), notificationsCollection), {
-    ...fields,
+    ...defined,
     read: false,
     senderId: sender.uid,
     createdAt: serverTimestamp(),

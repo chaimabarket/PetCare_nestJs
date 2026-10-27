@@ -65,12 +65,21 @@ export default function ProfilPage() {
 function Profil() {
   const router = useRouter();
   const { user, profile } = useAuth();
-  const [passwordOpen, setPasswordOpen] = useState(false);
+  // « /profil#mot-de-passe » (notification « Nouvelle connexion ») ouvre directement le formulaire.
+  const [passwordOpen, setPasswordOpen] = useState(() => window.location.hash === "#mot-de-passe");
   const securityRef = useRef<HTMLDivElement>(null);
 
-  // Lien « /profil#preferences » (page Notifications) : la section n'existe qu'après le chargement du profil.
+  // Liens « #preferences » et « #mot-de-passe » : la section n'existe qu'après le chargement du profil.
+  // Lors d'une navigation interne, l'adresse (et son #) n'est à jour qu'à partir des effets.
   useEffect(() => {
-    if (window.location.hash === "#preferences") securityRef.current?.scrollIntoView({ behavior: "smooth" });
+    const hash = window.location.hash;
+    if (hash === "#mot-de-passe") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- synchronisation avec l'adresse de la page
+      setPasswordOpen(true);
+    }
+    if (hash === "#preferences" || hash === "#mot-de-passe") {
+      securityRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [profile]);
 
   async function handleLogout() {

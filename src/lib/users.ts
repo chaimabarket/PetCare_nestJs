@@ -14,6 +14,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc, type Timestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { auth, db } from "./firebase";
+import { describeDevice } from "./device";
 import { sendNotification } from "./notifications";
 
 export type UserRole = "proprietaire" | "prestataire" | "refuge" | "admin";
@@ -103,13 +104,40 @@ export async function signUp(input: {
   }).catch((error) => console.error("Notification de bienvenue non envoyée :", error));
 }
 
+/**
+ * Notification de sécurité envoyée à l'utilisateur connecté (type « compte », toujours affichée).
+ * Un échec n'empêche jamais l'action principale (connexion, changement de mot de passe…).
+ */
+async function notifyAccount(title: string, body: string, link?: string, actionLabel?: string): Promise<void> {
+  const user = auth().currentUser;
+  if (!user) return;
+  await sendNotification({ userId: user.uid, type: "compte", title, body, link, actionLabel }).catch((error) =>
+    console.error(`Notification « ${title} » non envoyée :`, error),
+  );
+}
+
+function formatNow(): string {
+  return new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" });
+}
+
 /** `remember` = rester connecté après fermeture du navigateur. */
 export async function signIn(email: string, password: string, remember: boolean): Promise<void> {
   await setPersistence(auth(), remember ? browserLocalPersistence : browserSessionPersistence);
   await signInWithEmailAndPassword(auth(), email, password);
+  await notifyAccount(
+    "Nouvelle connexion à votre compte",
+    `Connexion depuis ${describeDevice()} le ${formatNow()}. Si ce n'est pas vous, changez votre mot de passe.`,
+    "/profil#mot-de-passe",
+    "Ce n'est pas moi",
+  );
 }
 
 export async function logOut(): Promise<void> {
+  // Envoyée avant la déconnexion : l'utilisateur doit encore être authentifié pour l'écrire.
+  await notifyAccount(
+    "Déconnexion de votre compte",
+    `Vous vous êtes déconnecté depuis ${describeDevice()} le ${formatNow()}.`,
+  );
   await signOut(auth());
 }
 
@@ -122,10 +150,29 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   return snapshot.exists() ? (snapshot.data() as UserProfile) : null;
 }
 
+const PROFILE_FIELD_LABELS: Record<keyof EditableProfile, string> = {
+  displayName: "Nom",
+  city: "Ville",
+  phone: "Téléphone",
+  bio: "Biographie",
+};
+
 export async function updateUserProfile(uid: string, changes: EditableProfile): Promise<void> {
+  const before = await getUserProfile(uid);
+  const changed = (Object.keys(PROFILE_FIELD_LABELS) as (keyof EditableProfile)[]).filter(
+    (field) => (before?.[field] ?? "") !== changes[field],
+  );
+  if (changed.length === 0) return;
+
   const user = auth().currentUser;
   if (user) await updateProfile(user, { displayName: changes.displayName });
   await updateDoc(doc(db(), usersCollection, uid), { ...changes, updatedAt: serverTimestamp() });
+  await notifyAccount(
+    "Profil mis à jour",
+    `Informations modifiées : ${changed.map((field) => PROFILE_FIELD_LABELS[field]).join(", ")}.`,
+    "/profil",
+    "Voir mon profil",
+  );
 }
 
 export async function updateNotificationPrefs(uid: string, prefs: NotificationPrefs): Promise<void> {
@@ -141,6 +188,12 @@ export async function changePassword(currentPassword: string, newPassword: strin
     passwordChangedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+  await notifyAccount(
+    "Mot de passe modifié",
+    `Le mot de passe de votre compte a été modifié depuis ${describeDevice()} le ${formatNow()}. Si ce n'est pas vous, réinitialisez-le immédiatement.`,
+    "/mot-de-passe-oublie",
+    "Réinitialiser mon mot de passe",
+  );
 }
 
 const firebaseMessages: Record<string, string> = {
