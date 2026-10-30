@@ -5,6 +5,29 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 
+/** Accès à l'assistant IA (maquette Stitch M1), pour les visiteurs comme pour les membres. */
+function AssistantCard() {
+  return (
+    <Link
+      href="/assistant"
+      className="flex items-center gap-space-md rounded-2xl bg-primary-container text-on-primary p-space-lg shadow-sm hover:shadow-md transition-shadow"
+    >
+      <span className="w-12 h-12 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shrink-0">
+        <Icon name="pets" filled className="text-[26px]" />
+      </span>
+      <span className="flex-1">
+        <span className="block font-headline-sm text-headline-sm">Assistant PetCare</span>
+        <span className="block font-body-md text-body-md text-on-primary-container">
+          Une question sur votre animal ? Demandez-moi !
+        </span>
+      </span>
+      <span className="hidden sm:inline-flex items-center h-10 px-space-md rounded-full bg-surface-container-lowest text-primary font-label-lg text-label-lg">
+        Discuter
+      </span>
+    </Link>
+  );
+}
+
 export default function AccueilPage() {
   const { user, profile, loading } = useAuth();
 
@@ -37,6 +60,9 @@ export default function AccueilPage() {
             </Link>
           </div>
         </Card>
+        <div className="mx-auto mt-space-lg max-w-xl">
+          <AssistantCard />
+        </div>
       </div>
     );
   }
@@ -45,6 +71,7 @@ export default function AccueilPage() {
   return (
     <div className="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg py-space-xl flex flex-col gap-space-lg">
       <h1 className="font-headline-lg text-headline-lg">Bonjour {profile?.displayName ?? user.displayName} 👋</h1>
+      <AssistantCard />
       <div className="grid gap-space-lg md:grid-cols-2">
         <Card>
           <h2 className="font-headline-sm text-headline-sm">Mes animaux</h2>

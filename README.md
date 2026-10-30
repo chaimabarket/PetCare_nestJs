@@ -122,3 +122,15 @@ Cycle d'une candidature : `envoyee` → `en-etude` (ouverture par l'auteur) → 
 Chaque étape envoie une notification de type `adoption`.
 
 Pour donner le rôle admin : modifier le champ `role` du document `users/{uid}` dans la console Firebase.
+
+## Assistant IA (branche `chatbot`)
+
+Page `/assistant`, code dans `src/lib/assistant/` et `src/components/assistant/`. Même assistant que la version Flutter : Gemini via **Firebase AI Logic** (Gemini Developer API, plan gratuit Spark), aucune clé dans le code.
+
+- Visiteur : questions générales et suggestions d'animaux à adopter (cartes vers les annonces).
+- Connecté : choix d'un de ses animaux (collection `pets`, carnet de santé du module 2), 5 questions recommandées, « Créer un rappel » depuis une réponse (collection `reminders`, même format que le module 3 Flutter), historique des 10 dernières conversations, 👍 / 👎, copier. 30 messages par jour.
+- Formulaire d'annonce : bouton « ✨ Rédiger avec l'IA ». Bannière dans le fil d'adoption, carte sur l'accueil.
+
+Mise en route (une fois, console Firebase du projet web) : **AI Logic → Get started → Gemini Developer API** (pas Vertex AI), puis vérifier le nom du modèle gratuit dans `src/lib/assistant/prompt.ts` (`ASSISTANT_MODEL`). Publier les règles avec `npm run deploy:rules`.
+
+Pour le module 2 : `fetchHealthSummary` (`src/lib/assistant/pets.ts`) renvoie quelques lignes du carnet de santé ; elles sont ajoutées automatiquement aux réponses sur l'animal.

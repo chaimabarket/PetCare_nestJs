@@ -42,6 +42,42 @@ service cloud.firestore {
       allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
     }
 
+    // Assistant IA : compteur de messages du jour (+1 à chaque message, 30 maximum).
+    match /users/{uid}/assistantUsage/{day} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['count', 'updatedAt'])
+        && request.resource.data.count == 1
+        && request.resource.data.updatedAt == request.time;
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['count', 'updatedAt'])
+        && request.resource.data.count == resource.data.count + 1
+        && request.resource.data.count <= 30
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Assistant IA : historique privé des conversations.
+    match /users/{uid}/assistantChats/{chatId} {
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['title', 'petId', 'petName', 'createdAt', 'updatedAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 60;
+
+      match /messages/{messageId} {
+        allow read, delete: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['role', 'text', 'listingIds', 'reminders', 'rating', 'createdAt'])
+          && request.resource.data.role in ['user', 'model']
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 4000;
+        // Seul l'avis 👍 / 👎 d'une réponse peut changer.
+        allow update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating'])
+          && (request.resource.data.rating == null || request.resource.data.rating in ['up', 'down']);
+      }
+    }
+
     match /notifications/{id} {
       // Chacun ne voit que ses propres notifications.
       allow read: if signedIn() && resource.data.userId == request.auth.uid;
