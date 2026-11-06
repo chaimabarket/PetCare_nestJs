@@ -25,6 +25,7 @@ Ce fichier n'est pas versionné : demandez-le à l'équipe.
 | `npm run build` | Build de production |
 | `npm run lint` | Vérifier le code |
 | `npm run test:api` | Tester les règles d'accès des routes `/api` (serveur `npm run dev` lancé ; comptes temporaires, supprimés à la fin) |
+| `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption (même principe) |
 | `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (après `npx firebase-tools login`) |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
 
@@ -129,4 +130,10 @@ aide à la décision), `src/lib/images.ts` (photos compressées dans le navigate
 
 Cycle d'une candidature : `envoyee` → `en-etude` (ouverture par l'auteur) → `acceptee` (l'animal passe « Réservé »)
 → `adoptee` (les autres candidatures sont refusées automatiquement). Le candidat peut la retirer tant qu'elle est en attente.
-Chaque étape envoie une notification de type `adoption`.
+Chaque étape envoie une notification de type `adoption` (envoyée par le serveur).
+
+Routes API (`src/app/api/adoption/`) : `listings` (fil, publication, `mine`, `[id]` avec les actions
+`update` / `archive` / `republish`), `applications` (`?scope=mine|received`, `[id]` avec les actions `withdraw`,
+`review`, `accept`, `refuse`, `cancel-acceptance`, `confirm-adoption`), `favorites`, `happy-tails`, `stats`, `reports`.
+Les règles d'accès sont dans `src/lib/server/adoption.ts` et dans chaque route ; les changements qui touchent
+plusieurs documents (accepter, confirmer, archiver) sont faits dans une transaction MongoDB.

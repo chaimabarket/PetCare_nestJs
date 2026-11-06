@@ -9,7 +9,7 @@ import { errorMessage } from "@/lib/users";
 type AsyncState<T> = { data?: T; error?: string; loading: boolean };
 
 /**
- * Charge des données Firestore. `load` doit être stable (useCallback) ; `null` = pas encore prêt.
+ * Charge des données (routes /api). `load` doit être stable (useCallback) ; `null` = pas encore prêt.
  * `reload()` relance le chargement après une modification.
  */
 export function useAsync<T>(load: (() => Promise<T>) | null): AsyncState<T> & { reload: () => void } {

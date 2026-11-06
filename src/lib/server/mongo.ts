@@ -1,5 +1,5 @@
 import "server-only";
-import { MongoClient, type Collection, type Db, type ObjectId } from "mongodb";
+import { MongoClient, type ClientSession, type Collection, type Db, type ObjectId } from "mongodb";
 import type { NotificationPrefs, NotificationType, UserRole } from "@/lib/models";
 
 /** Document stocké dans `users` : `_id` = uid Firebase. */
@@ -33,23 +33,41 @@ export type NotificationDoc = {
 };
 
 // Une seule connexion par processus, conservée entre les rechargements à chaud de `next dev`.
-const cache = globalThis as unknown as { _petcareMongo?: Promise<Db> };
+type Connection = { client: MongoClient; db: Db };
+const cache = globalThis as unknown as { _petcareMongo?: Promise<Connection> };
 
-async function connect(): Promise<Db> {
+async function connect(): Promise<Connection> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("MONGODB_URI manquant : ajoutez-le dans .env.local.");
   const client = await new MongoClient(uri, { appName: "petcare-web" }).connect();
   const db = client.db(process.env.MONGODB_DB || "petcare");
   await db.collection("notifications").createIndex({ userId: 1, showAt: -1 });
-  return db;
+  return { client, db };
 }
 
-export async function mongo(): Promise<Db> {
+function connection(): Promise<Connection> {
   cache._petcareMongo ??= connect().catch((error) => {
     cache._petcareMongo = undefined; // nouvelle tentative à la prochaine requête
     throw error;
   });
   return cache._petcareMongo;
+}
+
+export async function mongo(): Promise<Db> {
+  return (await connection()).db;
+}
+
+/**
+ * Exécute plusieurs écritures en une transaction : tout est enregistré, ou rien.
+ * Passez `{ session }` à chaque opération MongoDB faite dans `work`.
+ */
+export async function withTransaction<T>(work: (session: ClientSession) => Promise<T>): Promise<T> {
+  const session = (await connection()).client.startSession();
+  try {
+    return await session.withTransaction(() => work(session));
+  } finally {
+    await session.endSession();
+  }
 }
 
 export async function users(): Promise<Collection<UserDoc>> {

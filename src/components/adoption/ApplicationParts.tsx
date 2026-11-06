@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import type { Timestamp } from "firebase/firestore";
 import { Icon } from "@/components/ui/Icon";
 import {
   ACTIVITY_LEVELS,
@@ -65,7 +64,7 @@ export function TimelineStepper({ status }: { status: ApplicationStatus }) {
 /** Frise verticale détaillée (panneau de droite de « Mes candidatures »). */
 export function VerticalTimeline({ application }: { application: AdoptionApplication }) {
   const { step, stopped } = progress(application.status);
-  const events: { title: string; text: string; date?: Timestamp; done: boolean; current: boolean; tone?: "grey" }[] = [
+  const events: { title: string; text: string; date?: string; done: boolean; current: boolean; tone?: "grey" }[] = [
     {
       title: "Candidature transmise",
       text: "Votre dossier a été envoyé à l'auteur de l'annonce.",

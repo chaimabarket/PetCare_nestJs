@@ -1,14 +1,14 @@
 /**
- * Photos stockées directement dans Firestore (pas de Firebase Storage dans le projet) :
- * elles sont redimensionnées et compressées en JPEG dans le navigateur.
- * Un document Firestore est limité à 1 Mio.
+ * Photos stockées directement dans les documents MongoDB (pas de service de fichiers dans le projet) :
+ * elles sont redimensionnées et compressées en JPEG dans le navigateur, et le serveur
+ * vérifie leur format et leur poids (src/lib/server/adoption.ts).
  */
 
 export const LISTING_PHOTO_SIZE = 800;
 export const THUMBNAIL_SIZE = 240;
 export const STORY_PHOTO_SIZE = 900;
 
-/** Taille maximale cumulée des photos d'un document (marge sous la limite de 1 Mio). */
+/** Taille maximale cumulée des photos d'un document (le serveur refuse au-delà de 1,2 Mo). */
 export const MAX_PHOTOS_BYTES = 800_000;
 
 export async function compressImage(file: Blob, maxSize: number, quality = 0.72): Promise<string> {

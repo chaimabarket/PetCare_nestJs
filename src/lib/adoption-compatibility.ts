@@ -1,4 +1,4 @@
-import type { AdoptionListing, ApplicationAnswers } from "./adoption";
+import type { AdoptionListing, ApplicationAnswers } from "./adoption-models";
 
 export type CompatibilityCheck = {
   key: "jardin" | "enfants" | "animaux" | "temps-seul" | "activite" | "logement" | "allergies" | "experience";

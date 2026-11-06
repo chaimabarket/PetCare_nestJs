@@ -1,4 +1,6 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
+import { connection } from "next/server";
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
 
@@ -35,6 +37,11 @@ export async function requireUser(request: Request): Promise<DecodedIdToken> {
   }
 }
 
+/** Pour les pages publiques : l'utilisateur s'il est connecté, sinon `undefined` (visiteur). */
+export async function optionalUser(request: Request): Promise<DecodedIdToken | undefined> {
+  return request.headers.has("authorization") ? requireUser(request) : undefined;
+}
+
 /** Corps JSON de la requête (objet attendu). */
 export async function readJson(request: Request): Promise<Record<string, unknown>> {
   const body = await request.json().catch(() => null);
@@ -42,11 +49,16 @@ export async function readJson(request: Request): Promise<Record<string, unknown
   return body as Record<string, unknown>;
 }
 
-/** Exécute un gestionnaire de route et transforme les erreurs en réponses JSON. */
+/**
+ * Exécute un gestionnaire de route et transforme les erreurs en réponses JSON.
+ * Les routes API répondent toujours à la demande (jamais pré-rendues au build).
+ */
 export async function handle(action: () => Promise<Response>): Promise<Response> {
   try {
+    await connection();
     return await action();
   } catch (error) {
+    unstable_rethrow(error); // signaux internes de Next.js : à laisser passer
     if (error instanceof HttpError) return Response.json({ error: error.message }, { status: error.status });
     console.error("Erreur API :", error);
     return Response.json({ error: "Erreur du serveur. Réessayez." }, { status: 500 });

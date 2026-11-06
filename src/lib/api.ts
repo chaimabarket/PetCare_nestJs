@@ -10,16 +10,26 @@ export class ApiError extends Error {
   }
 }
 
+type ApiOptions = {
+  method?: string;
+  body?: unknown;
+  /** Route accessible aux visiteurs : le jeton n'est envoyé que si l'utilisateur est connecté. */
+  public?: boolean;
+};
+
 /** Appelle l'API de l'application au nom de l'utilisateur Firebase connecté. */
-export async function api<T = void>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+export async function api<T = void>(path: string, init: ApiOptions = {}): Promise<T> {
+  // Au chargement d'une page, Firebase restaure la session de façon asynchrone :
+  // on l'attend pour ne pas traiter un utilisateur connecté comme un visiteur.
+  await auth().authStateReady();
   const user = auth().currentUser;
-  if (!user) throw new ApiError(401, "Vous devez être connecté.");
-  const token = await user.getIdToken();
+  if (!user && !init.public) throw new ApiError(401, "Vous devez être connecté.");
+  const token = user ? await user.getIdToken() : null;
 
   const response = await fetch(path, {
     method: init.method ?? "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...(init.body !== undefined && { "Content-Type": "application/json" }),
     },
     body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
@@ -30,5 +40,6 @@ export async function api<T = void>(path: string, init: { method?: string; body?
     const data = (await response.json().catch(() => null)) as { error?: string } | null;
     throw new ApiError(response.status, data?.error ?? "Une erreur est survenue. Réessayez.");
   }
-  return (response.status === 204 ? undefined : await response.json()) as T;
+  const text = await response.text(); // réponse vide (204, 201 sans contenu) → undefined
+  return (text ? JSON.parse(text) : undefined) as T;
 }
