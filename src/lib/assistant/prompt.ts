@@ -9,7 +9,7 @@ import { isSenior, isYoung } from "./pets";
  * Modèle Gemini gratuit (Gemini Developer API, plan Spark).
  * Vérifier le nom dans la console Firebase (AI Logic) : Google renomme parfois ses modèles.
  */
-export const ASSISTANT_MODEL = "gemini-2.5-flash-lite";
+export const ASSISTANT_MODEL = "gemini-3.5-flash-lite";
 
 /** Messages par utilisateur connecté et par jour (protège le quota gratuit). Même valeur dans firestore.rules. */
 export const DAILY_LIMIT = 30;
