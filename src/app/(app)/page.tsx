@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { UpcomingAppointmentsCard } from "@/components/rendez-vous/UpcomingAppointmentsCard";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 
@@ -37,6 +38,10 @@ export default function AccueilPage() {
             </Link>
           </div>
         </Card>
+        {/* Version statique du module Rendez-vous : visible sans compte en attendant MongoDB. */}
+        <div className="mx-auto mt-space-lg max-w-xl">
+          <UpcomingAppointmentsCard />
+        </div>
       </div>
     );
   }
@@ -50,10 +55,7 @@ export default function AccueilPage() {
           <h2 className="font-headline-sm text-headline-sm">Mes animaux</h2>
           <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
         </Card>
-        <Card>
-          <h2 className="font-headline-sm text-headline-sm">Prochains rendez-vous</h2>
-          <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
-        </Card>
+        <UpcomingAppointmentsCard />
       </div>
     </div>
   );
