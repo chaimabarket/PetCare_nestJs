@@ -4,11 +4,15 @@ import { connection } from "next/server";
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
 
-/** Erreur renvoyée telle quelle au navigateur : `{ error: message }` avec ce statut. */
+/**
+ * Erreur renvoyée telle quelle au navigateur : `{ error: message, fieldErrors? }` avec ce statut.
+ * `fieldErrors` (facultatif) associe un message à chaque champ de formulaire invalide.
+ */
 export class HttpError extends Error {
   constructor(
     public status: number,
     message: string,
+    public fieldErrors?: Record<string, string | undefined>,
   ) {
     super(message);
   }
@@ -59,7 +63,9 @@ export async function handle(action: () => Promise<Response>): Promise<Response>
     return await action();
   } catch (error) {
     unstable_rethrow(error); // signaux internes de Next.js : à laisser passer
-    if (error instanceof HttpError) return Response.json({ error: error.message }, { status: error.status });
+    if (error instanceof HttpError) {
+      return Response.json({ error: error.message, fieldErrors: error.fieldErrors }, { status: error.status });
+    }
     console.error("Erreur API :", error);
     return Response.json({ error: "Erreur du serveur. Réessayez." }, { status: 500 });
   }

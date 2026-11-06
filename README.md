@@ -25,6 +25,7 @@ Ce fichier n'est pas versionné : demandez-le à l'équipe.
 | `npm run build` | Build de production |
 | `npm run lint` | Vérifier le code |
 | `npm run test:api` | Tester les règles d'accès des routes `/api` (serveur `npm run dev` lancé ; comptes temporaires, supprimés à la fin) |
+| `npm run test:health` | Tester le module Carnet de santé (même principe) |
 | `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption (même principe) |
 | `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (après `npx firebase-tools login`) |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
@@ -138,18 +139,12 @@ Routes API (`src/app/api/adoption/`) : `listings` (fil, publication, `mine`, `[i
 Les règles d'accès sont dans `src/lib/server/adoption.ts` et dans chaque route ; les changements qui touchent
 plusieurs documents (accepter, confirmer, archiver) sont faits dans une transaction MongoDB.
 
-## Module Carnet de santé (MongoDB)
+## Module Carnet de santé
 
-Contrairement aux autres modules, le carnet de santé est stocké dans **MongoDB** (Firebase reste utilisé pour la connexion).
-Le navigateur appelle les routes `src/app/api/health-records/` avec le jeton Firebase de l'utilisateur ;
-le serveur vérifie ce jeton puis lit/écrit dans MongoDB. Chaque utilisateur ne voit que ses propres actes.
-
-Configuration dans `.env.local` (voir `.env.local.example`) :
-
-```bash
-MONGODB_URI=mongodb://127.0.0.1:27017   # ou l'URI MongoDB Atlas (mongodb+srv://…)
-MONGODB_DB=petcare
-```
+Même architecture que les autres modules : le navigateur appelle les routes `src/app/api/health-records/` via `api()`
+(`src/lib/health-records-api.ts`), le serveur vérifie le jeton Firebase (`requireUser`) puis lit/écrit dans la
+collection MongoDB Atlas `health_records` (`src/lib/server/health.ts`). Chaque utilisateur ne voit que ses propres actes.
+Les erreurs de validation sont renvoyées champ par champ (`fieldErrors`) et affichées sous chaque champ du formulaire.
 
 | Page | Rôle |
 |---|---|
@@ -172,6 +167,9 @@ Collection `health_records` : `ownerId` (uid Firebase), `petId`, `petName`, `typ
 `lotNumber` et `nextDueDate` (vaccin), `dosage` et `endDate` (traitement), `attachments[]` (PDF/JPG/PNG/WebP, 2 Mo max, 3 par acte),
 `createdAt`, `updatedAt`. Index : `{ ownerId, petId, date }`.
 
-L'animal est lu dans Firestore `pets/{id}` (module Mes animaux) quand il existe ; sinon un carnet peut être créé
-depuis `/carnet-de-sante` en indiquant le nom de l'animal. Un vaccin avec date de rappel programme une notification
-(type `rappel`) 7 jours avant l'échéance.
+Le module Mes animaux n'existe pas encore : `listMyPets()` / `getPet()` renvoient une liste vide / `null` et un
+carnet est créé depuis `/carnet-de-sante` en indiquant le nom de l'animal. À brancher sur l'API du module Mes animaux
+quand il sera prêt. Un vaccin avec date de rappel programme une notification (type `rappel`) 7 jours avant l'échéance ;
+ce rappel est créé par le serveur, remplacé si l'acte est modifié et supprimé avec l'acte.
+
+Tests : `npm run test:health` (33 vérifications : validation, droits, pièces jointes, rappels).

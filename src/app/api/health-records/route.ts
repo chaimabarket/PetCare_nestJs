@@ -1,35 +1,47 @@
-import type { NextRequest } from "next/server";
-import { ATTACHMENTS_MAX_COUNT, RECORD_TYPES, type RecordType } from "@/lib/health-records";
-import { ApiError, handle, parseNewAttachments, readJson, recordFields } from "@/lib/server/api";
-import { HealthRecordModel, LIST_PROJECTION, toHealthRecord, type HealthRecordDoc } from "@/lib/server/health-record-model";
+// Carnet de santé : liste des actes d'un animal et ajout d'un acte. Chacun ne voit que ses propres actes.
+import { ObjectId } from "mongodb";
+import { RECORD_TYPES, type RecordType } from "@/lib/health-records";
+import {
+  healthRecords,
+  LIST_PROJECTION,
+  parseNewAttachments,
+  recordFields,
+  syncVaccineReminder,
+  toHealthRecord,
+  type HealthRecordDoc,
+} from "@/lib/server/health";
+import { badRequest, handle, readJson, requireUser } from "@/lib/server/http";
 
 /** GET /api/health-records?petId=…&type=… — carnet de santé d'un animal (plus récent d'abord). */
-export async function GET(request: NextRequest) {
-  return handle(request, async (uid) => {
-    const petId = request.nextUrl.searchParams.get("petId")?.trim();
-    const type = request.nextUrl.searchParams.get("type");
-    if (!petId) throw new ApiError(400, "Le paramètre petId est obligatoire.");
-    if (type && !RECORD_TYPES.includes(type as RecordType)) throw new ApiError(400, "Type d'acte inconnu.");
+export async function GET(request: Request) {
+  return handle(async () => {
+    const { uid } = await requireUser(request);
+    const params = new URL(request.url).searchParams;
+    const petId = params.get("petId")?.trim();
+    const type = params.get("type");
+    if (!petId) throw badRequest("Le paramètre petId est obligatoire.");
+    if (type && !RECORD_TYPES.includes(type as RecordType)) throw badRequest("Type d'acte inconnu.");
 
-    const docs = await HealthRecordModel.find({ ownerId: uid, petId, ...(type ? { type } : {}) }, LIST_PROJECTION)
+    const docs = await (await healthRecords())
+      .find({ ownerId: uid, petId, ...(type && { type: type as RecordType }) }, { projection: LIST_PROJECTION })
       .sort({ date: -1, createdAt: -1 })
-      .lean<HealthRecordDoc[]>();
+      .toArray();
     return Response.json({ records: docs.map(toHealthRecord) });
   });
 }
 
-/** POST /api/health-records — ajoute un acte médical. */
-export async function POST(request: NextRequest) {
-  return handle(request, async (uid) => {
+/** POST /api/health-records — ajoute un acte médical (et programme le rappel d'un vaccin). */
+export async function POST(request: Request) {
+  return handle(async () => {
+    const { uid } = await requireUser(request);
     const body = await readJson(request);
     const fields = recordFields(body);
     const attachments = parseNewAttachments(body.newAttachments);
-    if (attachments.length > ATTACHMENTS_MAX_COUNT) {
-      throw new ApiError(400, `${ATTACHMENTS_MAX_COUNT} pièces jointes maximum par acte.`);
-    }
 
-    const created = await HealthRecordModel.create({ ...fields, ownerId: uid, attachments });
-    const doc = await HealthRecordModel.findById(created._id, LIST_PROJECTION).lean<HealthRecordDoc>();
-    return Response.json({ record: toHealthRecord(doc!) }, { status: 201 });
+    const now = new Date();
+    const record: HealthRecordDoc = { _id: new ObjectId(), ...fields, ownerId: uid, attachments, createdAt: now, updatedAt: now };
+    await (await healthRecords()).insertOne(record);
+    await syncVaccineReminder(record, record._id, uid, record.petId);
+    return Response.json({ record: toHealthRecord(record) }, { status: 201 });
   });
 }

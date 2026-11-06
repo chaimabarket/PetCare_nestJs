@@ -1,23 +1,25 @@
-import type { NextRequest } from "next/server";
-import { ApiError, handle, notFound, parseObjectId } from "@/lib/server/api";
-import { HealthRecordModel } from "@/lib/server/health-record-model";
+// Téléchargement d'une pièce jointe (propriétaire de l'acte uniquement).
+import { healthRecords, recordNotFound, recordObjectId } from "@/lib/server/health";
+import { handle, HttpError, requireUser } from "@/lib/server/http";
 
-/** GET /api/health-records/:id/attachments/:attachmentId — télécharge une pièce jointe. */
-export async function GET(
-  request: NextRequest,
-  ctx: RouteContext<"/api/health-records/[id]/attachments/[attachmentId]">,
-) {
-  return handle(request, async (uid) => {
+/** GET /api/health-records/:id/attachments/:attachmentId */
+export async function GET(request: Request, ctx: RouteContext<"/api/health-records/[id]/attachments/[attachmentId]">) {
+  return handle(async () => {
+    const { uid } = await requireUser(request);
     const { id, attachmentId } = await ctx.params;
-    const record = await HealthRecordModel.findOne({ _id: parseObjectId(id), ownerId: uid }, { attachments: 1 });
-    if (!record) throw notFound();
-    const attachment = record.attachments.find((a) => String(a._id) === attachmentId);
-    if (!attachment) throw new ApiError(404, "Pièce jointe introuvable.");
+    const record = await (await healthRecords()).findOne(
+      { _id: recordObjectId(id), ownerId: uid },
+      { projection: { attachments: 1 } },
+    );
+    if (!record) throw recordNotFound();
+    const attachment = record.attachments.find((a) => a._id.toHexString() === attachmentId);
+    if (!attachment) throw new HttpError(404, "Pièce jointe introuvable.");
 
-    return new Response(new Uint8Array(attachment.data), {
+    const bytes = new Uint8Array(attachment.data.buffer.subarray(0, attachment.data.length()));
+    return new Response(bytes, {
       headers: {
         "Content-Type": attachment.mimeType,
-        "Content-Length": String(attachment.data.length),
+        "Content-Length": String(bytes.length),
         "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(attachment.name)}`,
         "Cache-Control": "private, no-store",
         "X-Content-Type-Options": "nosniff",

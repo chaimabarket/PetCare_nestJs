@@ -2,7 +2,6 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/Button";
 import { Alert, Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
@@ -27,7 +26,6 @@ import {
   createHealthRecord,
   fileToAttachment,
   HealthApiError,
-  scheduleVaccineReminder,
   updateHealthRecord,
 } from "@/lib/health-records-api";
 import { hasErrors, type FieldErrors } from "@/lib/validation";
@@ -51,7 +49,6 @@ export function RecordForm({
   backHref: string;
 }) {
   const router = useRouter();
-  const { user } = useAuth();
   const fileInput = useRef<HTMLInputElement>(null);
   const [values, setValues] = useState<HealthRecordInput>(() =>
     record
@@ -117,13 +114,10 @@ export function RecordForm({
     setSaving(true);
     try {
       const newAttachments = await Promise.all(files.map(fileToAttachment));
-      const saved = record
-        ? await updateHealthRecord(record.id, value, { keepAttachmentIds: kept.map((a) => a.id), newAttachments })
-        : await createHealthRecord(value, newAttachments);
-      if (!record && user) {
-        // Facultatif : un rappel non programmé ne doit pas bloquer l'enregistrement.
-        await scheduleVaccineReminder(saved, user.uid).catch((err) => console.error("Rappel non programmé :", err));
-      }
+      await (record
+        ? updateHealthRecord(record.id, value, { keepAttachmentIds: kept.map((a) => a.id), newAttachments })
+        : createHealthRecord(value, newAttachments));
+      // Le rappel d'un vaccin (notification 7 jours avant l'échéance) est programmé par le serveur.
       router.push(`${backHref}${backHref.includes("?") ? "&" : "?"}${record ? "modifie" : "ajoute"}=1`);
     } catch (err) {
       if (err instanceof HealthApiError && Object.keys(err.fieldErrors).length) {

@@ -1,93 +1,65 @@
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { ApiError, api } from "./api";
+import { auth } from "./firebase";
 import type { HealthRecord, HealthRecordInput, NewAttachment, RecordType } from "./health-records";
-import { sendNotification } from "./notifications";
 
 /**
- * Appels du navigateur vers l'API MongoDB du carnet de santé (/api/health-records).
- * Chaque requête envoie le jeton Firebase de l'utilisateur connecté.
+ * Appels du navigateur vers l'API du carnet de santé (/api/health-records, données dans MongoDB).
+ * `api()` envoie le jeton Firebase de l'utilisateur connecté ; le serveur ne renvoie que ses actes.
  */
 
-/** Erreur de l'API, avec les erreurs par champ renvoyées par la validation serveur. */
-export class HealthApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public fieldErrors: Partial<Record<string, string>> = {},
-  ) {
-    super(message);
-  }
-}
-
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const user = auth().currentUser;
-  if (!user) throw new HealthApiError("Vous devez être connecté.", 401);
-  const token = await user.getIdToken();
-
-  let response: Response;
-  try {
-    response = await fetch(path, {
-      ...init,
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...init.headers },
-    });
-  } catch {
-    throw new HealthApiError("Problème de connexion réseau. Vérifiez votre connexion internet.", 0);
-  }
-  if (response.status === 204) return undefined as T;
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new HealthApiError(body.error ?? "Une erreur est survenue. Réessayez.", response.status, body.fieldErrors ?? {});
-  }
-  return body as T;
-}
+/** Erreur de l'API, avec les erreurs par champ renvoyées par la validation serveur (`fieldErrors`). */
+export { ApiError as HealthApiError };
 
 export async function listHealthRecords(petId: string, type?: RecordType): Promise<HealthRecord[]> {
   const params = new URLSearchParams({ petId, ...(type ? { type } : {}) });
-  const { records } = await request<{ records: HealthRecord[] }>(`/api/health-records?${params}`);
+  const { records } = await api<{ records: HealthRecord[] }>(`/api/health-records?${params}`);
   return records;
 }
 
 export async function getHealthRecord(id: string): Promise<HealthRecord> {
-  const { record } = await request<{ record: HealthRecord }>(`/api/health-records/${encodeURIComponent(id)}`);
+  const { record } = await api<{ record: HealthRecord }>(`/api/health-records/${encodeURIComponent(id)}`);
   return record;
 }
 
+/** Crée l'acte ; un vaccin avec date de rappel programme sa notification (côté serveur). */
 export async function createHealthRecord(input: HealthRecordInput, newAttachments: NewAttachment[]): Promise<HealthRecord> {
-  const { record } = await request<{ record: HealthRecord }>("/api/health-records", {
+  const { record } = await api<{ record: HealthRecord }>("/api/health-records", {
     method: "POST",
-    body: JSON.stringify({ ...input, newAttachments }),
+    body: { ...input, newAttachments },
   });
   return record;
 }
 
+/** Modifie l'acte ; le rappel de vaccin est mis à jour par le serveur. */
 export async function updateHealthRecord(
   id: string,
   input: HealthRecordInput,
   attachments: { keepAttachmentIds: string[]; newAttachments: NewAttachment[] },
 ): Promise<HealthRecord> {
-  const { record } = await request<{ record: HealthRecord }>(`/api/health-records/${encodeURIComponent(id)}`, {
+  const { record } = await api<{ record: HealthRecord }>(`/api/health-records/${encodeURIComponent(id)}`, {
     method: "PUT",
-    body: JSON.stringify({ ...input, ...attachments }),
+    body: { ...input, ...attachments },
   });
   return record;
 }
 
 export async function deleteHealthRecord(id: string): Promise<void> {
-  await request<void>(`/api/health-records/${encodeURIComponent(id)}`, { method: "DELETE" });
+  await api(`/api/health-records/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
 /** Ouvre une pièce jointe dans un nouvel onglet (le téléchargement exige le jeton). */
 export async function openAttachment(recordId: string, attachmentId: string): Promise<void> {
+  await auth().authStateReady();
   const user = auth().currentUser;
-  if (!user) throw new HealthApiError("Vous devez être connecté.", 401);
+  if (!user) throw new ApiError(401, "Vous devez être connecté.");
   // L'onglet est ouvert tout de suite (sinon le navigateur le bloque), puis rempli.
   const tab = window.open("", "_blank");
   try {
     const response = await fetch(
       `/api/health-records/${encodeURIComponent(recordId)}/attachments/${encodeURIComponent(attachmentId)}`,
-      { headers: { Authorization: `Bearer ${await user.getIdToken()}` } },
+      { headers: { Authorization: `Bearer ${await user.getIdToken()}` }, cache: "no-store" },
     );
-    if (!response.ok) throw new HealthApiError("Pièce jointe introuvable.", response.status);
+    if (!response.ok) throw new ApiError(response.status, "Pièce jointe introuvable.");
     const url = URL.createObjectURL(await response.blob());
     if (tab) tab.location.href = url;
     else window.location.href = url;
@@ -100,9 +72,9 @@ export async function openAttachment(recordId: string, attachmentId: string): Pr
 
 export type HealthPetSummary = { petId: string; petName: string; count: number; lastDate: string };
 
-/** Animaux qui ont déjà des actes dans le carnet (MongoDB). */
+/** Animaux qui ont déjà des actes dans le carnet. */
 export async function listPetsWithRecords(): Promise<HealthPetSummary[]> {
-  const { pets } = await request<{ pets: HealthPetSummary[] }>("/api/health-records/pets");
+  const { pets } = await api<{ pets: HealthPetSummary[] }>("/api/health-records/pets");
   return pets;
 }
 
@@ -119,37 +91,24 @@ export function fileToAttachment(file: File): Promise<NewAttachment> {
   });
 }
 
-/* ---------- Animaux (module 1 « Mes animaux », collection Firestore `pets`) ---------- */
+/* ---------- Animaux (module 1 « Mes animaux ») ---------- */
 
 export type PetInfo = { id: string; name: string; species?: string; breed?: string };
 
 /**
- * Animaux de l'utilisateur dans Firestore `pets` (module 1).
- * Liste vide tant que ce module (ou ses règles Firestore) n'est pas en place.
+ * Animaux de l'utilisateur, fournis par le module 1 « Mes animaux ».
+ * Ce module n'existe pas encore : liste vide. Les carnets sont alors créés depuis /carnet-de-sante
+ * en indiquant le nom de l'animal (voir README). À brancher sur l'API du module 1 quand il sera prêt.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function listMyPets(uid: string): Promise<PetInfo[]> {
-  try {
-    const snapshot = await getDocs(query(collection(db(), "pets"), where("ownerId", "==", uid)));
-    return snapshot.docs
-      .map((d) => ({ id: d.id, data: d.data() }))
-      .filter(({ data }) => data.status !== "archived" && typeof data.name === "string" && data.name)
-      .map(({ id, data }) => ({ id, name: data.name, species: data.species, breed: data.breed }));
-  } catch {
-    return [];
-  }
+  return [];
 }
 
-/** Un animal du module 1, ou null s'il n'est pas (encore) disponible. */
+/** Un animal du module 1, ou null tant que ce module n'existe pas (le nom vient alors du carnet). */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getPet(petId: string): Promise<PetInfo | null> {
-  try {
-    const snapshot = await getDoc(doc(db(), "pets", petId));
-    const data = snapshot.data();
-    return data && typeof data.name === "string"
-      ? { id: snapshot.id, name: data.name, species: data.species, breed: data.breed }
-      : null;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export const SPECIES_LABELS: Record<string, string> = {
@@ -160,24 +119,3 @@ export const SPECIES_LABELS: Record<string, string> = {
   bird: "Oiseau",
   other: "Animal",
 };
-
-/**
- * Rappel de vaccin dans le centre de notifications (type « rappel » du module Utilisateurs),
- * affiché 7 jours avant l'échéance.
- */
-export async function scheduleVaccineReminder(record: HealthRecord, uid: string): Promise<void> {
-  if (record.type !== "vaccin" || !record.nextDueDate) return;
-  const due = new Date(`${record.nextDueDate}T09:00:00`);
-  if (due.getTime() < Date.now()) return;
-  const showAt = new Date(Math.max(Date.now(), due.getTime() - 7 * 24 * 3600_000));
-  const petName = record.petName || "votre animal";
-  await sendNotification({
-    userId: uid,
-    type: "rappel",
-    title: `Rappel de vaccin pour ${petName}`.slice(0, 120),
-    body: `${record.title} : rappel prévu le ${due.toLocaleDateString("fr-FR", { dateStyle: "long" })}.`,
-    link: `/animaux/${encodeURIComponent(record.petId)}/carnet-de-sante/${record.id}`,
-    actionLabel: "Voir le carnet",
-    showAt,
-  });
-}

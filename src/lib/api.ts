@@ -5,6 +5,8 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    /** Message par champ de formulaire, quand le serveur a refusé certaines valeurs. */
+    public fieldErrors: Partial<Record<string, string>> = {},
   ) {
     super(message);
   }
@@ -37,8 +39,10 @@ export async function api<T = void>(path: string, init: ApiOptions = {}): Promis
   });
 
   if (!response.ok) {
-    const data = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new ApiError(response.status, data?.error ?? "Une erreur est survenue. Réessayez.");
+    const data = (await response.json().catch(() => null)) as
+      | { error?: string; fieldErrors?: Partial<Record<string, string>> }
+      | null;
+    throw new ApiError(response.status, data?.error ?? "Une erreur est survenue. Réessayez.", data?.fieldErrors ?? {});
   }
   const text = await response.text(); // réponse vide (204, 201 sans contenu) → undefined
   return (text ? JSON.parse(text) : undefined) as T;
