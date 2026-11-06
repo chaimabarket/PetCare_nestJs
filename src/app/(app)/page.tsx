@@ -38,7 +38,7 @@ export default function AccueilPage() {
             </Link>
           </div>
         </Card>
-        {/* Version statique du module Rendez-vous : visible sans compte en attendant MongoDB. */}
+        {/* Carte du module Rendez-vous : un visiteur n'a pas de rendez-vous (« Aucun rendez-vous à venir »). */}
         <div className="mx-auto mt-space-lg max-w-xl">
           <UpcomingAppointmentsCard />
         </div>
@@ -55,6 +55,15 @@ export default function AccueilPage() {
           <h2 className="font-headline-sm text-headline-sm">Mes animaux</h2>
           <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
         </Card>
+        <Link href="/carnet-de-sante" className="group">
+          <Card className="h-full transition-shadow group-hover:shadow-md">
+            <h2 className="flex items-center gap-space-sm font-headline-sm text-headline-sm">
+              <Icon name="medical_information" className="text-primary" />
+              Carnets de santé
+            </h2>
+            <p className="mt-2 text-on-surface-variant">Vaccins, consultations, traitements et allergies de vos animaux.</p>
+          </Card>
+        </Link>
         <UpcomingAppointmentsCard />
       </div>
     </div>

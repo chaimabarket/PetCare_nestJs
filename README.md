@@ -1,7 +1,7 @@
 # PetCare Community — application web (Next.js)
 
 Application pour gérer ses animaux, trouver des services, publier des annonces perdus/trouvés et faciliter les adoptions.
-Stack : **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS 4**, **Firebase** (Authentication + Firestore).
+Stack : **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS 4**, **Firebase Authentication** (comptes et connexion), **MongoDB Atlas** (données, via les routes `/api`).
 
 ## Installation
 
@@ -9,11 +9,12 @@ Prérequis : Node.js **24 LTS** (Firebase 13 demande Node ≥ 24.12).
 
 ```bash
 npm install
-cp .env.local.example .env.local   # puis remplir avec la configuration Firebase du projet
+cp .env.local.example .env.local   # puis remplir (Firebase + MongoDB)
 npm run dev                         # http://localhost:3000
 ```
 
-Les valeurs de `.env.local` sont dans la console Firebase → Paramètres du projet → Vos applications.
+Les valeurs `NEXT_PUBLIC_FIREBASE_*` sont dans la console Firebase → Paramètres du projet → Vos applications.
+`MONGODB_URI` vient de MongoDB Atlas → Connect → Drivers ; ajoutez aussi votre adresse IP dans Atlas → Network Access.
 Ce fichier n'est pas versionné : demandez-le à l'équipe.
 
 ## Commandes
@@ -23,8 +24,10 @@ Ce fichier n'est pas versionné : demandez-le à l'équipe.
 | `npm run dev` | Lancer le site en local |
 | `npm run build` | Build de production |
 | `npm run lint` | Vérifier le code |
-| `npm run deploy:rules` | Publier `firestore.rules` (après `npx firebase-tools login`) |
-| `npm run test:firebase` | Tester les règles de sécurité Firestore (comptes temporaires, supprimés à la fin) |
+| `npm run test:api` | Tester les règles d'accès des routes `/api` (serveur `npm run dev` lancé ; comptes temporaires, supprimés à la fin) |
+| `npm run test:health` | Tester le module Carnet de santé (même principe) |
+| `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption (même principe) |
+| `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (après `npx firebase-tools login`) |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
 
 ## Structure
@@ -34,8 +37,9 @@ src/app/(auth)/        connexion, inscription, mot-de-passe-oublie (sans navigat
 src/app/(app)/         pages avec la navigation : accueil, profil, notifications…
 src/components/ui/     composants partagés : Button, TextField, Card, Alert, Toggle, Avatar, Icon
 src/components/auth/   AuthProvider, RequireAuth, AccountMenu
-src/lib/               firebase, users, notifications, validation, dates
-firestore.rules        règles de sécurité (chaque module ajoute ses collections)
+src/app/api/           routes API : seules à accéder à MongoDB, vérifient qui appelle et ce qui est permis
+src/lib/               firebase (auth), api (appel des routes), models (types partagés), users, notifications…
+src/lib/server/        connexion MongoDB, vérification du jeton Firebase (code serveur uniquement)
 ```
 
 ## Design system
@@ -83,13 +87,89 @@ await sendNotification({
 });
 ```
 
-Le destinataire voit la notification en temps réel (cloche + `/notifications`), selon ses préférences d'alerte.
+Le destinataire voit la notification dans les 20 secondes (immédiatement pour ses propres actions) (cloche + `/notifications`), selon ses préférences d'alerte.
 
-## Firestore
+## Données (MongoDB)
+
+Le navigateur n'accède jamais directement à MongoDB : il appelle les routes `/api/...` avec le jeton Firebase de
+l'utilisateur (`api()` dans `src/lib/api.ts`), et chaque route vérifie ce jeton (`requireUser`) puis les droits.
 
 | Collection | Contenu | Accès |
 |---|---|---|
-| `users/{uid}` | profil, rôle, préférences d'alerte | lecture/modification par le propriétaire (le rôle ne peut pas être changé) ; admin |
-| `notifications/{id}` | `userId`, `type`, `title`, `body`, `link`, `read`, `showAt`… | lecture/suppression par le destinataire ; création par tout utilisateur connecté en son nom |
+| `users` (`_id` = uid Firebase) | profil, rôle, préférences d'alerte | lecture/modification par le propriétaire (le rôle ne peut pas être changé) ; admin |
+| `notifications` | `userId`, `type`, `title`, `body`, `link`, `read`, `showAt`… | lecture/suppression par le destinataire ; création par tout utilisateur connecté en son nom |
+| `adoptionListings` | annonce d'adoption : animal, photos, histoire, compatibilité, `status`, `ownerId`, `adopterId`… | lecture publique (disponible, réservé, adopté) ; brouillons et archives par l'auteur ; création par un propriétaire ou un refuge |
+| `adoptionApplications` | candidature : réponses Logement / Foyer / Mode de vie, `status` (une seule par annonce et par candidat) | lecture par le candidat et l'auteur de l'annonce ; le candidat peut seulement retirer, l'auteur fait avancer le statut |
+| `adoptionFavorites` | favoris (un par utilisateur et par annonce) | propriétaire uniquement |
+| `happyTails` (`_id` = id de l'annonce) | histoire « avant / après », `likedBy` | lecture publique ; création par l'adoptant ; chacun ajoute/retire son cœur |
+| `adoptionReports` | signalements d'annonces et d'histoires | création par tout utilisateur connecté ; lecture admin |
 
-Pour donner le rôle admin : modifier le champ `role` du document `users/{uid}` dans la console Firebase.
+Pour donner le rôle admin : MongoDB Atlas → Browse Collections → `petcare.users` → modifier le champ `role` du document.
+
+**Ajouter une collection pour un module** : déclarer le type du document et la collection dans `src/lib/server/mongo.ts`,
+créer les routes dans `src/app/api/<module>/` (sur le modèle de `api/notifications`, avec `handle` et `requireUser`),
+puis les appeler côté navigateur avec `api()`.
+
+## Module Adoption
+
+Pages (`src/app/(app)/communaute/adoption/`) :
+
+| Route | Écran |
+|---|---|
+| `/communaute/adoption` | fil des annonces, recherche et filtres (5.1, 5.2) |
+| `/communaute/adoption/[id]` | fiche d'adoption (5.3) |
+| `/communaute/adoption/[id]/candidature` | candidature en 4 étapes (5.4 → 5.7) |
+| `/communaute/adoption/mes-candidatures` | suivi de mes candidatures (5.8) |
+| `/communaute/adoption/publier`, `/[id]/modifier` | publier / modifier une annonce (5.9) |
+| `/communaute/adoption/mes-annonces` | mes annonces (5.10) |
+| `/communaute/adoption/[id]/candidatures` | candidatures reçues, détail, confirmation d'adoption (5.11 → 5.13) |
+| `/communaute/adoption/favoris` | mes favoris (5.14) |
+| `/communaute/adoption/happy-tails`, `/[id]/happy-tail` | Happy Tails et partage d'une histoire (5.15, 5.16) |
+
+Code : `src/lib/adoption.ts` (fonctions appelées par les pages, via les routes `src/app/api/adoption/`), `src/lib/adoption-compatibility.ts` (score de compatibilité,
+aide à la décision), `src/lib/images.ts` (photos compressées dans le navigateur et stockées dans les documents MongoDB), `src/components/adoption/` (composants).
+
+Cycle d'une candidature : `envoyee` → `en-etude` (ouverture par l'auteur) → `acceptee` (l'animal passe « Réservé »)
+→ `adoptee` (les autres candidatures sont refusées automatiquement). Le candidat peut la retirer tant qu'elle est en attente.
+Chaque étape envoie une notification de type `adoption` (envoyée par le serveur).
+
+Routes API (`src/app/api/adoption/`) : `listings` (fil, publication, `mine`, `[id]` avec les actions
+`update` / `archive` / `republish`), `applications` (`?scope=mine|received`, `[id]` avec les actions `withdraw`,
+`review`, `accept`, `refuse`, `cancel-acceptance`, `confirm-adoption`), `favorites`, `happy-tails`, `stats`, `reports`.
+Les règles d'accès sont dans `src/lib/server/adoption.ts` et dans chaque route ; les changements qui touchent
+plusieurs documents (accepter, confirmer, archiver) sont faits dans une transaction MongoDB.
+
+## Module Carnet de santé
+
+Même architecture que les autres modules : le navigateur appelle les routes `src/app/api/health-records/` via `api()`
+(`src/lib/health-records-api.ts`), le serveur vérifie le jeton Firebase (`requireUser`) puis lit/écrit dans la
+collection MongoDB Atlas `health_records` (`src/lib/server/health.ts`). Chaque utilisateur ne voit que ses propres actes.
+Les erreurs de validation sont renvoyées champ par champ (`fieldErrors`) et affichées sous chaque champ du formulaire.
+
+| Page | Rôle |
+|---|---|
+| `/carnet-de-sante` | choix de l'animal |
+| `/animaux/[id]/carnet-de-sante` | carnet : historique, filtres, rappels, traitements, allergies |
+| `/animaux/[id]/carnet-de-sante/ajouter` | ajouter un acte |
+| `/animaux/[id]/carnet-de-sante/[recordId]` | détail (+ suppression avec confirmation) |
+| `/animaux/[id]/carnet-de-sante/[recordId]/modifier` | modifier un acte |
+
+| API (en-tête `Authorization: Bearer <idToken Firebase>`) | Rôle |
+|---|---|
+| `GET /api/health-records?petId=…&type=…` | actes d'un animal (plus récent d'abord) |
+| `POST /api/health-records` | créer un acte |
+| `GET` / `PUT` / `DELETE /api/health-records/{id}` | lire / modifier / supprimer un acte |
+| `GET /api/health-records/{id}/attachments/{attachmentId}` | télécharger une pièce jointe |
+| `GET /api/health-records/pets` | animaux ayant des actes (nombre, date du dernier) |
+
+Collection `health_records` : `ownerId` (uid Firebase), `petId`, `petName`, `type`
+(`visite` | `vaccin` | `examen` | `traitement` | `allergie` | `note`), `title`, `date`, `veterinarian`, `clinic`, `notes`,
+`lotNumber` et `nextDueDate` (vaccin), `dosage` et `endDate` (traitement), `attachments[]` (PDF/JPG/PNG/WebP, 2 Mo max, 3 par acte),
+`createdAt`, `updatedAt`. Index : `{ ownerId, petId, date }`.
+
+Le module Mes animaux n'existe pas encore : `listMyPets()` / `getPet()` renvoient une liste vide / `null` et un
+carnet est créé depuis `/carnet-de-sante` en indiquant le nom de l'animal. À brancher sur l'API du module Mes animaux
+quand il sera prêt. Un vaccin avec date de rappel programme une notification (type `rappel`) 7 jours avant l'échéance ;
+ce rappel est créé par le serveur, remplacé si l'acte est modifié et supprimé avec l'acte.
+
+Tests : `npm run test:health` (33 vérifications : validation, droits, pièces jointes, rappels).

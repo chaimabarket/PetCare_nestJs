@@ -1,47 +1,11 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-  where,
-  writeBatch,
-} from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { api } from "./api";
+import type { AppNotification, NewNotification, NotificationPrefs, NotificationType } from "./models";
 import { isTypeEnabled } from "./notification-prefs";
-import type { NotificationPrefs } from "./users";
 
-/**
- * Types de notification. Chaque module utilise le sien :
- * rendez-vous / rappel → module 3, sante → module 2, perdu-trouve → module 4,
- * adoption → module 5, service → module 6, compte → module Utilisateurs.
- */
-export type NotificationType = "rendez-vous" | "rappel" | "sante" | "adoption" | "perdu-trouve" | "service" | "compte";
+// Notifications stockées dans MongoDB, lues / modifiées via les routes /api/notifications/*.
+export type { AppNotification, NewNotification, NotificationType } from "./models";
 
 export type NotificationCategory = "sante" | "adoption" | "alerte" | "autre";
-
-/** Document Firestore `notifications/{id}`. */
-export type AppNotification = {
-  id: string;
-  /** Destinataire. */
-  userId: string;
-  type: NotificationType;
-  title: string;
-  body: string;
-  /** Page à ouvrir (ex. "/rendez-vous/abc123"). */
-  link?: string;
-  /** Texte du bouton d'action (ex. "Voir le rendez-vous"). */
-  actionLabel?: string;
-  read: boolean;
-  senderId: string;
-  createdAt: Timestamp;
-  /** Date d'affichage : dans le futur pour un rappel programmé. */
-  showAt: Timestamp;
-};
 
 export const NOTIFICATION_TYPES: Record<
   NotificationType,
@@ -63,18 +27,14 @@ export const NOTIFICATION_CATEGORIES: { key: NotificationCategory | "all"; label
   { key: "alerte", label: "Perdus & trouvés", dot: "bg-tertiary" },
 ];
 
-const notificationsCollection = "notifications";
+// MongoDB ne pousse pas les changements au navigateur : la liste est rechargée
+// régulièrement, au retour sur l'onglet, et immédiatement après chaque action de l'utilisateur.
+const POLL_INTERVAL_MS = 20_000;
+const listeners = new Set<() => void>();
 
-export type NewNotification = {
-  userId: string;
-  type: NotificationType;
-  title: string;
-  body: string;
-  link?: string;
-  actionLabel?: string;
-  /** Pour programmer un rappel (par défaut : maintenant). */
-  showAt?: Date;
-};
+function refreshSubscriptions() {
+  listeners.forEach((reload) => reload());
+}
 
 /**
  * Envoie une notification dans l'application à un utilisateur.
@@ -90,54 +50,63 @@ export type NewNotification = {
  *   });
  */
 export async function sendNotification(notification: NewNotification): Promise<string> {
-  const sender = auth().currentUser;
-  if (!sender) throw new Error("Vous devez être connecté pour envoyer une notification.");
   const { showAt, ...fields } = notification;
-  const ref = await addDoc(collection(db(), notificationsCollection), {
-    ...fields,
-    read: false,
-    senderId: sender.uid,
-    createdAt: serverTimestamp(),
-    showAt: showAt ? Timestamp.fromDate(showAt) : serverTimestamp(),
+  const created = await api<AppNotification>("/api/notifications", {
+    method: "POST",
+    body: { ...fields, ...(showAt && { showAt: showAt.toISOString() }) },
   });
-  return ref.id;
+  refreshSubscriptions();
+  return created.id;
 }
 
-/** Écoute en temps réel les notifications d'un utilisateur (plus récentes d'abord). */
+/** Suit les notifications de l'utilisateur connecté (plus récentes d'abord). */
 export function subscribeToNotifications(
   uid: string,
   onChange: (notifications: AppNotification[]) => void,
   onError: (error: Error) => void,
 ): () => void {
-  const q = query(collection(db(), notificationsCollection), where("userId", "==", uid));
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const items = snapshot.docs.map(
-        (d) => ({ id: d.id, ...d.data({ serverTimestamps: "estimate" }) }) as AppNotification,
-      );
-      items.sort((a, b) => b.showAt.toMillis() - a.showAt.toMillis());
-      onChange(items);
-    },
-    onError,
-  );
+  let active = true;
+  let request = 0;
+
+  const reload = () => {
+    const current = ++request;
+    api<AppNotification[]>("/api/notifications")
+      .then((items) => {
+        // Ignore une réponse dépassée par une requête plus récente, ou arrivée après la déconnexion.
+        if (!active || current !== request) return;
+        onChange(items.filter((n) => n.userId === uid));
+      })
+      .catch((error: Error) => active && current === request && onError(error));
+  };
+  const onVisible = () => document.visibilityState === "visible" && reload();
+
+  reload();
+  listeners.add(reload);
+  const timer = setInterval(() => document.visibilityState === "visible" && reload(), POLL_INTERVAL_MS);
+  document.addEventListener("visibilitychange", onVisible);
+
+  return () => {
+    active = false;
+    listeners.delete(reload);
+    clearInterval(timer);
+    document.removeEventListener("visibilitychange", onVisible);
+  };
 }
 
 export async function markAsRead(id: string): Promise<void> {
-  await updateDoc(doc(db(), notificationsCollection, id), { read: true });
+  await api(`/api/notifications/${encodeURIComponent(id)}`, { method: "PATCH", body: { read: true } });
+  refreshSubscriptions();
 }
 
 export async function markAllAsRead(ids: string[]): Promise<void> {
-  // Un lot Firestore est limité à 500 écritures.
-  for (let i = 0; i < ids.length; i += 500) {
-    const batch = writeBatch(db());
-    ids.slice(i, i + 500).forEach((id) => batch.update(doc(db(), notificationsCollection, id), { read: true }));
-    await batch.commit();
-  }
+  if (!ids.length) return;
+  await api("/api/notifications/read-all", { method: "POST", body: { ids } });
+  refreshSubscriptions();
 }
 
 export async function deleteNotification(id: string): Promise<void> {
-  await deleteDoc(doc(db(), notificationsCollection, id));
+  await api(`/api/notifications/${encodeURIComponent(id)}`, { method: "DELETE" });
+  refreshSubscriptions();
 }
 
 // showAt vient de l'horloge du serveur : une horloge locale en retard de quelques
@@ -151,7 +120,7 @@ export function visibleNotifications(
   now = Date.now(),
 ): AppNotification[] {
   return notifications.filter((n) => {
-    if (n.showAt.toMillis() > now + CLOCK_TOLERANCE_MS) return false;
+    if (new Date(n.showAt).getTime() > now + CLOCK_TOLERANCE_MS) return false;
     return isTypeEnabled(n.type, prefs);
   });
 }
