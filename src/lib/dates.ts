@@ -1,10 +1,15 @@
-import type { Timestamp } from "firebase/firestore";
-
 const rtf = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
 
+/** Les dates de l'API arrivent au format ISO ; les objets Date sont aussi acceptés. */
+export type DateInput = string | Date;
+
+export function toDate(date: DateInput): Date {
+  return date instanceof Date ? date : new Date(date);
+}
+
 /** « il y a 2 heures », « hier », « il y a 3 mois »… */
-export function timeAgo(date: Timestamp | Date, now = Date.now()): string {
-  const millis = date instanceof Date ? date.getTime() : date.toMillis();
+export function timeAgo(date: DateInput, now = Date.now()): string {
+  const millis = toDate(date).getTime();
   const minutes = Math.round((millis - now) / 60_000);
   if (minutes > -1) return "à l'instant";
   if (minutes > -60) return rtf.format(minutes, "minute");
@@ -17,6 +22,6 @@ export function timeAgo(date: Timestamp | Date, now = Date.now()): string {
   return rtf.format(Math.round(days / 365), "year");
 }
 
-export function isToday(date: Timestamp, now = new Date()): boolean {
-  return date.toDate().toDateString() === now.toDateString();
+export function isToday(date: DateInput, now = new Date()): boolean {
+  return toDate(date).toDateString() === now.toDateString();
 }

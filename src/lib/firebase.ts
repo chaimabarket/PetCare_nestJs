@@ -1,6 +1,6 @@
+// Firebase ne sert qu'à l'authentification ; les données sont dans MongoDB (routes /api/*).
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,8 +22,4 @@ function firebaseApp(): FirebaseApp {
 
 export function auth(): Auth {
   return getAuth(firebaseApp());
-}
-
-export function db(): Firestore {
-  return getFirestore(firebaseApp());
 }

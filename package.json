@@ -7,15 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:firebase": "node scripts/test-firebase.mjs",
     "deploy:rules": "npx --yes firebase-tools@14 deploy --only firestore:rules",
-    "seed:notifications": "node scripts/seed-notifications.mjs"
+    "seed:notifications": "node --env-file=.env.local scripts/seed-notifications.mjs",
+    "test:api": "node --env-file=.env.local scripts/test-api.mjs"
   },
   "dependencies": {
     "firebase": "^13.1.0",
+    "firebase-admin": "^14.5.0",
+    "mongodb": "^7.8.0",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
