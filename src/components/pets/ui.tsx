@@ -10,13 +10,18 @@ import { errorMessage } from "@/lib/users";
 /**
  * Liens vers les modules qui utilisent les animaux. `null` tant que le module n'est pas sur `main` :
  * le bouton affiche « Bientôt disponible ». À renseigner à la fusion, par exemple
- * `health: (id) => `/animaux/${id}/carnet-de-sante``.
+ * `health: (id) => `/animaux/${id}/carnet-de-sante``, `assistant: (id) => `/assistant?pet=${id}``.
  */
-export const LINKED_MODULES: Record<"health" | "appointments" | "reminders" | "assistant", ((petId: string) => string) | null> = {
+export const LINKED_MODULES: Record<
+  "health" | "appointments" | "reminders" | "assistant" | "vets",
+  ((petId: string) => string) | null
+> = {
   health: null,
   appointments: null,
   reminders: null,
   assistant: null,
+  /** Annuaire des vétérinaires (module Services). */
+  vets: null,
 };
 
 export const COMING_SOON = "Bientôt disponible";

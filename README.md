@@ -5,7 +5,7 @@ Stack : **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS 4**, **Fireb
 
 ## Installation
 
-Prérequis : Node.js **24 LTS** (Firebase 13 demande Node ≥ 24.12).
+Prérequis : Node.js **24 LTS ou plus récent** (Firebase 13 demande Node ≥ 24.12 ; testé aussi avec Node 26 LTS).
 
 ```bash
 npm install
@@ -26,6 +26,8 @@ Ce fichier n'est pas versionné : demandez-le à l'équipe.
 | `npm run lint` | Vérifier le code |
 | `npm run test:api` | Tester les règles d'accès des routes `/api` (serveur `npm run dev` lancé ; comptes temporaires, supprimés à la fin) |
 | `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption (même principe) |
+| `npm test` | Tests rapides sans serveur : validation des animaux et alerte de poids |
+| `npm run test:pets` | Tester les routes `/api/pets` (serveur `npm run dev` lancé ; comptes temporaires, supprimés à la fin) |
 | `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (après `npx firebase-tools login`) |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
 
@@ -102,6 +104,8 @@ l'utilisateur (`api()` dans `src/lib/api.ts`), et chaque route vérifie ce jeton
 | `adoptionFavorites` | favoris (un par utilisateur et par annonce) | propriétaire uniquement |
 | `happyTails` (`_id` = id de l'annonce) | histoire « avant / après », `likedBy` | lecture publique ; création par l'adoptant ; chacun ajoute/retire son cœur |
 | `adoptionReports` | signalements d'annonces et d'histoires | création par tout utilisateur connecté ; lecture admin |
+| `pets` | animal : identité, photos, contacts, vétérinaire, `status` (`draft` / `active` / `archived`), alerte de poids | propriétaire uniquement ; jamais supprimé (archivage) |
+| `petWeights` | pesées : `petId`, `day` (AAAA-MM-JJ), `weightKg`, `note` — une par animal et par jour | propriétaire uniquement |
 
 Pour donner le rôle admin : MongoDB Atlas → Browse Collections → `petcare.users` → modifier le champ `role` du document.
 
@@ -137,3 +141,57 @@ Routes API (`src/app/api/adoption/`) : `listings` (fil, publication, `mine`, `[i
 `review`, `accept`, `refuse`, `cancel-acceptance`, `confirm-adoption`), `favorites`, `happy-tails`, `stats`, `reports`.
 Les règles d'accès sont dans `src/lib/server/adoption.ts` et dans chaque route ; les changements qui touchent
 plusieurs documents (accepter, confirmer, archiver) sont faits dans une transaction MongoDB.
+
+## Module Mes animaux
+
+Pages (`src/app/(app)/animaux/`, réservées aux utilisateurs connectés) :
+
+| Route | Écran |
+|---|---|
+| `/animaux` | liste : onglets Actifs / Archivés, recherche, filtre par espèce, tri, badge d'alerte de poids |
+| `/animaux/nouveau` | ajout (brouillon possible) |
+| `/animaux/[id]` | fiche : galerie, identité, puce, vétérinaire, notes, contacts, poids, alerte, partage, export, archivage |
+| `/animaux/[id]/modifier` | modification |
+
+Code : `src/lib/pets-models.ts` (types, validation partagée navigateur / serveur, âge), `src/lib/pet-weight-alert.ts`
+(alerte de poids), `src/lib/pets.ts` (appels des routes), `src/lib/server/pets.ts` (collections, droits, recalcul de
+l'alerte), `src/components/pets/` (composants). Tests : `tests/` (`npm test`) et `scripts/test-pets.mjs` (`npm run test:pets`).
+
+**API pour les autres modules** (Santé, Rendez-vous, chatbot) — en-tête `Authorization: Bearer <jeton Firebase>`, via `api()` :
+
+| Route | Rôle |
+|---|---|
+| `GET /api/pets` | ses animaux (tous statuts), avec la couverture (miniature), `latestWeight` et `weightAlert` |
+| `POST /api/pets` | `{ pet, draft?, photos?, weight? }` : ajouter un animal |
+| `GET /api/pets/{id}` | fiche complète (toutes les photos, contacts, vétérinaire, dernier poids, alerte) |
+| `PUT /api/pets/{id}` | `{ pet, draft?, photoOrder?, weight? }` : modification du formulaire |
+| `PATCH /api/pets/{id}` | `{ notes?, contacts?, favorite?, dismissAlert? }` |
+| `POST /api/pets/{id}/archive`, `/restore` | archiver (`{ reason? }`) / restaurer |
+| `POST /api/pets/{id}/photos` | `{ url, thumbnail }` (images compressées, data URL) ; 5 maximum |
+| `DELETE /api/pets/{id}/photos/{fileId}`, `POST …/{fileId}/cover` | retirer une photo / en faire la couverture |
+| `GET` / `POST /api/pets/{id}/weights` | pesées (plus récente d'abord) / ajouter `{ day, weightKg, note? }` (409 si le jour a déjà une pesée) |
+| `PUT` / `DELETE /api/pets/{id}/weights/{weightId}` | corriger `{ weightKg, note? }` (la date ne change pas) / supprimer |
+
+Règles : seul le propriétaire accède à ses animaux (403 sinon). Un animal n'est jamais supprimé ; archivé, il se lit et se
+restaure mais toute autre modification renvoie 409. Format JSON : type `Pet` / `PetWeight` de `src/lib/pets-models.ts`.
+Côté navigateur, utilisez directement `listPets()`, `getPet(id)`, `listWeights(id)`… de `src/lib/pets.ts`.
+
+**Liens vers les autres modules** : les cartes Carnet de santé, Rendez-vous, Rappels, Conseils et « Voir les
+vétérinaires » affichent « Bientôt disponible ». À la fusion d'un module, renseignez son lien dans `LINKED_MODULES`
+(`src/components/pets/ui.tsx`), par exemple ``assistant: (id) => `/assistant?pet=${id}` ``.
+
+**Alerte intelligente de poids** : à chaque pesée ajoutée, corrigée ou supprimée, la dernière pesée est comparée aux pesées
+des 90 jours précédents. Règles, de la plus grave à la moins grave :
+
+| Règle | Condition | Conseil |
+|---|---|---|
+| `extreme` | variation ≥ 30 % en 7 jours | vérifier la saisie, consulter |
+| `loss-10` | perte ≥ 10 % en 90 jours | consulter (VCA Hospitals) |
+| `rapid-loss` | perte ≥ 5 % en 7 jours (≥ 3 % pour lapin, rongeur, oiseau) | consulter |
+| `gain-20` | prise ≥ 20 % en 90 jours, adulte | consulter |
+| `loss-5` | perte ≥ 5 % en 30 jours | surveiller |
+| `gain-10` | prise ≥ 10 % en 90 jours, adulte (≈ 1 point de score corporel, AAHA / iCatCare) | surveiller |
+
+Pas d'analyse avec moins de 2 pesées, pour un animal archivé ou si la dernière pesée a plus de 30 jours ; pas d'alerte de
+prise avant 1 an ni pour un retour au poids habituel. Notification `sante` immédiate, une seule par épisode (animal + règle +
+pesée de référence), une nouvelle si l'alerte s'aggrave. Bandeau sur la fiche, badge sur la liste. Ce n'est jamais un diagnostic.

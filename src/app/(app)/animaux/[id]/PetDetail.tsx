@@ -8,6 +8,8 @@ import { exportPetSheet } from "@/components/pets/export";
 import { PetContacts } from "@/components/pets/PetContacts";
 import { PetGallery } from "@/components/pets/PetGallery";
 import { Breadcrumb, COMING_SOON, ErrorState, LINKED_MODULES, LoadingState, StatusBadge, useLoad } from "@/components/pets/ui";
+import { WeightAlertBanner } from "@/components/pets/WeightAlertBanner";
+import { WeightSection } from "@/components/pets/WeightSection";
 import { Icon } from "@/components/ui/Icon";
 import {
   ageLabel,
@@ -127,6 +129,7 @@ function PetDetailContent({ id }: { id: string }) {
           </Link>
         </Banner>
       )}
+      <WeightAlertBanner pet={pet} onChange={replace} />
       {notice && (
         <p role="status" className="bg-inverse-surface text-inverse-on-surface rounded-xl px-space-md py-space-sm font-body-sm text-body-sm self-start">
           {notice}
@@ -210,7 +213,9 @@ function PetDetailContent({ id }: { id: string }) {
             <Notes pet={pet} editable={editable} onChange={replace} />
           </div>
 
-          <div id="poids" className="scroll-mt-24" />
+          <div id="poids" className="scroll-mt-24">
+            <WeightSection pet={pet} editable={editable} onChanged={reload} />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
             <ModuleCard
