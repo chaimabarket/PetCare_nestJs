@@ -50,6 +50,15 @@ export default function AccueilPage() {
           <h2 className="font-headline-sm text-headline-sm">Mes animaux</h2>
           <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
         </Card>
+        <Link href="/carnet-de-sante" className="group">
+          <Card className="h-full transition-shadow group-hover:shadow-md">
+            <h2 className="flex items-center gap-space-sm font-headline-sm text-headline-sm">
+              <Icon name="medical_information" className="text-primary" />
+              Carnets de santé
+            </h2>
+            <p className="mt-2 text-on-surface-variant">Vaccins, consultations, traitements et allergies de vos animaux.</p>
+          </Card>
+        </Link>
         <Card>
           <h2 className="font-headline-sm text-headline-sm">Prochains rendez-vous</h2>
           <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
