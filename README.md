@@ -144,6 +144,53 @@ plusieurs documents (accepter, confirmer, archiver) sont faits dans une transact
 
 ## Module Mes animaux
 
+### Fonctionnalités réalisées
+
+**Liste (`/animaux`)**
+- Onglets Actifs / Archivés avec compteurs, recherche (nom, race, espèce), filtre par espèce, tri par date ou par nom.
+- Carte : photo de couverture (ou emoji de l'espèce), nom, sexe, espèce et race (ou l'animal saisi librement), âge
+  (« 4 ans et 10 mois », « 8 mois », « 3 semaines »), stérilisation, dernier poids (« il y a 12 j »), favori.
+- Badges Brouillon, Archivé et alerte de poids ; raccourcis Santé, Rendez-vous et Journal de poids.
+- État vide avec bouton d'ajout ; invitation à se connecter pour un visiteur ; bouton « Ajouter » flottant sur mobile.
+
+**Ajout et modification (`/animaux/nouveau`, `/animaux/[id]/modifier`)**
+- Nom, espèce (puces avec emoji), race ou « Quel animal ? » obligatoire pour « Autre » (ex. « Ours »), sexe, stérilisation.
+- Date de naissance (jamais future) estimée ou non, avec l'âge calculé ; puce de 15 chiffres ; notes (500 caractères).
+- Vétérinaire référent saisi à la main (nom, clinique, adresse, téléphone).
+- Jusqu'à 5 photos compressées dans le navigateur : réordonner, choisir la couverture, retirer.
+- Poids facultatif enregistré comme pesée du jour (confirmation si l'écart dépasse 30 %).
+- Enregistrement en brouillon (seul le nom est exigé), complété plus tard.
+- Validation identique dans le formulaire et sur le serveur.
+
+**Fiche (`/animaux/[id]`)**
+- Galerie : grande photo, miniatures, zoom, ajout de photo, favori.
+- Carte d'identité : statut, puce tronquée (afficher / copier), stérilisation, vétérinaire référent avec bouton d'appel.
+- Notes modifiables sur place ; contacts utiles (5 maximum : ajout, suppression, appel, contact d'urgence).
+- Partage limité (nom, espèce, race, sexe, âge ; jamais la puce, les notes ni les données médicales).
+- Export de la fiche complète en page imprimable / PDF.
+- Cartes Carnet de santé, Rendez-vous, Rappels et Conseils (« Bientôt disponible » tant que ces modules manquent).
+
+**Poids**
+- Ajout d'une pesée avec date et note ; une seule pesée par jour (message clair sinon) ; confirmation au-delà de 30 % d'écart.
+- Courbe des 6 dernières pesées, tendance, historique complet avec correction du poids et de la note (la date ne change
+  pas) et suppression.
+
+**Alerte intelligente de poids** (6 règles, détail plus bas)
+- Calcul côté serveur à chaque pesée ajoutée, corrigée ou supprimée ; notification `sante` immédiate, une par épisode,
+  une nouvelle si l'alerte s'aggrave.
+- Bandeau sur la fiche (Prendre rendez-vous ou appeler le vétérinaire référent, Voir les vétérinaires, Sources, Ignorer)
+  et badge sur la liste ; mention « ce n'est pas un diagnostic ».
+
+**Archivage**
+- Boîte de confirmation (motif facultatif) ; l'animal quitte les actifs, rien n'est supprimé.
+- Un animal archivé se lit et se restaure ; toute autre modification est refusée (409) et l'interface masque les boutons.
+
+**Tests** : `npm test` (36 tests : validation, âge, partage, toutes les règles de l'alerte) et `npm run test:pets`
+(93 vérifications de l'API REST sur le serveur lancé : validation, accès d'un autre utilisateur, photos, contacts,
+pesées, brouillon, archivage, chaque règle de l'alerte et absence de notification en double).
+
+### Pages et API
+
 Pages (`src/app/(app)/animaux/`, réservées aux utilisateurs connectés) :
 
 | Route | Écran |

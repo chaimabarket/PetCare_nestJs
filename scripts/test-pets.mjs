@@ -195,6 +195,91 @@ try {
   const restored = await expectStatus("Restaurer Milo", 200, () => call(alice, "POST", `/api/pets/${id}/restore`));
   check("…de nouveau actif", restored?.status === "active");
   await expectStatus("Pas de suppression d'un animal", 405, () => call(alice, "DELETE", `/api/pets/${id}`));
+  await expectStatus("Restaurer un animal actif refusé", 409, () => call(alice, "POST", `/api/pets/${id}/restore`));
+
+  console.log("\nCas limites de l'API :");
+  await expectStatus("Visiteur ne lit pas une fiche", 401, () => call(null, "GET", `/api/pets/${id}`));
+  await expectStatus("Identifiant mal formé", 404, () => call(alice, "GET", "/api/pets/pas-un-id"));
+  await expectStatus("Retirer une photo inconnue", 404, () => call(alice, "DELETE", `/api/pets/${id}/photos/000000000000000000000000`));
+  await expectStatus("Couverture inconnue", 404, () => call(alice, "POST", `/api/pets/${id}/photos/000000000000000000000000/cover`));
+  await expectStatus("Corriger une pesée inconnue", 404, () =>
+    call(alice, "PUT", `/api/pets/${id}/weights/000000000000000000000000`, { weightKg: 3 }),
+  );
+  await expectStatus("Téléphone de contact invalide", 400, () =>
+    call(alice, "PATCH", `/api/pets/${id}`, { contacts: [{ name: "Voisin", phone: "abc" }] }),
+  );
+  await expectStatus("Notes de plus de 500 caractères (PATCH)", 400, () => call(alice, "PATCH", `/api/pets/${id}`, { notes: "x".repeat(501) }));
+  await expectStatus("PATCH vide refusé", 400, () => call(alice, "PATCH", `/api/pets/${id}`, {}));
+  await expectStatus("Pesée avant la naissance refusée", 400, () =>
+    call(alice, "POST", `/api/pets/${id}/weights`, { day: "2019-01-01", weightKg: 3 }),
+  );
+  const photoIds = (await call(alice, "GET", `/api/pets/${id}`)).data?.photos?.map((p) => p.id) ?? [];
+  await expectStatus("Ordre des photos invalide", 400, () =>
+    call(alice, "PUT", `/api/pets/${id}`, { pet: petInput(), photoOrder: [photoIds[0]] }),
+  );
+  const reordered = await expectStatus("Réordonner les photos (PUT)", 200, () =>
+    call(alice, "PUT", `/api/pets/${id}`, { pet: petInput(), photoOrder: [...photoIds].reverse() }),
+  );
+  check("…nouvel ordre enregistré", reordered?.photos?.[0]?.id === photoIds[photoIds.length - 1]);
+  const upsert = await expectStatus("Pesée du jour depuis le formulaire (corrige celle du jour)", 200, () =>
+    call(alice, "PUT", `/api/pets/${id}`, { pet: petInput(), weight: { day: day(), weightKg: 29.9 } }),
+  );
+  check("…pas de doublon, poids mis à jour", upsert?.latestWeight?.kg === 29.9);
+  check("Liste : dernier poids et couverture", (await call(alice, "GET", "/api/pets")).data?.find((p) => p.id === id)?.latestWeight?.kg === 29.9);
+
+  console.log("\nAlerte de poids — toutes les règles (côté serveur) :");
+  /** Crée un animal et ses pesées [jours avant aujourd'hui, kg] ; renvoie la fiche après la dernière pesée. */
+  async function scenario(name, points, extra = {}) {
+    const pet = (await call(alice, "POST", "/api/pets", { pet: petInput({ name, chipNumber: "", ...extra }) })).data;
+    for (const [daysAgo, weightKg] of points) {
+      const res = await call(alice, "POST", `/api/pets/${pet.id}/weights`, { day: day(-daysAgo), weightKg });
+      if (res.status !== 201) throw new Error(`${name} : pesée refusée (${res.status} ${res.data?.error ?? ""})`);
+    }
+    return (await call(alice, "GET", `/api/pets/${pet.id}`)).data;
+  }
+  const notificationsFor = async (petId) =>
+    db.collection("notifications").countDocuments({ userId: alice.uid, type: "sante", link: `/animaux/${petId}` });
+
+  const slow = await scenario("Lent", [[80, 10], [50, 9.6], [20, 9.2], [0, 8.9]]);
+  check("Perte lente (−11 % en 90 j) → loss-10", slow?.weightAlert?.rule === "loss-10");
+  const extremeCase = await scenario("Extreme", [[3, 10], [0, 6.5]]);
+  check("Variation extrême (−35 % en 3 j) → extreme", extremeCase?.weightAlert?.rule === "extreme");
+  const rabbit = await scenario("Lapin", [[5, 2], [0, 1.93]], { species: "rabbit", breed: "Bélier nain" });
+  check("Petit animal (lapin, −3,5 % en 5 j) → rapid-loss", rabbit?.weightAlert?.rule === "rapid-loss");
+  const dog = await scenario("Chien", [[5, 20], [0, 19.3]]);
+  check("Même écart pour un chien → pas d'alerte", !dog?.weightAlert);
+  await expectStatus("Ignorer sans alerte en cours", 409, () => call(alice, "PATCH", `/api/pets/${dog?.id}`, { dismissAlert: true }));
+  check("Milo restauré : son alerte (pesées toujours en baisse) est recalculée", (await call(alice, "GET", `/api/pets/${id}`)).data?.weightAlert?.rule === "rapid-loss");
+  const puppy = await scenario("Chiot", [[60, 5], [0, 7]], { birthDate: day(-200) });
+  check("Croissance (chiot de 6 mois, +40 %) → pas d'alerte", !puppy?.weightAlert);
+  const gain = await scenario("Gourmand", [[60, 10], [0, 12.2]]);
+  check("Adulte +22 % en 60 j → gain-20", gain?.weightAlert?.rule === "gain-20");
+  const gain10 = await scenario("Gourmet", [[60, 10], [0, 11.1]]);
+  check("Adulte +11 % en 60 j → gain-10 (à surveiller)", gain10?.weightAlert?.rule === "gain-10" && gain10?.weightAlert?.level === "watch");
+  const back = await scenario("Retour", [[80, 10], [40, 8.8], [0, 10]]);
+  check("Retour au poids habituel → pas d'alerte", !back?.weightAlert);
+  const single = await scenario("Unique", [[0, 10]]);
+  check("Une seule pesée → pas d'alerte", !single?.weightAlert);
+  const old = await scenario("Ancien", [[40, 20], [31, 15]]);
+  check("Dernière pesée de plus de 30 jours → pas d'alerte", !old?.weightAlert);
+
+  const worse = await scenario("Aggrave", [[25, 10], [1, 9.4]]);
+  check("Perte de 6 % en 30 j → loss-5", worse?.weightAlert?.rule === "loss-5");
+  check("…1 notification", (await notificationsFor(worse?.id)) === 1);
+  await call(alice, "POST", `/api/pets/${worse?.id}/weights`, { day: day(), weightKg: 8.9 });
+  const worse2 = (await call(alice, "GET", `/api/pets/${worse?.id}`)).data;
+  check("L'alerte s'aggrave (−11 %) → loss-10", worse2?.weightAlert?.rule === "loss-10");
+  check("…nouvelle notification (2 au total)", (await notificationsFor(worse?.id)) === 2);
+  await call(alice, "POST", `/api/pets/${worse?.id}/weights`, { day: day(-2), weightKg: 9.5 });
+  check("Pesée qui ne change pas l'épisode → pas de doublon", (await notificationsFor(worse?.id)) === 2);
+
+  const slowWeights = (await call(alice, "GET", `/api/pets/${slow?.id}/weights`)).data ?? [];
+  await expectStatus("Supprimer la dernière pesée", 204, () => call(alice, "DELETE", `/api/pets/${slow?.id}/weights/${slowWeights[0]?.id}`));
+  check("…l'alerte est recalculée (plus d'alerte)", !(await call(alice, "GET", `/api/pets/${slow?.id}`)).data?.weightAlert);
+  await expectStatus("Archiver un animal en alerte", 200, () => call(alice, "POST", `/api/pets/${gain?.id}/archive`, {}));
+  check("…plus d'analyse pour un animal archivé", !(await call(alice, "GET", `/api/pets/${gain?.id}`)).data?.weightAlert);
+  const listed = (await call(alice, "GET", "/api/pets")).data ?? [];
+  check("Liste : actifs et archivés, badge d'alerte", listed.some((p) => p.status === "archived") && listed.some((p) => p.weightAlert?.rule === "extreme"));
 } catch (error) {
   console.error("\nErreur pendant le test :", error.code ?? error.message);
   failed++;
