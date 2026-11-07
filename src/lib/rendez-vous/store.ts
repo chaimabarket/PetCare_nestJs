@@ -1,12 +1,13 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { ApiError, api } from "@/lib/api";
 import { addMinutes, formatTime } from "./format";
-import { CURRENT_USER_ID, MOCK_PETS, createMockData } from "./mock-data";
-import { canCancel, canComplete, canConfirm, canReschedule, findPetConflict, isActive, isBooking } from "./rules";
+import { findPetConflict } from "./rules";
 import type {
   Appointment,
-  AppointmentAction,
+  AppointmentChange,
   AppointmentPlace,
   AppointmentType,
   PetOption,
@@ -15,56 +16,116 @@ import type {
 } from "./types";
 
 /**
- * Données du module en mémoire (version statique, en attendant l'API MongoDB).
+ * Données du module Rendez-vous et rappels, stockées dans MongoDB Atlas (collections `appointments`
+ * et `reminders`) et lues / modifiées via les routes /api/appointments et /api/reminders.
  *
- * Chaque action reprend une route de la future API (`POST /api/appointments/:id/confirm`…) et
- * vérifie les mêmes règles : pour brancher MongoDB, on remplacera le corps de ces fonctions par
- * des appels à `src/lib/api.ts`, sans toucher aux pages. Tout est perdu au rechargement de la page.
+ * Les pages lisent un cache partagé (`useRdv`) chargé une fois par utilisateur connecté ; chaque action
+ * appelle l'API, qui applique les règles métier (src/lib/rendez-vous/rules.ts), puis met le cache à jour.
  */
 
 export type RdvState = {
   appointments: Appointment[];
   reminders: Reminder[];
+  /** Animaux du module Mes animaux (pas encore disponible : les noms sont saisis dans les formulaires). */
   pets: PetOption[];
   /** Démonstration : afficher le détail comme le client ou comme le prestataire. */
   viewAs: "client" | "provider";
 };
 
-/** Erreur métier affichable telle quelle (la future API renverra `{ "error": "…" }`). */
+/** Erreur métier affichable telle quelle. */
 export class RdvError extends Error {}
 
 let state: RdvState | null = null;
+/** Utilisateur dont les données sont en cache (`null` = visiteur, `undefined` = rien de chargé). */
+let loadedFor: string | null | undefined;
+let viewAs: RdvState["viewAs"] = "client";
 const listeners = new Set<() => void>();
 
-// Créé au premier affichage dans le navigateur : les dates dépendent de l'heure actuelle.
-function snapshot(): RdvState {
-  state ??= { ...createMockData(new Date()), pets: MOCK_PETS, viewAs: "client" };
-  return state;
-}
+/** Identifiant de l'utilisateur connecté (uid Firebase), connu dès que ses données sont chargées. */
+export let currentUserId = "";
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 
-function update(change: (current: RdvState) => Partial<RdvState>) {
-  const current = snapshot();
-  state = { ...current, ...change(current) };
+function setState(next: RdvState | null) {
+  state = next;
   listeners.forEach((listener) => listener());
 }
 
-/** Les données du module, ou null pendant le rendu serveur (le temps que la page s'affiche). */
+function update(change: (current: RdvState) => Partial<RdvState>) {
+  if (state) setState({ ...state, ...change(state) });
+}
+
+// Les dates arrivent de l'API au format ISO.
+const optionalDate = (value: unknown) => (typeof value === "string" ? new Date(value) : undefined);
+
+function reviveAppointment(raw: Record<string, unknown>): Appointment {
+  return {
+    ...(raw as unknown as Appointment),
+    startsAt: new Date(raw.startsAt as string),
+    endsAt: new Date(raw.endsAt as string),
+    reminderDoneAt: optionalDate(raw.reminderDoneAt),
+    changes: (raw.changes as Record<string, unknown>[]).map(
+      (c) =>
+        ({
+          ...c,
+          at: new Date(c.at as string),
+          oldStart: optionalDate(c.oldStart),
+          newStart: optionalDate(c.newStart),
+        }) as AppointmentChange,
+    ),
+  };
+}
+
+function reviveReminder(raw: Record<string, unknown>): Reminder {
+  return { ...(raw as unknown as Reminder), dueAt: new Date(raw.dueAt as string), doneAt: optionalDate(raw.doneAt) };
+}
+
+async function load(uid: string) {
+  try {
+    const [appointments, reminders] = await Promise.all([
+      api<Record<string, unknown>[]>("/api/appointments"),
+      api<Record<string, unknown>[]>("/api/reminders"),
+    ]);
+    if (loadedFor !== uid) return; // l'utilisateur a changé entre-temps
+    setState({ appointments: appointments.map(reviveAppointment), reminders: reminders.map(reviveReminder), pets: [], viewAs });
+  } catch (error) {
+    if (loadedFor !== uid) return;
+    console.error("Chargement de l'agenda impossible :", error);
+    setState({ appointments: [], reminders: [], pets: [], viewAs });
+  }
+}
+
+/** Charge les données de cet utilisateur (une seule fois), ou un agenda vide pour un visiteur. */
+function ensureLoaded(uid: string | null) {
+  if (loadedFor === uid) return;
+  loadedFor = uid;
+  currentUserId = uid ?? "";
+  if (!uid) {
+    setState({ appointments: [], reminders: [], pets: [], viewAs });
+    return;
+  }
+  setState(null);
+  void load(uid);
+}
+
+/** Les données du module, ou null pendant le chargement. */
 export function useRdv(): RdvState | null {
-  return useSyncExternalStore(subscribe, snapshot, () => null);
+  const { user, loading } = useAuth();
+  const uid = loading ? undefined : (user?.uid ?? null);
+  useEffect(() => {
+    if (uid !== undefined) ensureLoaded(uid);
+  }, [uid]);
+  const data = useSyncExternalStore(subscribe, () => state, () => null);
+  return uid === undefined || loadedFor !== uid ? null : data;
 }
 
-export const currentUserId = CURRENT_USER_ID;
-
-export function setViewAs(viewAs: RdvState["viewAs"]) {
-  update(() => ({ viewAs }));
+export function setViewAs(next: RdvState["viewAs"]) {
+  viewAs = next;
+  update(() => ({ viewAs: next }));
 }
-
-const newId = (prefix: string) => `${prefix}-${Date.now().toString(36)}`;
 
 function checkTimes(start: Date, end: Date) {
   if (start <= new Date()) throw new RdvError("Le rendez-vous doit commencer dans le futur.");
@@ -73,6 +134,16 @@ function checkTimes(start: Date, end: Date) {
 
 function conflictMessage(petName: string, conflict: Appointment) {
   return `${petName.trim()} a déjà « ${conflict.title} » prévu à ${formatTime(conflict.startsAt)}.`;
+}
+
+function replaceAppointment(raw: Record<string, unknown>) {
+  const next = reviveAppointment(raw);
+  update((s) => ({
+    appointments: s.appointments.some((a) => a.id === next.id)
+      ? s.appointments.map((a) => (a.id === next.id ? next : a))
+      : [...s.appointments, next],
+  }));
+  return next;
 }
 
 // ---------------------------------------------------------------------------
@@ -92,89 +163,50 @@ export type PersonalAppointmentInput = {
   pushReminder: boolean;
 };
 
-/** Futur `POST /api/appointments` : un rendez-vous personnel démarre « Confirmé » (RG-16). */
-export function createPersonalAppointment(input: PersonalAppointmentInput): string {
+/** `POST /api/appointments` : un rendez-vous personnel démarre « Confirmé » (RG-16). Renvoie son identifiant. */
+export async function createPersonalAppointment(input: PersonalAppointmentInput): Promise<string> {
   const endsAt = addMinutes(input.startsAt, input.durationMinutes);
   checkTimes(input.startsAt, endsAt);
   if (!input.title.trim()) throw new RdvError("L'intitulé est obligatoire.");
   if (!input.pet.name.trim()) throw new RdvError("Choisissez l'animal concerné.");
-
-  const conflict = findPetConflict(snapshot().appointments, {
-    ownerId: CURRENT_USER_ID,
+  const conflict = findPetConflict(state?.appointments ?? [], {
+    ownerId: currentUserId,
     petName: input.pet.name,
     start: input.startsAt,
     end: endsAt,
   });
   if (conflict) throw new RdvError(conflictMessage(input.pet.name, conflict));
 
-  const id = newId("rdv");
-  const appointment: Appointment = {
-    id,
-    ownerId: CURRENT_USER_ID,
-    petId: input.pet.id,
-    petName: input.pet.name.trim(),
-    petBreed: input.pet.breed,
-    title: input.title.trim(),
-    type: input.type,
-    startsAt: input.startsAt,
-    endsAt,
-    status: "confirmed",
-    place: input.place,
-    location: input.location.trim(),
-    notes: input.notes.trim(),
-    reminderMinutes: input.reminderMinutes,
-    pushReminder: input.pushReminder,
-    version: 1,
-    changes: [{ action: "create", at: new Date(), by: CURRENT_USER_ID }],
-  };
-  update((s) => ({ appointments: [...s.appointments, appointment] }));
-  return id;
+  const created = await api<Record<string, unknown>>("/api/appointments", {
+    method: "POST",
+    body: { ...input, startsAt: input.startsAt.toISOString() },
+  });
+  return replaceAppointment(created).id;
 }
 
-/**
- * Applique une modification si la version affichée est toujours la bonne (RG-20)
- * et si la règle `check` l'autorise. Ajoute la ligne d'historique et augmente la version.
- */
-function transition(
-  shown: Appointment,
-  check: (current: Appointment) => string | null,
-  changes: (current: Appointment) => Partial<Appointment>,
-  history?: { action: AppointmentAction; reason?: string; oldStart?: Date; newStart?: Date },
-) {
-  const current = snapshot().appointments.find((a) => a.id === shown.id);
-  if (!current) throw new RdvError("Ce rendez-vous n'existe plus.");
-  if (current.version !== shown.version) {
-    throw new RdvError("Ce rendez-vous vient d'être modifié par quelqu'un d'autre. Vérifiez-le puis recommencez.");
-  }
-  const error = check(current);
-  if (error) throw new RdvError(error);
-
-  const by = snapshot().viewAs === "provider" && current.providerId ? current.providerId : CURRENT_USER_ID;
-  const next: Appointment = {
-    ...current,
-    ...changes(current),
-    version: current.version + 1,
-    changes: history ? [...current.changes, { ...history, at: new Date(), by }] : current.changes,
-  };
-  update((s) => ({ appointments: s.appointments.map((a) => (a.id === next.id ? next : a)) }));
+/** `PATCH /api/appointments/:id` avec la version affichée (RG-20) : le serveur vérifie les règles. */
+async function transition(shown: Appointment, body: Record<string, unknown>) {
+  const updated = await api<Record<string, unknown>>(`/api/appointments/${encodeURIComponent(shown.id)}`, {
+    method: "PATCH",
+    body: { ...body, version: shown.version },
+  });
+  replaceAppointment(updated);
 }
 
 /** Le prestataire confirme une réservation en attente. */
-export function confirmAppointment(a: Appointment) {
-  transition(a, (c) => (canConfirm(c) ? null : "Ce rendez-vous ne peut plus être confirmé."), () => ({ status: "confirmed" }), {
-    action: "confirm",
-  });
+export async function confirmAppointment(a: Appointment) {
+  await transition(a, { action: "confirm" });
 }
 
 /** Report avant le début, avec un motif (RG-18). Une réservation repasse « En attente ». */
-export function rescheduleAppointment(a: Appointment, newStart: Date, reason: string) {
+export async function rescheduleAppointment(a: Appointment, newStart: Date, reason: string) {
   const newEnd = addMinutes(newStart, (a.endsAt.getTime() - a.startsAt.getTime()) / 60_000);
   checkTimes(newStart, newEnd);
   if (reason.trim().length < 3) throw new RdvError("Indiquez le motif du report.");
   if (newStart.getTime() === a.startsAt.getTime()) {
     throw new RdvError("Choisissez un horaire différent de l'horaire actuel.");
   }
-  const conflict = findPetConflict(snapshot().appointments, {
+  const conflict = findPetConflict(state?.appointments ?? [], {
     ownerId: a.ownerId,
     petName: a.petName,
     start: newStart,
@@ -182,54 +214,27 @@ export function rescheduleAppointment(a: Appointment, newStart: Date, reason: st
     ignoreId: a.id,
   });
   if (conflict) throw new RdvError(conflictMessage(a.petName, conflict));
-
-  transition(
-    a,
-    (c) => (canReschedule(c) ? null : "Ce rendez-vous ne peut plus être reporté : il a commencé ou est terminé."),
-    (c) => ({
-      startsAt: newStart,
-      endsAt: newEnd,
-      status: isBooking(c) ? "planned" : "confirmed",
-      // Le rappel est recalculé pour le nouvel horaire (RG-21).
-      reminderDoneAt: undefined,
-    }),
-    { action: "reschedule", reason: reason.trim(), oldStart: a.startsAt, newStart },
-  );
+  await transition(a, { action: "reschedule", startsAt: newStart.toISOString(), reason: reason.trim() });
 }
 
 /** Annulation avant le début (RG-17). CANCELLED est définitif. */
-export function cancelAppointment(a: Appointment, reason: string) {
-  const clean = reason.trim() || undefined;
-  transition(
-    a,
-    (c) => (canCancel(c) ? null : "Ce rendez-vous ne peut plus être annulé : il a déjà commencé."),
-    () => ({ status: "cancelled", cancelReason: clean }),
-    { action: "cancel", reason: clean },
-  );
+export async function cancelAppointment(a: Appointment, reason: string) {
+  await transition(a, { action: "cancel", reason: reason.trim() });
 }
 
 /** Termine un rendez-vous confirmé après son heure de fin (RG-19). */
-export function completeAppointment(a: Appointment) {
-  transition(
-    a,
-    (c) => (canComplete(c) ? null : "Un rendez-vous se termine après son heure de fin, s'il était confirmé."),
-    () => ({ status: "completed" }),
-    { action: "complete" },
-  );
+export async function completeAppointment(a: Appointment) {
+  await transition(a, { action: "complete" });
 }
 
 /** Active ou désactive le rappel (« Me rappeler 1 jour avant »). */
-export function setAppointmentReminder(a: Appointment, minutes: number) {
-  transition(
-    a,
-    (c) => (isActive(c.status) ? null : "Ce rendez-vous est terminé ou annulé."),
-    () => ({ reminderMinutes: minutes, reminderDoneAt: undefined }),
-  );
+export async function setAppointmentReminder(a: Appointment, minutes: number) {
+  await transition(a, { action: "reminder", minutes });
 }
 
 /** Bouton « Fait » de la liste des rappels pour un rendez-vous. */
-export function markAppointmentReminderDone(a: Appointment, done: boolean) {
-  transition(a, () => null, () => ({ reminderDoneAt: done ? new Date() : undefined }));
+export async function markAppointmentReminderDone(a: Appointment, done: boolean) {
+  await transition(a, { action: "reminder-done", done });
 }
 
 // ---------------------------------------------------------------------------
@@ -245,39 +250,34 @@ export type ReminderInput = {
   dueAt: Date;
 };
 
-/** Futur `POST /api/reminders`. */
-export function createReminder(input: ReminderInput) {
+/** `POST /api/reminders`. */
+export async function createReminder(input: ReminderInput) {
   if (!input.petName.trim()) throw new RdvError("Indiquez l'animal concerné.");
   if (!input.title.trim()) throw new RdvError("L'intitulé est obligatoire.");
-  const pet = snapshot().pets.find((p) => p.name.toLowerCase() === input.petName.trim().toLowerCase());
-  const reminder: Reminder = {
-    id: newId("rap"),
-    ownerId: CURRENT_USER_ID,
-    petName: input.petName.trim(),
-    petBreed: pet?.breed,
-    title: input.title.trim(),
-    description: input.description.trim() || undefined,
-    detail: input.detail.trim() || undefined,
-    category: input.category,
-    dueAt: input.dueAt,
-    done: false,
-  };
+  const created = await api<Record<string, unknown>>("/api/reminders", {
+    method: "POST",
+    body: { ...input, dueAt: input.dueAt.toISOString() },
+  });
+  const reminder = reviveReminder(created);
   update((s) => ({ reminders: [...s.reminders, reminder] }));
 }
 
-/** Futur `PATCH /api/reminders/:id` : bouton « Fait » ou annulation du « Fait ». */
-export function setReminderDone(id: string, done: boolean) {
-  update((s) => ({
-    reminders: s.reminders.map((r) => (r.id === id ? { ...r, done, doneAt: done ? new Date() : undefined } : r)),
-  }));
+/** `PATCH /api/reminders/:id` : bouton « Fait » ou annulation du « Fait ». */
+export async function setReminderDone(id: string, done: boolean) {
+  const updated = reviveReminder(
+    await api<Record<string, unknown>>(`/api/reminders/${encodeURIComponent(id)}`, { method: "PATCH", body: { done } }),
+  );
+  update((s) => ({ reminders: s.reminders.map((r) => (r.id === id ? updated : r)) }));
 }
 
-/** Futur `DELETE /api/reminders/:id`. */
-export function deleteReminder(id: string) {
+/** `DELETE /api/reminders/:id`. */
+export async function deleteReminder(id: string) {
+  await api(`/api/reminders/${encodeURIComponent(id)}`, { method: "DELETE" });
   update((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) }));
 }
 
 /** Message lisible pour l'utilisateur, quelle que soit l'erreur. */
 export function errorMessage(error: unknown) {
-  return error instanceof RdvError ? error.message : "Une erreur est survenue. Réessayez.";
+  if (error instanceof RdvError || error instanceof ApiError) return error.message;
+  return "Une erreur est survenue. Réessayez.";
 }

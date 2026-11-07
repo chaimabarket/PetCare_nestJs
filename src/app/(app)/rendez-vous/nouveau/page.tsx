@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
   Chip,
-  DemoBanner,
   Dialog,
   ErrorBanner,
   FieldError,
@@ -56,8 +57,6 @@ import {
 const SLOTS = [9 * 60, 10 * 60 + 30, 14 * 60, 15 * 60 + 30, 16 * 60 + 30, 17 * 60 + 30, 18 * 60 + 30];
 const DURATIONS = [15, 30, 45, 60, 90, 120];
 const REMINDER_CHOICES = [0, 60, 1440, 2880];
-/** Adresse par défaut : la ville du profil (fictive tant que le module Users n'est pas branché). */
-const PROFILE_ADDRESS = "Tunis, Les Berges du Lac";
 
 /**
  * Ajouter un rendez-vous personnel, ou reporter un rendez-vous.
@@ -65,9 +64,11 @@ const PROFILE_ADDRESS = "Tunis, Les Berges du Lac";
  */
 export default function AppointmentFormPage() {
   return (
-    <Suspense fallback={<Loading />}>
-      <FormLoader />
-    </Suspense>
+    <RequireAuth>
+      <Suspense fallback={<Loading />}>
+        <FormLoader />
+      </Suspense>
+    </RequireAuth>
   );
 }
 
@@ -136,7 +137,9 @@ function AppointmentForm({
   const [conflictSlot, setConflictSlot] = useState<number | null>(null);
   const [duration, setDuration] = useState(source ? durationMinutes(source) : 45);
   const [place, setPlace] = useState<AppointmentPlace>(source?.place ?? "domicile");
-  const [address, setAddress] = useState(source?.location || PROFILE_ADDRESS);
+  // Adresse par défaut : la ville du profil de l'utilisateur.
+  const { profile } = useAuth();
+  const [address, setAddress] = useState(source?.location || profile?.city || "");
   const [notes, setNotes] = useState(source?.notes ?? "");
   const [reminderMinutes, setReminderMinutes] = useState(source?.reminderMinutes ?? 1440);
   const [push, setPush] = useState(source?.pushReminder ?? true);
@@ -185,7 +188,7 @@ function AppointmentForm({
     setSlot(null);
   }
 
-  function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
     setServerError(null);
@@ -194,11 +197,11 @@ function AppointmentForm({
     try {
       const start = slotStart(slot);
       if (reschedule) {
-        rescheduleAppointment(reschedule, start, reason);
+        await rescheduleAppointment(reschedule, start, reason);
         flash(isBooking(reschedule) ? "Rendez-vous reporté. Le prestataire doit le confirmer à nouveau." : "Rendez-vous reporté.");
         router.push(`/rendez-vous/${reschedule.id}`);
       } else {
-        const id = createPersonalAppointment({
+        const id = await createPersonalAppointment({
           pet,
           title,
           type,
@@ -226,7 +229,6 @@ function AppointmentForm({
   return (
     <div className={pageClass}>
       <Breadcrumb items={[{ label: "Agenda", href: "/rendez-vous" }, { label: heading }]} />
-      <DemoBanner />
 
       <form onSubmit={save} noValidate className="mx-auto flex max-w-3xl flex-col">
         <h1 className="mb-space-md font-headline-lg text-headline-lg">{heading}</h1>

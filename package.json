@@ -11,7 +11,8 @@
     "seed:notifications": "node --env-file=.env.local scripts/seed-notifications.mjs",
     "test:api": "node --env-file=.env.local scripts/test-api.mjs",
     "test:adoption": "node --env-file=.env.local scripts/test-adoption.mjs",
-    "test:health": "node --env-file=.env.local scripts/test-health.mjs"
+    "test:health": "node --env-file=.env.local scripts/test-health.mjs",
+    "test:rendez-vous": "node --env-file=.env.local scripts/test-rendez-vous.mjs"
   },
   "dependencies": {
     "firebase": "^13.1.0",

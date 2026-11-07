@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import Link from "next/link";
 import {
   Breadcrumb,
   Chip,
-  DemoBanner,
   Dialog,
   FieldError,
   FieldLabel,
@@ -47,6 +47,14 @@ import {
  * Réunit les rappels de soins créés à la main et les rendez-vous à venir qui ont un rappel.
  */
 export default function RemindersPage() {
+  return (
+    <RequireAuth>
+      <RemindersLoader />
+    </RequireAuth>
+  );
+}
+
+function RemindersLoader() {
   const data = useRdv();
   if (!data) return <Loading />;
   return <Reminders data={data} />;
@@ -143,10 +151,10 @@ function Reminders({ data }: { data: RdvState }) {
   const doneOther = visible.filter((i) => i.done && !doneToday.includes(i));
   const todayPets = [...new Set([...todayItems, ...doneToday].map((i) => i.petName))];
 
-  function toggleDone(item: Item) {
+  async function toggleDone(item: Item) {
     try {
-      if (item.reminder) setReminderDone(item.reminder.id, !item.done);
-      else markAppointmentReminderDone(item.appointment!, !item.done);
+      if (item.reminder) await setReminderDone(item.reminder.id, !item.done);
+      else await markAppointmentReminderDone(item.appointment!, !item.done);
       toast.show(item.done ? `« ${item.title} » remis à faire.` : `« ${item.title} » validé.`);
     } catch (error) {
       toast.show(errorMessage(error), "error");
@@ -159,7 +167,6 @@ function Reminders({ data }: { data: RdvState }) {
   return (
     <div className={pageClass}>
       <Breadcrumb items={[{ label: "Agenda", href: "/rendez-vous" }, { label: "Rappels & Soins" }]} />
-      <DemoBanner />
 
       <div className="mx-auto flex max-w-3xl flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -274,9 +281,13 @@ function Reminders({ data }: { data: RdvState }) {
             items={showDone ? [...doneToday, ...doneOther] : doneToday}
             todayCount={doneToday.length}
             onUndo={toggleDone}
-            onDelete={(item) => {
-              deleteReminder(item.reminder!.id);
-              toast.show("Rappel supprimé.");
+            onDelete={async (item) => {
+              try {
+                await deleteReminder(item.reminder!.id);
+                toast.show("Rappel supprimé.");
+              } catch (error) {
+                toast.show(errorMessage(error), "error");
+              }
             }}
           />
         )}
@@ -544,7 +555,7 @@ function NewReminderForm({ knownPets, onCreated }: { knownPets: string[]; onCrea
   const inputClass =
     "h-11 w-full rounded-lg bg-surface-container-low px-3.5 placeholder:text-outline focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20";
 
-  function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
     setError(null);
@@ -552,7 +563,7 @@ function NewReminderForm({ knownPets, onCreated }: { knownPets: string[]; onCrea
     const [hours, minutes] = time.split(":").map(Number);
     const day = addDays(today, dayOffset);
     try {
-      createReminder({
+      await createReminder({
         petName,
         title,
         description,

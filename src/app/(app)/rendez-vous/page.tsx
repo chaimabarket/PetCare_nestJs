@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AppointmentCard, CancelledCard, ReminderAgendaCard } from "@/components/rendez-vous/AgendaCards";
 import {
   Breadcrumb,
   Chip,
-  DemoBanner,
   Loading,
   Pill,
   PetAvatar,
@@ -28,15 +28,17 @@ import {
   shortDayName,
 } from "@/lib/rendez-vous/format";
 import { isActive } from "@/lib/rendez-vous/rules";
-import { setReminderDone, useRdv, type RdvState } from "@/lib/rendez-vous/store";
+import { errorMessage, setReminderDone, useRdv, type RdvState } from "@/lib/rendez-vous/store";
 import type { Appointment, AppointmentStatus, Reminder } from "@/lib/rendez-vous/types";
 
 /** Agenda : semaine ou mois, filtres par animal et par statut, rendez-vous et rappels du jour choisi puis du lendemain. */
 export default function AgendaPage() {
   return (
-    <Suspense fallback={<Loading />}>
-      <AgendaLoader />
-    </Suspense>
+    <RequireAuth>
+      <Suspense fallback={<Loading />}>
+        <AgendaLoader />
+      </Suspense>
+    </RequireAuth>
   );
 }
 
@@ -115,9 +117,13 @@ function Agenda({ data, initialPet }: { data: RdvState; initialPet: string | nul
         <ReminderAgendaCard
           key={r.id}
           reminder={r}
-          onToggle={() => {
-            setReminderDone(r.id, !r.done);
-            toast.show(`« ${r.title} » validé.`);
+          onToggle={async () => {
+            try {
+              await setReminderDone(r.id, !r.done);
+              toast.show(`« ${r.title} » validé.`);
+            } catch (error) {
+              toast.show(errorMessage(error), "error");
+            }
           }}
         />
       );
@@ -133,7 +139,6 @@ function Agenda({ data, initialPet }: { data: RdvState; initialPet: string | nul
   return (
     <div className={pageClass}>
       <Breadcrumb items={[{ label: "Agenda" }]} />
-      <DemoBanner />
 
       <div className="mb-space-lg flex flex-wrap items-center justify-between gap-space-sm">
         <div>

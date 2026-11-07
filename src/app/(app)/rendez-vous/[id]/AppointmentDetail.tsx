@@ -5,7 +5,6 @@ import Link from "next/link";
 import { directionsUrl } from "@/components/rendez-vous/AgendaCards";
 import {
   Breadcrumb,
-  DemoBanner,
   Dialog,
   Loading,
   Pill,
@@ -77,9 +76,9 @@ function Detail({ appointment: a, viewAs }: { appointment: Appointment; viewAs: 
   const booking = isBooking(a);
   const isProvider = booking && viewAs === "provider";
 
-  function run(action: () => void, success: string) {
+  async function run(action: () => Promise<void>, success: string) {
     try {
-      action();
+      await action();
       toast.show(success);
     } catch (error) {
       toast.show(errorMessage(error), "error");
@@ -102,7 +101,6 @@ function Detail({ appointment: a, viewAs }: { appointment: Appointment; viewAs: 
   return (
     <div className={pageClass}>
       <Breadcrumb items={[{ label: "Agenda", href: "/rendez-vous" }, { label: a.title }]} />
-      <DemoBanner />
 
       <div className="mb-space-lg flex flex-wrap items-center gap-3">
         <Link

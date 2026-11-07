@@ -316,16 +316,6 @@ export function useToast() {
   return { show, view };
 }
 
-/** Rappelle que la page fonctionne sans base de données. */
-export function DemoBanner() {
-  return (
-    <p className="mb-space-md flex items-center gap-2 rounded-xl bg-secondary-fixed/50 px-3 py-2 font-body-sm text-body-sm text-on-secondary-container">
-      <Icon name="science" className="text-[18px]" />
-      Version de démonstration : données fictives, rien n&apos;est enregistré (la base MongoDB arrive bientôt).
-    </p>
-  );
-}
-
 /** Fil d'Ariane : Accueil › Agenda › … */
 export function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   return (
