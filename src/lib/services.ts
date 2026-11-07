@@ -7,6 +7,7 @@ import type {
   ProviderDetail,
   ProviderInput,
   ProviderService,
+  ProviderSummary,
   ServiceBooking,
   ServiceCategory,
   ServiceInput,
@@ -40,9 +41,9 @@ export function deleteCategory(id: string): Promise<ServiceCategory[]> {
 // Prestataires --------------------------------------------------------------
 
 /** Annuaire : prestataires publiés, filtrés par catégorie, ville et recherche. */
-export function listProviders(filters: { categorie?: string; ville?: string; q?: string } = {}): Promise<ServiceProvider[]> {
+export function listProviders(filters: { categorie?: string; ville?: string; q?: string } = {}): Promise<ProviderSummary[]> {
   const params = new URLSearchParams(Object.entries(filters).filter(([, v]) => v) as [string, string][]);
-  return api<ServiceProvider[]>(`/api/services/providers${params.size ? `?${params}` : ""}`, { public: true });
+  return api<ProviderSummary[]>(`/api/services/providers${params.size ? `?${params}` : ""}`, { public: true });
 }
 
 /** Profils en attente de validation (administrateur). */

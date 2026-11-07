@@ -196,6 +196,16 @@ export type ServiceBooking = {
 /** Fiche publique d'un prestataire : prestations publiées (toutes pour son propriétaire) et disponibilités. */
 export type ProviderDetail = ServiceProvider & { services: ProviderService[]; availability: DayAvailability[] };
 
+/** Carte de l'annuaire : prestataire, horaires, nombre de prestations publiées et prix de la moins chère. */
+export type ProviderSummary = ServiceProvider & {
+  availability: DayAvailability[];
+  serviceCount: number;
+  /** Prix minimum des prestations publiées (absent s'il n'y en a pas). */
+  minPrice?: number;
+  /** Prestation la moins chère (« Consultation dès 45 DT »). */
+  cheapestService?: string;
+};
+
 // ---------------------------------------------------------------------------
 // Validation (même code dans les formulaires et dans les routes)
 // ---------------------------------------------------------------------------
@@ -455,6 +465,38 @@ export function availableSlots({
     }
   }
   return slots;
+}
+
+/**
+ * État d'ouverture à un instant donné (heure de Tunis) : « Ouvert • Ferme à 20:00 », « Fermé • Ouvre à 14:00 »,
+ * « Fermé aujourd'hui ».
+ */
+export function openingStatus(week: DayAvailability[], now = new Date(), timeZone = APP_TIME_ZONE): { open: boolean; label: string } {
+  const { weekday, minutes } = zonedParts(now, timeZone);
+  const day = week.find((d) => d.weekday === weekday);
+  if (!day?.enabled || !day.ranges.length) return { open: false, label: "Fermé aujourd'hui" };
+  const current = day.ranges.find((r) => minutes >= toMinutes(r.start) && minutes < toMinutes(r.end));
+  if (current) return { open: true, label: `Ouvert • Ferme à ${current.end}` };
+  const next = day.ranges.find((r) => toMinutes(r.start) > minutes);
+  return { open: false, label: next ? `Fermé • Ouvre à ${next.start}` : "Fermé pour aujourd'hui" };
+}
+
+/** Résumé des horaires : « Lun – Ven : 09:00 – 18:30 », jours fermés listés à part. */
+export function hoursSummary(week: DayAvailability[]): { open: string; closed: string } {
+  const short = (w: number) => WEEKDAY_LABELS[w].slice(0, 3);
+  const openDays = week.filter((d) => d.enabled && d.ranges.length);
+  if (!openDays.length) return { open: "Horaires non renseignés", closed: "" };
+  const same = openDays.every((d) => JSON.stringify(d.ranges) === JSON.stringify(openDays[0].ranges));
+  const consecutive = openDays.every((d, i) => i === 0 || d.weekday === openDays[i - 1].weekday + 1);
+  const ranges = (d: DayAvailability) => d.ranges.map((r) => `${r.start} – ${r.end}`).join(", ");
+  const closed = week.filter((d) => !d.enabled || !d.ranges.length).map((d) => WEEKDAY_LABELS[d.weekday].toLowerCase());
+  const days = same && consecutive && openDays.length > 1
+    ? `${short(openDays[0].weekday)} – ${short(openDays[openDays.length - 1].weekday)}`
+    : openDays.map((d) => short(d.weekday)).join(", ");
+  return {
+    open: same ? `${days} : ${ranges(openDays[0])}` : "Horaires variables selon les jours",
+    closed: closed.length ? `Fermé le ${closed.join(", ")}` : "Ouvert 7 jours sur 7",
+  };
 }
 
 // ---------------------------------------------------------------------------

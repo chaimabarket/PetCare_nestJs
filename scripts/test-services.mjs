@@ -186,6 +186,11 @@ try {
   );
   const saved = await expectStatus("Enregistrer 08:00–20:00 tous les jours", 200, () => call(presta, "PUT", "/api/services/providers/me/availability", { days: week() }));
   check("…7 jours ouverts", saved?.length === 7 && saved.every((d) => d.enabled));
+  const card = (await call(null, "GET", "/api/services/providers")).data?.find((p) => p.id === providerId);
+  check(
+    "Annuaire : horaires, 2 prestations publiées, « Garde de nuit dès 30 DT »",
+    card?.availability?.length === 7 && card?.serviceCount === 2 && card?.minPrice === 30 && card?.cheapestService === "Garde de nuit",
+  );
 
   console.log("\nCréneaux :");
   const day = tunisDay(2);

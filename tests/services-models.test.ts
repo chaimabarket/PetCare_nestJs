@@ -8,6 +8,8 @@ import {
   fitsAvailability,
   formatDuration,
   formatPrice,
+  hoursSummary,
+  openingStatus,
   validateAvailability,
   validateBooking,
   validateCategory,
@@ -189,5 +191,20 @@ describe("affichage", () => {
     assert.equal(formatDuration(30), "30 min");
     assert.equal(formatDuration(90), "1 h 30");
     assert.equal(formatDuration(1440), "1 nuit");
+  });
+});
+
+describe("horaires affichés (annuaire et fiche)", () => {
+  const WEEK: DayAvailability[] = EMPTY_WEEK.map((d) =>
+    d.weekday === 1 ? d : { weekday: d.weekday, enabled: true, ranges: [{ start: "09:00", end: "18:30" }] },
+  );
+  it("ouvert, fermé avant l'ouverture, fermé le lundi", () => {
+    assert.deepEqual(openingStatus(WEEK, new Date("2026-11-10T09:00:00Z")), { open: true, label: "Ouvert • Ferme à 18:30" });
+    assert.deepEqual(openingStatus(WEEK, new Date("2026-11-10T06:00:00Z")), { open: false, label: "Fermé • Ouvre à 09:00" });
+    assert.equal(openingStatus(WEEK, new Date("2026-11-09T10:00:00Z")).label, "Fermé aujourd'hui");
+  });
+  it("résumé « Mar – Dim : 09:00 – 18:30 », fermé le lundi", () => {
+    assert.deepEqual(hoursSummary(WEEK), { open: "Mar – Dim : 09:00 – 18:30", closed: "Fermé le lundi" });
+    assert.equal(hoursSummary(EMPTY_WEEK).open, "Horaires non renseignés");
   });
 });
