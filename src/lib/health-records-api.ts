@@ -1,6 +1,7 @@
 import { ApiError, api } from "./api";
 import { auth } from "./firebase";
 import type { HealthRecord, HealthRecordInput, NewAttachment, RecordType } from "./health-records";
+import { getPet as getPetSheet, listPets, type Pet } from "./pets";
 
 /**
  * Appels du navigateur vers l'API du carnet de santé (/api/health-records, données dans MongoDB).
@@ -95,20 +96,22 @@ export function fileToAttachment(file: File): Promise<NewAttachment> {
 
 export type PetInfo = { id: string; name: string; species?: string; breed?: string };
 
+const toPetInfo = (p: Pet): PetInfo => ({ id: p.id, name: p.name, species: p.species,breed: p.breed || undefined });
+
 /**
- * Animaux de l'utilisateur, fournis par le module 1 « Mes animaux ».
- * Ce module n'existe pas encore : liste vide. Les carnets sont alors créés depuis /carnet-de-sante
- * en indiquant le nom de l'animal (voir README). À brancher sur l'API du module 1 quand il sera prêt.
+ * Animaux de l'utilisateur (module 1 « Mes animaux », /api/pets), hors archivés.
+ * Un carnet créé en saisissant seulement un nom (identifiant sans fiche) reste listé grâce à ses actes.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function listMyPets(uid: string): Promise<PetInfo[]> {
-  return [];
+  return (await listPets()).filter((p) => p.status !== "archived").map(toPetInfo);
 }
 
-/** Un animal du module 1, ou null tant que ce module n'existe pas (le nom vient alors du carnet). */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/** Fiche du module 1, ou null si ce carnet n'est pas relié à une fiche (le nom vient alors du carnet). */
 export async function getPet(petId: string): Promise<PetInfo | null> {
-  return null;
+  if (!/^[0-9a-f]{24}$/.test(petId)) return null;
+  // Fiche absente, à quelqu'un d'autre ou serveur injoignable : le carnet affiche alors le nom enregistré.
+  return getPetSheet(petId).then(toPetInfo, () => null);
 }
 
 export const SPECIES_LABELS: Record<string, string> = {

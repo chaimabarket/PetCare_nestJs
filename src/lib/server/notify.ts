@@ -18,9 +18,13 @@ export type ServerNotification = {
 /**
  * Notifications envoyées par le serveur à la suite d'une action (candidature acceptée…).
  * Elles ne bloquent jamais l'action principale : une erreur est seulement journalisée.
+ * Par défaut, on ne se notifie pas soi-même ; `includeSelf` le permet (alerte de poids de son propre animal…).
  */
-export async function notifyUsers(list: ServerNotification[]): Promise<void> {
-  const items = list.filter((n) => n.userId && n.userId !== n.senderId);
+export async function notifyUsers(
+  list: ServerNotification[],
+  { includeSelf = false }: { includeSelf?: boolean } = {},
+): Promise<void> {
+  const items = list.filter((n) => n.userId && (includeSelf || n.userId !== n.senderId));
   if (!items.length) return;
   const now = new Date();
   try {

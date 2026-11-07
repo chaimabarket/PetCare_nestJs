@@ -51,10 +51,15 @@ export default function AccueilPage() {
     <div className="max-w-7xl mx-auto px-margin md:px-margin-md lg:px-margin-lg py-space-xl flex flex-col gap-space-lg">
       <h1 className="font-headline-lg text-headline-lg">Bonjour {profile?.displayName ?? user.displayName} 👋</h1>
       <div className="grid gap-space-lg md:grid-cols-2">
-        <Card>
-          <h2 className="font-headline-sm text-headline-sm">Mes animaux</h2>
-          <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
-        </Card>
+        <Link href="/animaux" className="group">
+          <Card className="h-full transition-shadow group-hover:shadow-md">
+            <h2 className="flex items-center gap-space-sm font-headline-sm text-headline-sm">
+              <Icon name="pets" className="text-primary" />
+              Mes animaux
+            </h2>
+            <p className="mt-2 text-on-surface-variant">Fiches, photos, contacts et suivi du poids de vos compagnons.</p>
+          </Card>
+        </Link>
         <Link href="/carnet-de-sante" className="group">
           <Card className="h-full transition-shadow group-hover:shadow-md">
             <h2 className="flex items-center gap-space-sm font-headline-sm text-headline-sm">

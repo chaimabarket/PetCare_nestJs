@@ -154,6 +154,19 @@ Exemple : un refuge accepte une candidature.
 - `src/lib/rendez-vous/store.ts` garde en cache les données de l'utilisateur connecté (rechargées à chaque
   connexion) et les met à jour après chaque action. L'historique (`changes`) est écrit par le serveur.
 
+### Mes animaux
+- Modèle `src/lib/server/pets.ts` ; types, validation et âge partagés `src/lib/pets-models.ts` ; alerte de poids
+  (code pur) `src/lib/pet-weight-alert.ts` ; client `src/lib/pets.ts`.
+- Collections : `pets` (identité, photos dans le document, contacts, vétérinaire, `status` `draft` / `active` /
+  `archived`, alerte en cours) et `petWeights` (index unique `petId` + `day` : une pesée par jour).
+- Routes : `GET/POST /api/pets`, `GET/PUT/PATCH /api/pets/[id]`, `POST …/archive`, `POST …/restore`,
+  `POST …/photos`, `DELETE …/photos/[fileId]`, `POST …/photos/[fileId]/cover`, `GET/POST …/weights`,
+  `PUT/DELETE …/weights/[weightId]`. Propriétaire uniquement (403) ; jamais de suppression ; animal archivé non
+  modifiable (409). Les autres modules lisent les animaux avec `listPets()` / `getPet(id)` de `src/lib/pets.ts`.
+- Alerte de poids recalculée par le serveur à chaque pesée ajoutée, corrigée ou supprimée ; notification `sante` via
+  `notifyUsers(…, { includeSelf: true })`, une par épisode. Liens vers les autres modules : `LINKED_MODULES`
+  (`src/components/pets/ui.tsx`).
+
 ## 6. Ajouter un module
 
 1. **Types partagés** : `src/lib/<module>-models.ts` (types, constantes, validations sans dépendance).
@@ -182,14 +195,16 @@ Exemple : un refuge accepte une candidature.
 | `npm run test:adoption` | 72 — annonces, candidatures (cycle complet), favoris, Happy Tails, signalements |
 | `npm run test:health` | 33 — validation, droits, pièces jointes, rappels de vaccin |
 | `npm run test:rendez-vous` | 53 — règles RG-12 à RG-21, versions, réservations prestataire, rappels de soins |
+| `npm run test:pets` | 93 — validation, droits, photos, contacts, pesées, brouillon, archivage, chaque règle de l'alerte de poids |
+| `npm test` | 36 — tests unitaires sans serveur : validation des animaux, âge, alerte de poids |
 
 Chaque script crée des comptes Firebase temporaires, appelle l'API d'un serveur lancé, puis supprime comptes et
 données. À lancer avant chaque fusion dans `main`, contre `npm run dev` ou, mieux, un build de production.
 
 ## 9. Limites connues et prochaines étapes
 
-- Modules **Mes animaux**, **Communauté** (perdus/trouvés) et **Services** à développer : les liens du menu
-  mènent à une 404 ; le carnet de santé et l'agenda saisissent le nom de l'animal en attendant Mes animaux ; les
+- Modules **Communauté** (perdus/trouvés) et **Services** à développer : les liens du menu
+  mènent à une 404 ; le carnet de santé et l'agenda saisissent encore le nom de l'animal (à relier à Mes animaux) ; les
   boutons « Carnet santé » de l'agenda affichent « arrive avec le module Santé » (à relier au carnet existant).
 - Le lien « Mes annonces » du profil pointe vers `/communaute/mes-annonces` (page inexistante ; l'adoption utilise
   `/communaute/adoption/mes-annonces`) — à aligner selon le futur module Communauté.
