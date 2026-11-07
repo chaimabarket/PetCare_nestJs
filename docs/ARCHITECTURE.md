@@ -167,6 +167,20 @@ Exemple : un refuge accepte une candidature.
   `notifyUsers(…, { includeSelf: true })`, une par épisode. Liens vers les autres modules : `LINKED_MODULES`
   (`src/components/pets/ui.tsx`).
 
+### Services
+- Modèle `src/lib/server/services.ts` ; types, validation, créneaux (heure de Tunis) et transitions partagés
+  `src/lib/services-models.ts` ; client `src/lib/services.ts`.
+- Collections : `serviceCategories` (catégories par défaut tant que l'admin n'en a pas enregistré), `serviceProviders`
+  (un profil par prestataire, `status` `pending` / `published` / `rejected`), `providerServices` (`published` /
+  `archived`), `providerAvailability` (`_id` = `{providerId}_{weekday}`), `serviceBookings` (`pending` / `confirmed` /
+  `declined` / `cancelled`, `appointmentId`).
+- Routes `/api/services/…` : `categories` (écriture admin), `providers` (annuaire, `?status=pending` admin, `me`,
+  `me/services`, `me/availability`, `[id]`, `[id]/status` admin, `[id]/slots`), `bookings` (`?as=client|provider`,
+  `[id]/status`). Rôles vérifiés par le serveur (`requireProviderRole`, `requireAdmin`).
+- Réservation = transaction : `serviceBookings` + rendez-vous `planned` dans `appointments` (module Rendez-vous, non
+  modifié) ; confirmer / refuser / annuler met à jour le rendez-vous, et une action faite depuis l'agenda est reprise
+  à la lecture des réservations (`syncFromAgenda`). Notifications `service` via `notifyUsers`.
+
 ## 6. Ajouter un module
 
 1. **Types partagés** : `src/lib/<module>-models.ts` (types, constantes, validations sans dépendance).
@@ -196,15 +210,16 @@ Exemple : un refuge accepte une candidature.
 | `npm run test:health` | 33 — validation, droits, pièces jointes, rappels de vaccin |
 | `npm run test:rendez-vous` | 53 — règles RG-12 à RG-21, versions, réservations prestataire, rappels de soins |
 | `npm run test:pets` | 93 — validation, droits, photos, contacts, pesées, brouillon, archivage, chaque règle de l'alerte de poids |
-| `npm test` | 36 — tests unitaires sans serveur : validation des animaux, âge, alerte de poids |
+| `npm run test:services` | 102 — catégories, rôles, cycle de validation d'un profil, prestations, plages horaires, créneaux, réservations et agenda |
+| `npm test` | 62 — tests unitaires sans serveur : animaux, alerte de poids, services (validation, créneaux, transitions) |
 
 Chaque script crée des comptes Firebase temporaires, appelle l'API d'un serveur lancé, puis supprime comptes et
 données. À lancer avant chaque fusion dans `main`, contre `npm run dev` ou, mieux, un build de production.
 
 ## 9. Limites connues et prochaines étapes
 
-- Modules **Communauté** (perdus/trouvés) et **Services** à développer : les liens du menu
-  mènent à une 404 ; le carnet de santé et l'agenda saisissent encore le nom de l'animal (à relier à Mes animaux) ; les
+- Module **Communauté** (perdus/trouvés) à développer : le lien du menu
+  mène à une 404 ; le carnet de santé et l'agenda saisissent encore le nom de l'animal (à relier à Mes animaux) ; les
   boutons « Carnet santé » de l'agenda affichent « arrive avec le module Santé » (à relier au carnet existant).
 - Le lien « Mes annonces » du profil pointe vers `/communaute/mes-annonces` (page inexistante ; l'adoption utilise
   `/communaute/adoption/mes-annonces`) — à aligner selon le futur module Communauté.
