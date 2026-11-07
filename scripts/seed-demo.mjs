@@ -130,6 +130,7 @@ await Promise.all([
   col("reminders").deleteMany({ ownerId: { $in: uids } }),
   col("health_records").deleteMany({ ownerId: { $in: uids } }),
   col("pets").deleteMany({ ownerId: { $in: uids } }),
+  col("petWeights").deleteMany({ ownerId: { $in: uids } }),
   col("notifications").deleteMany({ userId: { $in: uids } }),
 ]);
 
@@ -150,15 +151,34 @@ for (const key of keys) {
 // 3. Animaux de Lina (collection `pets`, format du module Mes animaux) + carnets de santé.
 const rockyId = new ObjectId();
 const mimiId = new ObjectId();
-const pet = (_id, name, species, sex, breed, birthDate, img, notes) => ({
-  _id, name, species, sex, breed, birthDate, birthDateEstimated: false, chipNumber: "", sterilized: true, notes,
+const pet = (_id, name, species, sex, breed, birthDate, chipNumber, images, notes) => ({
+  _id, name, species, sex, breed, birthDate, birthDateEstimated: false, chipNumber, sterilized: true, notes,
   vet: { name: "Dr Sami Trabelsi", clinic: "Clinique Vétérinaire El Menzah", address: PEOPLE.vet.address, phone: PEOPLE.vet.phone },
-  ownerId: u.lina.uid, status: "active", favorite: name === "Rocky", contacts: [],
-  photos: [{ _id: new ObjectId(), url: img }], createdAt: ago(200), updatedAt: now,
+  ownerId: u.lina.uid, status: "active", favorite: name === "Rocky",
+  contacts: [
+    { _id: new ObjectId(), name: "Dr Sami Trabelsi", detail: "Vétérinaire – urgences 7j/7", phone: PEOPLE.vet.phone, emergency: true },
+    { _id: new ObjectId(), name: "Nour (pet-sitter)", detail: "Garde à domicile", phone: PEOPLE.sitter.phone, emergency: false },
+  ],
+  photos: images.map((img) => ({ _id: new ObjectId(), ...img, createdAt: ago(200) })),
+  notifiedAlertKeys: [], createdAt: ago(200), updatedAt: now,
 });
+const petPhoto = async (name) => ({ url: await photo(name), thumbnail: await photo(name, { size: 240 }) });
 await col("pets").insertMany([
-  pet(rockyId, "Rocky", "dog", "male", "Labrador", "2021-04-12", await photo("dog-labrador"), "Adore l'eau et les balles."),
-  pet(mimiId, "Mimi", "cat", "female", "Européen roux", "2023-02-01", await photo("cat-2"), "Adoptée au refuge."),
+  pet(rockyId, "Rocky", "dog", "male", "Labrador", "2021-04-12", "788200000012345", [await petPhoto("dog-labrador")], "Adore l'eau et les balles. Allergique au poulet."),
+  pet(mimiId, "Mimi", "cat", "female", "Européen roux", "2025-11-20", "", [await petPhoto("cat-2")], "Adoptée au refuge. Un peu timide avec les inconnus."),
+]);
+// Pesées mensuelles (courbe de poids de la fiche) : Rocky stable, Mimi qui grandit.
+const weighings = (p, kgs) =>
+  kgs.map((kg, i) => {
+    const d = day(-30 * (kgs.length - 1 - i) - 2);
+    return {
+      _id: new ObjectId(), petId: p.toHexString(), ownerId: u.lina.uid, day: d.toISOString().slice(0, 10),
+      measuredOn: new Date(d.getTime() + 12 * 3600_000), weightKg: kg, note: "", createdAt: d, updatedAt: d,
+    };
+  });
+await col("petWeights").insertMany([
+  ...weighings(rockyId, [30.8, 31.2, 31.0, 31.4, 31.1, 31.3]),
+  ...weighings(mimiId, [2.1, 2.6, 3.0, 3.3, 3.5, 3.6]),
 ]);
 const rocky = { id: rockyId.toHexString(), name: "Rocky", breed: "Labrador" };
 const mimi = { id: mimiId.toHexString(), name: "Mimi", breed: "Européen roux" };
