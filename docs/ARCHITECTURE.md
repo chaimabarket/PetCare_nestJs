@@ -167,6 +167,12 @@ Exemple : un refuge accepte une candidature.
   `notifyUsers(…, { includeSelf: true })`, une par épisode. Liens vers les autres modules : `LINKED_MODULES`
   (`src/components/pets/ui.tsx`).
 
+### Communauté (hub)
+- Page `src/app/(app)/communaute/page.tsx` (maquette `designs/stitch/communaut_petcare_community`), sans route ni
+  collection propre : elle lit les annonces, les Happy Tails et le nombre d'adoptions via `src/lib/adoption.ts`.
+- Liens : fil d'adoption, publication, Happy Tails ; la carte Perdus & Trouvés reste « Bientôt disponible ».
+  Chiffres affichés = données réelles (aucun chiffre de la maquette).
+
 ## 6. Ajouter un module
 
 1. **Types partagés** : `src/lib/<module>-models.ts` (types, constantes, validations sans dépendance).
@@ -203,11 +209,10 @@ données. À lancer avant chaque fusion dans `main`, contre `npm run dev` ou, mi
 
 ## 9. Limites connues et prochaines étapes
 
-- Modules **Communauté** (perdus/trouvés) et **Services** à développer : les liens du menu
-  mènent à une 404 ; le carnet de santé et l'agenda saisissent encore le nom de l'animal (à relier à Mes animaux) ; les
+- Modules **Perdus & Trouvés** (carte « Bientôt disponible » du hub `/communaute`) et **Services** à développer : le lien
+  Services du menu mène à une 404 ; le carnet de santé et l'agenda proposent les animaux de Mes animaux (un autre nom
+  reste saisissable) ; les
   boutons « Carnet santé » de l'agenda affichent « arrive avec le module Santé » (à relier au carnet existant).
-- Le lien « Mes annonces » du profil pointe vers `/communaute/mes-annonces` (page inexistante ; l'adoption utilise
-  `/communaute/adoption/mes-annonces`) — à aligner selon le futur module Communauté.
 - Photos et pièces jointes stockées dans les documents MongoDB (limite de 16 Mo par document) : un service de
   fichiers serait préférable à grande échelle.
 - Notifications par interrogation toutes les 20 s (pas de temps réel) ; e-mails non gérés (hors réinitialisation

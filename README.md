@@ -63,13 +63,14 @@ designs/stitch/          maquettes (capture + HTML exporté par écran)
 | Module | Pages | Routes API | Collections MongoDB |
 |---|---|---|---|
 | Utilisateurs & notifications | `/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/profil`, `/notifications` | `/api/users/me`, `/api/notifications` | `users`, `notifications` |
+| Communauté (hub) | `/communaute` | (lit `/api/adoption/…`) | — |
 | Adoption | `/communaute/adoption/…` | `/api/adoption/…` | `adoptionListings`, `adoptionApplications`, `adoptionFavorites`, `happyTails`, `adoptionReports` |
 | Carnet de santé | `/carnet-de-sante`, `/animaux/[id]/carnet-de-sante/…` | `/api/health-records/…` | `health_records` |
 | Rendez-vous & rappels | `/rendez-vous`, `/rendez-vous/nouveau`, `/rendez-vous/[id]`, `/rappels` | `/api/appointments`, `/api/reminders` | `appointments`, `reminders` |
 | Mes animaux | `/animaux`, `/animaux/nouveau`, `/animaux/[id]`, `/animaux/[id]/modifier` | `/api/pets/…` | `pets`, `petWeights` |
 
-Pas encore développés : **Communauté** (`/communaute`, perdus/trouvés) et **Services** (`/services`) — les liens
-du menu mènent pour l'instant à une page 404.
+Pas encore développés : **Perdus & Trouvés** (carte « Bientôt disponible » du hub Communauté) et **Services**
+(`/services`) — le lien Services du menu mène pour l'instant à une page 404.
 
 ### Utilisateurs & notifications — à utiliser dans les autres modules
 
