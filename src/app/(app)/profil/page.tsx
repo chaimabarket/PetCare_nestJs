@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Timestamp } from "firebase/firestore";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { PreferenceToggles } from "@/components/notifications/PreferenceToggles";
@@ -12,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { TextArea, TextField } from "@/components/ui/TextField";
-import { timeAgo } from "@/lib/dates";
+import { timeAgo, toDate } from "@/lib/dates";
 import { PREF_OPTIONS } from "@/lib/notification-prefs";
 import {
   BIO_MAX_LENGTH,
@@ -44,13 +43,13 @@ const accountLinks = [
   { href: "/notifications", label: "Centre de notifications", icon: "notifications_active", coral: false },
 ];
 
-function monthYear(date?: Timestamp) {
+function monthYear(date?: string) {
   if (!date) return "—";
-  const text = date.toDate().toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const text = toDate(date).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-function passwordChangedLabel(date?: Timestamp) {
+function passwordChangedLabel(date?: string) {
   return date ? `Modifié ${timeAgo(date)}` : "Jamais modifié depuis l'inscription";
 }
 

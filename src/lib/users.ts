@@ -11,17 +11,34 @@ import {
   updatePassword,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc, type Timestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
-import { auth, db } from "./firebase";
+import { ApiError, api } from "./api";
 import { describeDevice } from "./device";
+import { auth } from "./firebase";
+import {
+  DEFAULT_NOTIFICATION_PREFS,
+  type EditableProfile,
+  type NotificationPrefs,
+  type SignupRole,
+  type UserProfile,
+  type UserRole,
+} from "./models";
 import { sendNotification } from "./notifications";
 
-export type UserRole = "proprietaire" | "prestataire" | "refuge" | "admin";
+// Firebase ne sert plus qu'à l'authentification (comptes, mots de passe, sessions).
+// Les profils sont stockés dans MongoDB et lus / modifiés via les routes /api/users/*.
 
-/** Rôles proposés à l'inscription (admin est attribué depuis la console Firebase). */
-export const SIGNUP_ROLES = ["proprietaire", "prestataire", "refuge"] as const;
-export type SignupRole = (typeof SIGNUP_ROLES)[number];
+// Types et constantes partagés avec les routes API (lib/models.ts), réexportés pour les modules.
+export {
+  BIO_MAX_LENGTH,
+  DEFAULT_NOTIFICATION_PREFS,
+  SIGNUP_ROLES,
+  type EditableProfile,
+  type NotificationPrefs,
+  type SignupRole,
+  type UserProfile,
+  type UserRole,
+} from "./models";
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   proprietaire: "Propriétaire",
@@ -30,48 +47,13 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   admin: "Administrateur",
 };
 
-/** Préférences d'alerte (voir lib/notification-prefs.ts pour les libellés). */
-export type NotificationPrefs = {
-  appointments: boolean;
-  careReminders: boolean;
-  adoption: boolean;
-  lostFoundAlerts: boolean;
-  /** Pas encore géré : l'application n'envoie pas d'e-mails. */
-  email: boolean;
-};
-
-export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
-  appointments: true,
-  careReminders: true,
-  adoption: true,
-  lostFoundAlerts: true,
-  email: false,
-};
-
 /** Complète les préférences enregistrées avant l'ajout de nouvelles catégories. */
 export function resolvePrefs(prefs?: Partial<NotificationPrefs>): NotificationPrefs {
   return { ...DEFAULT_NOTIFICATION_PREFS, ...prefs };
 }
 
-export const BIO_MAX_LENGTH = 300;
-
-/** Document Firestore `users/{uid}`, partagé par tous les modules. */
-export type UserProfile = {
-  uid: string;
-  email: string;
-  displayName: string;
-  city: string;
-  role: UserRole;
-  phone?: string;
-  bio?: string;
-  notificationPrefs?: Partial<NotificationPrefs>;
-  createdAt?: Timestamp;
-  passwordChangedAt?: Timestamp;
-};
-
-export type EditableProfile = Pick<UserProfile, "displayName" | "city"> & { phone: string; bio: string };
-
-const usersCollection = "users";
+/** Événement navigateur : le profil a changé, <AuthProvider> le recharge. */
+export const PROFILE_CHANGED_EVENT = "petcare:profile-changed";
 
 export async function signUp(input: {
   email: string;
@@ -82,18 +64,12 @@ export async function signUp(input: {
 }): Promise<void> {
   const { user } = await createUserWithEmailAndPassword(auth(), input.email, input.password);
   await updateProfile(user, { displayName: input.displayName });
-  await setDoc(doc(db(), usersCollection, user.uid), {
-    uid: user.uid,
-    email: input.email,
-    displayName: input.displayName,
-    city: input.city,
-    role: input.role,
-    phone: "",
-    bio: "",
-    notificationPrefs: DEFAULT_NOTIFICATION_PREFS,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+  // Profil enregistré dans MongoDB (l'e-mail est repris du compte Firebase côté serveur).
+  await api("/api/users/me", {
+    method: "POST",
+    body: { displayName: input.displayName, city: input.city, role: input.role },
   });
+  window.dispatchEvent(new Event(PROFILE_CHANGED_EVENT));
   await sendNotification({
     userId: user.uid,
     type: "compte",
@@ -145,9 +121,14 @@ export async function resetPassword(email: string): Promise<void> {
   await sendPasswordResetEmail(auth(), email);
 }
 
+/** Profil de l'utilisateur connecté (null s'il n'a pas encore de profil). */
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
-  const snapshot = await getDoc(doc(db(), usersCollection, uid));
-  return snapshot.exists() ? (snapshot.data() as UserProfile) : null;
+  const profile = await api<UserProfile | null>("/api/users/me");
+  return profile?.uid === uid ? profile : null;
+}
+
+function assertCurrentUser(uid: string) {
+  if (auth().currentUser?.uid !== uid) throw new ApiError(403, "Vous ne pouvez modifier que votre propre profil.");
 }
 
 const PROFILE_FIELD_LABELS: Record<keyof EditableProfile, string> = {
@@ -158,15 +139,16 @@ const PROFILE_FIELD_LABELS: Record<keyof EditableProfile, string> = {
 };
 
 export async function updateUserProfile(uid: string, changes: EditableProfile): Promise<void> {
+  assertCurrentUser(uid);
   const before = await getUserProfile(uid);
   const changed = (Object.keys(PROFILE_FIELD_LABELS) as (keyof EditableProfile)[]).filter(
-    (field) => (before?.[field] ?? "") !== changes[field],
+    (field) => (before?.[field] ?? "").trim() !== changes[field].trim(),
   );
   if (changed.length === 0) return;
 
+  await api("/api/users/me", { method: "PATCH", body: changes });
   const user = auth().currentUser;
-  if (user) await updateProfile(user, { displayName: changes.displayName });
-  await updateDoc(doc(db(), usersCollection, uid), { ...changes, updatedAt: serverTimestamp() });
+  if (user) await updateProfile(user, { displayName: changes.displayName.trim() });
   await notifyAccount(
     "Profil mis à jour",
     `Informations modifiées : ${changed.map((field) => PROFILE_FIELD_LABELS[field]).join(", ")}.`,
@@ -176,7 +158,8 @@ export async function updateUserProfile(uid: string, changes: EditableProfile): 
 }
 
 export async function updateNotificationPrefs(uid: string, prefs: NotificationPrefs): Promise<void> {
-  await updateDoc(doc(db(), usersCollection, uid), { notificationPrefs: prefs, updatedAt: serverTimestamp() });
+  assertCurrentUser(uid);
+  await api("/api/users/me", { method: "PATCH", body: { notificationPrefs: prefs } });
 }
 
 export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
@@ -184,10 +167,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
   if (!user?.email) throw new Error("Vous devez être connecté.");
   await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword));
   await updatePassword(user, newPassword);
-  await updateDoc(doc(db(), usersCollection, user.uid), {
-    passwordChangedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  await api("/api/users/me", { method: "PATCH", body: { passwordChanged: true } });
   await notifyAccount(
     "Mot de passe modifié",
     `Le mot de passe de votre compte a été modifié depuis ${describeDevice()} le ${formatNow()}. Si ce n'est pas vous, réinitialisez-le immédiatement.`,
@@ -207,13 +187,14 @@ const firebaseMessages: Record<string, string> = {
   "auth/network-request-failed": "Problème de connexion réseau. Vérifiez votre connexion internet.",
   "auth/requires-recent-login": "Pour des raisons de sécurité, reconnectez-vous puis réessayez.",
   "auth/invalid-api-key": "Configuration Firebase manquante (voir .env.local).",
-  "permission-denied": "Vous n'avez pas l'autorisation d'effectuer cette action.",
 };
 
-/** Traduit une erreur Firebase en message clair pour l'utilisateur. */
+/** Traduit une erreur Firebase ou de l'API en message clair pour l'utilisateur. */
 export function errorMessage(error: unknown): string {
+  if (error instanceof ApiError) return error.message;
   if (error instanceof FirebaseError) {
     return firebaseMessages[error.code] ?? "Une erreur est survenue. Réessayez.";
   }
+  if (error instanceof TypeError) return "Problème de connexion réseau. Vérifiez votre connexion internet.";
   return error instanceof Error ? error.message : "Une erreur est survenue. Réessayez.";
 }

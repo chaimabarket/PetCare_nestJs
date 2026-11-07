@@ -11,7 +11,7 @@ type Status = { tone: "saving" | "saved" | "error"; text: string } | null;
 /** Préférences d'alerte enregistrées automatiquement à chaque changement. */
 function useAutoSavedPrefs() {
   const { profile, refreshProfile } = useAuth();
-  // Valeur affichée pendant l'enregistrement, avant le retour de Firestore.
+  // Valeur affichée pendant l'enregistrement, avant la réponse du serveur.
   const [pending, setPending] = useState<NotificationPrefs | null>(null);
   const [status, setStatus] = useState<Status>(null);
   const prefs = pending ?? resolvePrefs(profile?.notificationPrefs);
