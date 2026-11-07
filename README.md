@@ -36,9 +36,10 @@ par un canal privé.
 | `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption |
 | `npm run test:health` | Tester le module Carnet de santé : validation, droits, pièces jointes, rappels de vaccin |
 | `npm run test:rendez-vous` | Tester le module Rendez-vous et rappels : règles RG-12 à RG-21 et droits d'accès |
-| `npm test` | Tests rapides sans serveur : validation des animaux et alerte de poids |
+| `npm test` | Tests rapides sans serveur : validation des animaux, alerte de poids, services (créneaux, transitions) |
 | `npm run test:pets` | Tester le module Mes animaux : routes `/api/pets`, droits, photos, pesées, archivage, alerte de poids |
-| `npm run seed:demo` | Comptes et données de démonstration (Lina, refuge, vétérinaires, toiletteur, animalerie…), mot de passe `DemoPetCare!2026` ; relançable, dates calculées à partir du jour même |
+| `npm run test:services` | Tester le module Services : rôles, validation des profils, prestations, horaires, créneaux, réservations et agenda |
+| `npm run seed:demo` | Comptes et données de démonstration (`lina.demo@example.com`, refuge, vétérinaires, toiletteur, animalerie, pension à valider, admin `admin.petcare.demo@example.com`…), mot de passe `DemoPetCare!2026` ; relançable, dates calculées à partir du jour même |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
 | `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (inutilisé) — après `npx firebase-tools login` |
 
@@ -69,9 +70,9 @@ designs/stitch/          maquettes (capture + HTML exporté par écran)
 | Carnet de santé | `/carnet-de-sante`, `/animaux/[id]/carnet-de-sante/…` | `/api/health-records/…` | `health_records` |
 | Rendez-vous & rappels | `/rendez-vous`, `/rendez-vous/nouveau`, `/rendez-vous/[id]`, `/rappels` | `/api/appointments`, `/api/reminders` | `appointments`, `reminders` |
 | Mes animaux | `/animaux`, `/animaux/nouveau`, `/animaux/[id]`, `/animaux/[id]/modifier` | `/api/pets/…` | `pets`, `petWeights` |
+| Services | `/services`, `/services/[id]`, `/services/[id]/reserver`, `/services/mon-espace`, `/services/mes-reservations`, `/services/admin` | `/api/services/…` | `serviceCategories`, `serviceProviders`, `providerServices`, `providerAvailability`, `serviceBookings` |
 
-Pas encore développés : **Perdus & Trouvés** (carte « Bientôt disponible » du hub Communauté) et **Services**
-(`/services`) — le lien Services du menu mène pour l'instant à une page 404.
+Pas encore développé : **Perdus & Trouvés** (carte « Bientôt disponible » du hub Communauté).
 
 ### Utilisateurs & notifications — à utiliser dans les autres modules
 
@@ -122,7 +123,62 @@ Agenda (semaine / mois, filtres), rendez-vous personnels (création, report avec
 rappels de soins (« Fait », suppression). Règles RG-12 à RG-21 dans `src/lib/rendez-vous/rules.ts`, appliquées
 dans le navigateur et par le serveur : pas deux rendez-vous du même animal sur le même créneau, report et annulation
 avant le début, « Terminé » après l'heure de fin, contrôle de version contre les modifications simultanées.
-Les réservations de prestataires (`providerId`) sont prêtes côté API pour le futur module Services.
+Les réservations de prestataires (`providerId`) sont créées par le module Services (voir plus bas).
+
+### Services
+
+#### Fonctionnalités réalisées
+
+**Annuaire (`/services`, public)**
+- Grille des catégories (Vétérinaires, Toiletteurs, Promeneurs, Pensions, Boutiques, Autres par défaut), villes en
+  puces, recherche (nom, catégorie, ville, description, prestation), tri (récents, nom, prix).
+- Ouverture directe sur une catégorie : `/services?categorie=Vétérinaires` (utilisé par l'alerte de poids de Mes animaux).
+- Carte prestataire : photo, badge « Vérifié », catégorie, adresse, « Ouvert • Ferme à 20:00 », « Consultation dès 45 DT ».
+
+**Fiche prestataire (`/services/[id]`)** : couverture, « Prestataire vérifié », description, horaires (ouvert / fermé,
+résumé de la semaine), adresse, Appeler / Message, paiement sur place, prestations & tarifs avec « Réserver ».
+
+**Réservation (`/services/[id]/reserver`, connecté)** : prestation, compagnon choisi dans « Mes animaux » (ou autre
+animal), bandeau de dates (jours fermés grisés), créneaux de 30 min (Tous / Matin / Après-midi, créneaux déjà pris
+verrouillés), précisions ; la demande apparaît aussitôt dans l'agenda du client et du prestataire.
+
+**Espace prestataire (`/services/mon-espace`, rôle `prestataire`)**
+- Création du profil (photo, nom, catégorie, ville, adresse, téléphone, e-mail, présentation) qui part en validation ;
+  toute modification, ou la correction d'un profil refusé, le renvoie en validation.
+- Statut (en ligne et vérifié / en attente / refusé avec motif), compteurs (demandes en attente, confirmées du mois).
+- Prestations (ex. toilettage « Bain complet & démêlage doux, 45 min, 35 DT ») : ajout, modification, archivage et
+  réactivation ; durée de 5 min à 24 h (« 1 nuit » pour une pension).
+- Créneaux de travail par jour (6 plages maximum, « Appliquer à toute la semaine »), heure de Tunis.
+- Réservations reçues (en attente, confirmées, passées) : Confirmer / Refuser.
+
+**Mes réservations (`/services/mes-reservations`)** : suivi des demandes, annulation tant qu'elles sont en attente.
+
+**Administration (`/services/admin`, rôle `admin`)** : validation ou refus motivé des profils en attente ; catégories
+(ajout, renommage reporté sur les profils et prestations, icône, ordre, suppression refusée si la catégorie est utilisée).
+
+**Notifications `service`** : nouvelle demande, confirmation, refus, annulation, profil validé ou refusé.
+
+#### API
+
+| Route | Rôle |
+|---|---|
+| `GET /api/services/categories` · `POST` (admin) · `PUT` / `DELETE /api/services/categories/{id}` (admin) | catégories |
+| `GET /api/services/providers?categorie=&ville=&q=` | annuaire public (avec horaires, nombre de prestations, prix minimum) |
+| `GET /api/services/providers?status=pending` | profils en attente (admin) |
+| `GET` / `PUT /api/services/providers/me` | son profil prestataire (créé ou modifié → `pending`) |
+| `GET` / `POST /api/services/providers/me/services`, `PUT …/services/{serviceId}` | ses prestations (archivées comprises) |
+| `GET` / `PUT /api/services/providers/me/availability` | ses disponibilités `{ days: [{ weekday, enabled, ranges }] }` |
+| `GET /api/services/providers/{id}` | fiche : profil, prestations publiées, disponibilités |
+| `PUT /api/services/providers/{id}/status` | `{ status: "published" ou "rejected", reason? }` (admin, profil en attente) |
+| `GET /api/services/providers/{id}/slots?serviceId=&day=AAAA-MM-JJ` | créneaux libres |
+| `GET /api/services/bookings?as=client` ou `?as=provider` · `POST` | réservations ; nouvelle demande |
+| `PATCH /api/services/bookings/{id}/status` | `confirmed` / `declined` (prestataire), `cancelled` (client) |
+
+Règles : seule une demande **en attente** change de statut (409 sinon) ; date à venir, dans les disponibilités, sans
+chevauchement avec une autre réservation du prestataire ni un autre rendez-vous du même animal (409). Agenda :
+`createBooking` (`src/lib/server/services.ts`) crée le rendez-vous « planned » (`providerId` = uid du prestataire)
+dans `appointments` sans modifier le module Rendez-vous ; les statuts sont synchronisés dans les deux sens.
+Tests : `npm test` (validation, créneaux, fuseau horaire, transitions) et `npm run test:services` (102 vérifications).
 
 ### Mes animaux
 
@@ -213,7 +269,8 @@ Côté navigateur, utilisez directement `listPets()`, `getPet(id)`, `listWeights
 | Rendez-vous (liste), carte Rendez-vous (fiche) | agenda filtré sur l'animal : `/rendez-vous?animal={nom}` |
 | « Prendre rendez-vous » du bandeau d'alerte de poids | `/rendez-vous/nouveau?animal={nom}` (animal prérempli) |
 | Carte Rappels (fiche) | `/rappels` |
-| Conseils, « Voir les vétérinaires » | « Bientôt disponible » (chatbot et Services pas encore fusionnés) |
+| « Voir les vétérinaires » du bandeau d'alerte de poids | annuaire ouvert sur la catégorie : `/services?categorie=Vétérinaires` |
+| Conseils | « Bientôt disponible » (chatbot pas encore fusionné) |
 
 À la fusion d'un module, renseignez son lien, par exemple ``assistant: (pet) => `/assistant?pet=${pet.id}` ``.
 
