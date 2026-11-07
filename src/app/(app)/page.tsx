@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { UpcomingAppointmentsCard } from "@/components/rendez-vous/UpcomingAppointmentsCard";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 
@@ -37,6 +38,10 @@ export default function AccueilPage() {
             </Link>
           </div>
         </Card>
+        {/* Carte du module Rendez-vous : un visiteur n'a pas de rendez-vous (« Aucun rendez-vous à venir »). */}
+        <div className="mx-auto mt-space-lg max-w-xl">
+          <UpcomingAppointmentsCard />
+        </div>
       </div>
     );
   }
@@ -55,10 +60,16 @@ export default function AccueilPage() {
             <p className="mt-2 text-on-surface-variant">Fiches, photos, contacts et suivi du poids de vos compagnons.</p>
           </Card>
         </Link>
-        <Card>
-          <h2 className="font-headline-sm text-headline-sm">Prochains rendez-vous</h2>
-          <p className="mt-2 text-on-surface-variant">Bientôt disponible.</p>
-        </Card>
+        <Link href="/carnet-de-sante" className="group">
+          <Card className="h-full transition-shadow group-hover:shadow-md">
+            <h2 className="flex items-center gap-space-sm font-headline-sm text-headline-sm">
+              <Icon name="medical_information" className="text-primary" />
+              Carnets de santé
+            </h2>
+            <p className="mt-2 text-on-surface-variant">Vaccins, consultations, traitements et allergies de vos animaux.</p>
+          </Card>
+        </Link>
+        <UpcomingAppointmentsCard />
       </div>
     </div>
   );
