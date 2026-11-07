@@ -1,8 +1,7 @@
-// Données de démonstration : comptes, animaux, adoption, happy tails, carnets de santé, rendez-vous et rappels.
+// Données de démonstration : comptes, animaux, adoption, happy tails, carnets de santé, services, rendez-vous et rappels.
 // Relançable : les comptes démo sont réutilisés et toutes leurs données MongoDB sont recréées
 // (les dates sont calculées à partir d'aujourd'hui : relancez le script la veille d'une démo).
 // Lancement : npm run seed:demo        (aucun serveur nécessaire)
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { deleteApp, initializeApp } from "firebase/app";
@@ -64,6 +63,70 @@ const PEOPLE = {
   sitter: {
     email: "garde.demo@example.com", displayName: "Nour – Pet-sitting à domicile", role: "prestataire", city: "Tunis",
     phone: "+216 50 222 333", bio: "Garde et promenades à domicile.", address: "Tunis et banlieue nord",
+  },
+  pension: {
+    email: "pension.oliviers.demo@example.com", displayName: "Pension Canine Les Oliviers", role: "prestataire", city: "Ben Arous",
+    phone: "+216 79 456 123", bio: "Pension pour chiens et chats, grand terrain clos.", address: "Route de Mornag km 4, Ben Arous",
+  },
+  admin: {
+    email: "admin.petcare.demo@example.com", displayName: "Administrateur PetCare", role: "admin", city: "Tunis",
+    phone: "", bio: "Validation des prestataires et modération.",
+  },
+};
+
+/**
+ * Fiches du module Services (annuaire) : catégorie, présentation, prestations et horaires.
+ * La pension est « en attente de validation » : l'administrateur peut la publier pendant la démo.
+ */
+const MORNING_AFTERNOON = [{ start: "09:00", end: "12:30" }, { start: "14:00", end: "19:00" }];
+const PROVIDER_PROFILES = {
+  vet: {
+    category: "Vétérinaires", status: "published", image: "dog-labrador", days: [1, 2, 3, 4, 5, 6],
+    description: "Clinique vétérinaire : consultations, vaccins, chirurgie et analyses. Urgences 7j/7 sur rendez-vous.",
+    services: [
+      ["Consultation générale", 30, 60, "Examen complet, conseils d'alimentation et de prévention."],
+      ["Vaccin CHPPiL + rage", 30, 70, "Vaccin annuel du chien, carnet mis à jour."],
+      ["Vaccin typhus-coryza", 30, 65, "Vaccin annuel du chat."],
+      ["Bilan sanguin", 45, 120, "Prise de sang et analyse complète."],
+    ],
+  },
+  vet2: {
+    category: "Vétérinaires", status: "published", image: "cat-3", days: [1, 2, 3, 4, 5],
+    description: "Cabinet spécialisé en médecine féline et nouveaux animaux de compagnie (lapins, rongeurs, oiseaux).",
+    services: [
+      ["Contrôle annuel", 30, 50, "Bilan de santé annuel du chat ou du NAC."],
+      ["Consultation NAC", 30, 55, "Lapins, rongeurs, oiseaux."],
+    ],
+  },
+  groomer: {
+    category: "Toiletteurs", status: "published", image: "dog-retriever-golden", days: [2, 3, 4, 5, 6],
+    description: "Toilettage chiens et chats : bain, coupe aux ciseaux, démêlage, griffes. Produits hypoallergéniques.",
+    services: [
+      ["Toilettage complet (bain + coupe)", 90, 60, "Bain, séchage, coupe et finitions."],
+      ["Coupe des griffes", 30, 20, "Coupe et limage des griffes."],
+      ["Bain et brushing", 60, 40, "Pour chiens et chats à poil long."],
+    ],
+  },
+  shop: {
+    category: "Boutiques", status: "published", image: "dog-beagle", days: [1, 2, 3, 4, 5, 6, 7],
+    description: "Alimentation (dont sans céréales et sans poulet), accessoires et conseils. Retrait en magasin ou livraison.",
+    services: [
+      ["Retrait de commande", 15, 0, "Commande préparée, à récupérer en magasin."],
+      ["Conseil nutrition", 30, 0, "Choix de l'alimentation adaptée à votre animal."],
+    ],
+  },
+  sitter: {
+    category: "Promeneurs", status: "published", image: "dog-husky", days: [1, 2, 3, 4, 5, 6, 7],
+    description: "Garde à domicile, visites et promenades sur Tunis et la banlieue nord.",
+    services: [
+      ["Promenade (1 h)", 60, 15, "Promenade individuelle."],
+      ["Garde à domicile (journée)", 600, 80, "Visites, repas, jeux et câlins."],
+    ],
+  },
+  pension: {
+    category: "Pensions", status: "pending", image: "cat-5", days: [1, 2, 3, 4, 5, 6],
+    description: "Pension familiale pour chiens et chats, box chauffés et grand terrain clos.",
+    services: [["Nuit en pension", 1440, 35, "Repas et promenades inclus."]],
   },
 };
 
@@ -132,6 +195,14 @@ await Promise.all([
   col("pets").deleteMany({ ownerId: { $in: uids } }),
   col("petWeights").deleteMany({ ownerId: { $in: uids } }),
   col("notifications").deleteMany({ userId: { $in: uids } }),
+  col("serviceBookings").deleteMany({ $or: [{ clientId: { $in: uids } }, { providerOwnerId: { $in: uids } }] }),
+]);
+const demoProviders = (await col("serviceProviders").find({ ownerId: { $in: uids } }, { projection: { _id: 1 } }).toArray())
+  .map((p) => p._id.toHexString());
+await Promise.all([
+  col("serviceProviders").deleteMany({ ownerId: { $in: uids } }),
+  col("providerServices").deleteMany({ providerId: { $in: demoProviders } }),
+  col("providerAvailability").deleteMany({ providerId: { $in: demoProviders } }),
 ]);
 
 // 2. Profils.
@@ -352,11 +423,48 @@ await col("happyTails").insertMany([
   },
 ]);
 
-// 5. Rendez-vous (réservations chez les prestataires + rendez-vous personnels) et rappels de soins.
-const booking = (provider, p, fields) => ({
-  providerId: provider.uid, providerName: provider.displayName, providerAddress: provider.address, providerPhone: provider.phone,
-  place: "exterieur", location: provider.address, petId: p.id, petName: p.name, petBreed: p.breed, ...fields,
-});
+// 5. Services : fiches prestataires (annuaire), prestations et horaires.
+const providerOf = {};
+const serviceOf = {};
+for (const [key, profile] of Object.entries(PROVIDER_PROFILES)) {
+  const person = u[key];
+  const _id = new ObjectId();
+  const providerId = _id.toHexString();
+  providerOf[key] = { ...profile, providerId };
+  await col("serviceProviders").insertOne({
+    _id, ownerId: person.uid, name: person.displayName, category: profile.category, city: person.city,
+    description: profile.description, phone: person.phone, email: person.email, address: person.address,
+    photo: await photo(profile.image, { size: 480 }), status: profile.status,
+    ...(profile.status === "published" && { reviewedAt: ago(50) }), createdAt: ago(55), updatedAt: ago(50),
+  });
+  const docs = profile.services.map(([name, durationMinutes, price, description]) => ({
+    _id: new ObjectId(), providerId, name, category: profile.category, durationMinutes, price, description,
+    status: "published", createdAt: ago(50), updatedAt: ago(50),
+  }));
+  await col("providerServices").insertMany(docs);
+  for (const s of docs) serviceOf[`${key}:${s.name}`] = s;
+  await col("providerAvailability").insertMany(
+    [1, 2, 3, 4, 5, 6, 7].map((weekday) => ({
+      _id: `${providerId}_${weekday}`, providerId, weekday,
+      enabled: profile.days.includes(weekday), ranges: profile.days.includes(weekday) ? MORNING_AFTERNOON : [],
+    })),
+  );
+}
+
+// 6. Rendez-vous (réservations chez les prestataires + rendez-vous personnels) et rappels de soins.
+/** Réservation d'une prestation : rendez-vous de l'agenda + réservation du module Services (créée plus bas). */
+const booking = (key, p, serviceName, fields) => {
+  const provider = u[key];
+  const service = serviceOf[`${key}:${serviceName}`];
+  if (!service) throw new Error(`Prestation inconnue : ${key} / ${serviceName}`);
+  return {
+    providerId: provider.uid, providerName: provider.displayName,
+    providerAddress: [provider.address, provider.city].join(", "), providerPhone: provider.phone,
+    serviceId: service._id.toHexString(), price: service.price, minutes: service.durationMinutes,
+    place: "exterieur", location: [provider.address, provider.city].join(", "),
+    petId: p.id, petName: p.name, petBreed: p.breed, ...fields,
+  };
+};
 function appointment(owner, fields) {
   const { startsAt, minutes = 30, status, history = [], ...rest } = fields;
   const created = new Date(Math.min(Date.now(), startsAt.getTime()) - 3 * DAY);
@@ -367,30 +475,30 @@ function appointment(owner, fields) {
     status, version: changes.length, changes, ...rest,
   };
 }
-const rabiesAppt = appointment(u.lina, booking(u.vet, rocky, {
-  title: "Rappel vaccin CHPPiL + rage", type: "vaccin", startsAt: at(2, 10, 0), price: 70, status: "confirmed",
+const rabiesAppt = appointment(u.lina, booking("vet", rocky, "Vaccin CHPPiL + rage", {
+  title: "Rappel vaccin CHPPiL + rage", type: "vaccin", startsAt: at(2, 10, 0), status: "confirmed",
   notes: "Apporter le carnet de santé.", history: [{ action: "confirm", at: ago(1), by: u.vet.uid }],
 }));
-const groomingAppt = appointment(u.lina, booking(u.groomer, rocky, {
-  title: "Toilettage complet (bain + coupe)", type: "toilettage", startsAt: at(5, 14, 30), minutes: 90, price: 60, status: "planned",
+const groomingAppt = appointment(u.lina, booking("groomer", rocky, "Toilettage complet (bain + coupe)", {
+  title: "Toilettage complet (bain + coupe)", type: "toilettage", startsAt: at(5, 14, 30), status: "planned",
 }));
-const mimiCheck = appointment(u.lina, booking(u.vet2, mimi, {
-  title: "Contrôle annuel", type: "veterinaire", startsAt: at(9, 16, 0), price: 50, status: "planned",
+const mimiCheck = appointment(u.lina, booking("vet2", mimi, "Contrôle annuel", {
+  title: "Contrôle annuel", type: "veterinaire", startsAt: at(9, 16, 0), status: "planned",
   history: [{ action: "reschedule", at: ago(1), by: u.lina.uid, reason: "Empêchement professionnel", oldStart: at(4, 11, 0), newStart: at(9, 16, 0) }],
 }));
 const appointmentsDocs = [
   rabiesAppt, groomingAppt, mimiCheck,
-  appointment(u.lina, booking(u.shop, rocky, {
-    title: "Retrait commande croquettes sans poulet", type: "autre", startsAt: at(3, 18, 0), minutes: 15, price: 95, status: "confirmed",
-    reminderMinutes: 120, history: [{ action: "confirm", at: ago(1), by: u.shop.uid }],
+  appointment(u.lina, booking("shop", rocky, "Retrait de commande", {
+    title: "Retrait commande croquettes sans poulet", type: "autre", startsAt: at(3, 18, 0), status: "confirmed", price: 95,
+    notes: "Croquettes sans poulet 12 kg.", reminderMinutes: 120, history: [{ action: "confirm", at: ago(1), by: u.shop.uid }],
   })),
-  appointment(u.lina, booking(u.vet, rocky, {
-    title: "Consultation – otite", type: "veterinaire", startsAt: at(-40, 9, 30), price: 60, status: "completed",
+  appointment(u.lina, booking("vet", rocky, "Consultation générale", {
+    title: "Consultation – otite", type: "veterinaire", startsAt: at(-40, 9, 30), status: "completed",
     reminderDoneAt: at(-41, 9, 0),
     history: [{ action: "confirm", at: at(-42, 12, 0), by: u.vet.uid }, { action: "complete", at: at(-40, 10, 5), by: u.vet.uid }],
   })),
-  appointment(u.lina, booking(u.sitter, mimi, {
-    title: "Garde de Mimi pendant le week-end", type: "garde", startsAt: at(-10, 9, 0), minutes: 600, price: 80, status: "cancelled",
+  appointment(u.lina, booking("sitter", mimi, "Garde à domicile (journée)", {
+    title: "Garde de Mimi pendant le week-end", type: "garde", startsAt: at(-10, 9, 0), status: "cancelled",
     place: "domicile", location: "Tunis", cancelReason: "Voyage annulé",
     history: [{ action: "cancel", at: at(-12, 20, 0), by: u.lina.uid, reason: "Voyage annulé" }],
   })),
@@ -400,15 +508,38 @@ const appointmentsDocs = [
     notes: "Travail du rappel et de la marche en laisse.", reminderMinutes: 60,
   }),
   // Clientèle des prestataires (vue « prestataire »).
-  appointment(u.youssef, booking(u.vet, { name: "Nougat", breed: "Ragdoll" }, {
-    title: "Vaccin typhus-coryza", type: "vaccin", startsAt: at(2, 11, 0), price: 65, status: "planned", petId: undefined,
+  appointment(u.youssef, booking("vet", { name: "Nougat", breed: "Ragdoll" }, "Vaccin typhus-coryza", {
+    title: "Vaccin typhus-coryza", type: "vaccin", startsAt: at(2, 11, 0), status: "planned", petId: undefined,
   })),
-  appointment(u.karim, booking(u.groomer, { name: "Toby", breed: "Yorkshire" }, {
-    title: "Coupe des griffes", type: "toilettage", startsAt: at(5, 10, 0), price: 20, status: "confirmed", petId: undefined,
+  appointment(u.karim, booking("groomer", { name: "Toby", breed: "Yorkshire" }, "Coupe des griffes", {
+    title: "Coupe des griffes", type: "toilettage", startsAt: at(5, 10, 0), status: "confirmed", petId: undefined,
     history: [{ action: "confirm", at: ago(1), by: u.groomer.uid }],
   })),
 ].map((a) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined)));
 await col("appointments").insertMany(appointmentsDocs);
+
+// Réservations du module Services (« Mes réservations », « Mon espace » prestataire), reliées à leur rendez-vous.
+const BOOKING_STATUS = { planned: "pending", confirmed: "confirmed", completed: "confirmed", cancelled: "cancelled" };
+const providerKeyOf = Object.fromEntries(Object.keys(PROVIDER_PROFILES).map((k) => [u[k].uid, k]));
+await col("serviceBookings").insertMany(
+  appointmentsDocs
+    .filter((a) => a.serviceId)
+    .map((a) => {
+      const key = providerKeyOf[a.providerId];
+      const service = Object.values(serviceOf).find((s) => s._id.toHexString() === a.serviceId);
+      const clientKey = keys.find((k) => u[k].uid === a.ownerId);
+      const status = BOOKING_STATUS[a.status];
+      return {
+        _id: new ObjectId(), providerId: providerOf[key].providerId, providerOwnerId: a.providerId,
+        clientId: a.ownerId, clientName: u[clientKey].displayName, providerName: u[key].displayName,
+        serviceId: a.serviceId, serviceName: service.name, durationMinutes: service.durationMinutes, price: a.price,
+        animalName: a.petName, ...(a.petId && { petId: a.petId }), dateTime: a.startsAt, endsAt: a.endsAt,
+        notes: a.notes, status, appointmentId: a._id.toHexString(),
+        ...(status !== "pending" && { decidedAt: a.changes[a.changes.length - 1].at }),
+        createdAt: a.changes[0].at, updatedAt: a.changes[a.changes.length - 1].at,
+      };
+    }),
+);
 
 const reminder = (p, fields) => ({ _id: new ObjectId(), ownerId: u.lina.uid, petName: p.name, petBreed: p.breed, done: false, ...fields });
 await col("reminders").insertMany([
@@ -419,7 +550,7 @@ await col("reminders").insertMany([
   reminder(rocky, { title: "Gouttes auriculaires (contrôle)", category: "veterinaire", dueAt: at(12, 9, 0), description: "Vérifier l'oreille gauche." }),
 ]);
 
-// 6. Notifications (centre de notifications de chaque compte).
+// 7. Notifications (centre de notifications de chaque compte).
 const note = (user, fields, minutesAgo, read = false) => ({
   _id: new ObjectId(), userId: user.uid, senderId: "system", read, createdAt: new Date(Date.now() - minutesAgo * 60_000),
   showAt: new Date(Date.now() - minutesAgo * 60_000), ...fields,
@@ -437,6 +568,8 @@ await col("notifications").insertMany([
   note(u.vet2, { type: "rendez-vous", title: "Rendez-vous reporté", body: "Lina Ben Salah a reporté le contrôle annuel de Mimi.", link: `/rendez-vous/${mimiCheck._id}`, actionLabel: "Voir le rendez-vous" }, 1440),
   note(u.youssef, { type: "adoption", title: "Candidature acceptée 🎉", body: "Le refuge a accepté votre candidature pour Goldie.", link: "/communaute/adoption/mes-candidatures", actionLabel: "Mes candidatures" }, 10000),
   note(u.refuge, { type: "adoption", title: "Nouvelle candidature pour Max", body: "Lina Ben Salah souhaite adopter Max.", link: received(max), actionLabel: "Voir les candidatures" }, 5800),
+  note(u.admin, { type: "service", title: "Nouveau prestataire à valider", body: "Pension Canine Les Oliviers attend la validation de sa fiche.", link: "/services/admin", actionLabel: "Examiner" }, 180),
+  note(u.groomer, { type: "service", title: "Nouvelle demande : Toilettage complet (bain + coupe)", body: "Lina Ben Salah souhaite réserver pour Rocky.", link: "/services/mon-espace#demandes", actionLabel: "Répondre" }, 95),
 ]);
 
 await client.close();

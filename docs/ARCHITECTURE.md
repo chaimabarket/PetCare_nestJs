@@ -172,6 +172,19 @@ Exemple : un refuge accepte une candidature.
   collection propre : elle lit les annonces, les Happy Tails et le nombre d'adoptions via `src/lib/adoption.ts`.
 - Liens : fil d'adoption, publication, Happy Tails ; la carte Perdus & Trouvés reste « Bientôt disponible ».
   Chiffres affichés = données réelles (aucun chiffre de la maquette).
+### Services
+- Modèle `src/lib/server/services.ts` ; types, validation, créneaux (heure de Tunis) et transitions partagés
+  `src/lib/services-models.ts` ; client `src/lib/services.ts`.
+- Collections : `serviceCategories` (catégories par défaut tant que l'admin n'en a pas enregistré), `serviceProviders`
+  (un profil par prestataire, `status` `pending` / `published` / `rejected`), `providerServices` (`published` /
+  `archived`), `providerAvailability` (`_id` = `{providerId}_{weekday}`), `serviceBookings` (`pending` / `confirmed` /
+  `declined` / `cancelled`, `appointmentId`).
+- Routes `/api/services/…` : `categories` (écriture admin), `providers` (annuaire, `?status=pending` admin, `me`,
+  `me/services`, `me/availability`, `[id]`, `[id]/status` admin, `[id]/slots`), `bookings` (`?as=client|provider`,
+  `[id]/status`). Rôles vérifiés par le serveur (`requireProviderRole`, `requireAdmin`).
+- Réservation = transaction : `serviceBookings` + rendez-vous `planned` dans `appointments` (module Rendez-vous, non
+  modifié) ; confirmer / refuser / annuler met à jour le rendez-vous, et une action faite depuis l'agenda est reprise
+  à la lecture des réservations (`syncFromAgenda`). Notifications `service` via `notifyUsers`.
 
 ## 6. Ajouter un module
 
@@ -202,16 +215,16 @@ Exemple : un refuge accepte une candidature.
 | `npm run test:health` | 33 — validation, droits, pièces jointes, rappels de vaccin |
 | `npm run test:rendez-vous` | 53 — règles RG-12 à RG-21, versions, réservations prestataire, rappels de soins |
 | `npm run test:pets` | 93 — validation, droits, photos, contacts, pesées, brouillon, archivage, chaque règle de l'alerte de poids |
-| `npm test` | 36 — tests unitaires sans serveur : validation des animaux, âge, alerte de poids |
+| `npm run test:services` | 102 — catégories, rôles, cycle de validation d'un profil, prestations, plages horaires, créneaux, réservations et agenda |
+| `npm test` | 62 — tests unitaires sans serveur : animaux, alerte de poids, services (validation, créneaux, transitions) |
 
 Chaque script crée des comptes Firebase temporaires, appelle l'API d'un serveur lancé, puis supprime comptes et
 données. À lancer avant chaque fusion dans `main`, contre `npm run dev` ou, mieux, un build de production.
 
 ## 9. Limites connues et prochaines étapes
 
-- Modules **Perdus & Trouvés** (carte « Bientôt disponible » du hub `/communaute`) et **Services** à développer : le lien
-  Services du menu mène à une 404 ; le carnet de santé et l'agenda proposent les animaux de Mes animaux (un autre nom
-  reste saisissable) ; les
+- Module **Perdus & Trouvés** à développer (carte « Bientôt disponible » du hub `/communaute`) ; le carnet de santé
+  et l'agenda proposent les animaux de Mes animaux (un autre nom reste saisissable) ; les
   boutons « Carnet santé » de l'agenda affichent « arrive avec le module Santé » (à relier au carnet existant).
 - Photos et pièces jointes stockées dans les documents MongoDB (limite de 16 Mo par document) : un service de
   fichiers serait préférable à grande échelle.
