@@ -27,8 +27,8 @@ export function WeightAlertBanner({ pet, onChange }: { pet: Pet; onChange: (pet:
   const info = WEIGHT_ALERT_INFO[alert.rule];
   const tone = tones[alert.level];
   const change = `${alert.changePct > 0 ? "+" : ""}${alert.changePct.toLocaleString("fr-FR")} %`;
-  const appointments = LINKED_MODULES.appointments?.(pet.id);
-  const vets = LINKED_MODULES.vets?.(pet.id);
+  const appointments = LINKED_MODULES.bookAppointment?.(pet);
+  const vets = LINKED_MODULES.vets?.(pet);
   const vetPhone = pet.vet.phone.replace(/[^\d+]/g, "");
 
   async function dismiss() {

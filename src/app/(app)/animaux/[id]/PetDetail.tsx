@@ -222,28 +222,28 @@ function PetDetailContent({ id }: { id: string }) {
               icon="menu_book"
               title="Carnet de santé"
               text="Vaccins, consultations, traitements et allergies."
-              href={LINKED_MODULES.health?.(pet.id)}
+              href={LINKED_MODULES.health?.(pet)}
               action="Voir le carnet"
             />
             <ModuleCard
               icon="calendar_month"
               title="Rendez-vous"
               text="Prochaines consultations et réservations de services."
-              href={LINKED_MODULES.appointments?.(pet.id)}
-              action="Prendre rendez-vous"
+              href={LINKED_MODULES.appointments?.(pet)}
+              action="Voir ses rendez-vous"
             />
             <ModuleCard
               icon="alarm"
               title="Rappels"
               text="Vermifuge, antiparasitaire, soins réguliers."
-              href={LINKED_MODULES.reminders?.(pet.id)}
+              href={LINKED_MODULES.reminders?.(pet)}
               action="Voir les rappels"
             />
             <ModuleCard
               icon="tips_and_updates"
               title="Conseils"
               text={`Posez vos questions à l'assistant PetCare au sujet de ${pet.name}.`}
-              href={LINKED_MODULES.assistant?.(pet.id) ?? undefined}
+              href={LINKED_MODULES.assistant?.(pet) ?? undefined}
               action="Demander conseil"
             />
           </div>

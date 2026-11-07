@@ -67,12 +67,12 @@ export function PetCard({ pet, today }: { pet: Pet; today: string }) {
       </div>
 
       <div className="pt-5 mt-4 flex items-center gap-2">
-        <ModuleLink module="health" petId={pet.id} icon="medical_services" className={`${shortcut} bg-primary/10 text-primary hover:bg-primary/15`}>
+        <ModuleLink module="health" pet={pet} icon="medical_services" className={`${shortcut} bg-primary/10 text-primary hover:bg-primary/15`}>
           Santé
         </ModuleLink>
         <ModuleLink
           module="appointments"
-          petId={pet.id}
+          pet={pet}
           icon="calendar_today"
           className={`${shortcut} bg-surface-container text-on-surface hover:bg-surface-container-high`}
         >

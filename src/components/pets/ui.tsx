@@ -9,16 +9,20 @@ import { errorMessage } from "@/lib/users";
 
 /**
  * Liens vers les modules qui utilisent les animaux. `null` tant que le module n'est pas sur `main` :
- * le bouton affiche « Bientôt disponible ». À renseigner à la fusion, par exemple
- * `health: (id) => `/animaux/${id}/carnet-de-sante``, `assistant: (id) => `/assistant?pet=${id}``.
+ * le bouton affiche « Bientôt disponible ». À renseigner à la fusion d'un module, par exemple
+ * `assistant: (pet) => `/assistant?pet=${pet.id}``.
  */
 export const LINKED_MODULES: Record<
-  "health" | "appointments" | "reminders" | "assistant" | "vets",
-  ((petId: string) => string) | null
+  "health" | "appointments" | "bookAppointment" | "reminders" | "assistant" | "vets",
+  ((pet: Pick<Pet, "id" | "name">) => string) | null
 > = {
-  health: null,
-  appointments: null,
-  reminders: null,
+  /** Carnet de santé de l'animal (le nom s'affiche tant que le carnet ne lit pas encore /api/pets). */
+  health: (pet) => `/animaux/${encodeURIComponent(pet.id)}/carnet-de-sante?nom=${encodeURIComponent(pet.name)}`,
+  /** Agenda filtré sur l'animal (le module Rendez-vous identifie l'animal par son nom). */
+  appointments: (pet) => `/rendez-vous?animal=${encodeURIComponent(pet.name)}`,
+  /** Nouveau rendez-vous, animal prérempli. */
+  bookAppointment: (pet) => `/rendez-vous/nouveau?animal=${encodeURIComponent(pet.name)}`,
+  reminders: () => "/rappels",
   assistant: null,
   /** Annuaire des vétérinaires (module Services). */
   vets: null,
@@ -132,18 +136,18 @@ export function StatusBadge({ tone, children }: { tone: "grey" | "amber" | "gree
 /** Raccourci vers un autre module (Santé, Rendez-vous…), désactivé tant que le module n'existe pas. */
 export function ModuleLink({
   module,
-  petId,
+  pet,
   icon,
   children,
   className,
 }: {
   module: keyof typeof LINKED_MODULES;
-  petId: string;
+  pet: Pick<Pet, "id" | "name">;
   icon: string;
   children: ReactNode;
   className: string;
 }) {
-  const href = LINKED_MODULES[module]?.(petId);
+  const href = LINKED_MODULES[module]?.(pet);
   const content = (
     <>
       <Icon name={icon} className="text-[18px]" />

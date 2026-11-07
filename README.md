@@ -148,7 +148,7 @@ Les réservations de prestataires (`providerId`) sont prêtes côté API pour le
 - Notes modifiables sur place ; contacts utiles (5 maximum : ajout, suppression, appel, contact d'urgence).
 - Partage limité (nom, espèce, race, sexe, âge ; jamais la puce, les notes ni les données médicales).
 - Export de la fiche complète en page imprimable / PDF.
-- Cartes Carnet de santé, Rendez-vous, Rappels et Conseils (« Bientôt disponible » tant que ces modules manquent).
+- Cartes Carnet de santé, Rendez-vous et Rappels reliées à ces modules ; Conseils « Bientôt disponible » (chatbot).
 
 **Poids**
 - Ajout d'une pesée avec date et note ; une seule pesée par jour (message clair sinon) ; confirmation au-delà de 30 % d'écart.
@@ -203,9 +203,17 @@ Règles : seul le propriétaire accède à ses animaux (403 sinon). Un animal n'
 restaure mais toute autre modification renvoie 409. Format JSON : type `Pet` / `PetWeight` de `src/lib/pets-models.ts`.
 Côté navigateur, utilisez directement `listPets()`, `getPet(id)`, `listWeights(id)`… de `src/lib/pets.ts`.
 
-**Liens vers les autres modules** : les cartes Carnet de santé, Rendez-vous, Rappels, Conseils et « Voir les
-vétérinaires » affichent « Bientôt disponible ». À la fusion d'un module, renseignez son lien dans `LINKED_MODULES`
-(`src/components/pets/ui.tsx`), par exemple ``assistant: (id) => `/assistant?pet=${id}` ``.
+**Liens vers les autres modules** (`LINKED_MODULES`, `src/components/pets/ui.tsx`) :
+
+| Bouton | Destination |
+|---|---|
+| Santé (liste), carte Carnet de santé (fiche) | `/animaux/{id}/carnet-de-sante?nom={nom}` |
+| Rendez-vous (liste), carte Rendez-vous (fiche) | agenda filtré sur l'animal : `/rendez-vous?animal={nom}` |
+| « Prendre rendez-vous » du bandeau d'alerte de poids | `/rendez-vous/nouveau?animal={nom}` (animal prérempli) |
+| Carte Rappels (fiche) | `/rappels` |
+| Conseils, « Voir les vétérinaires » | « Bientôt disponible » (chatbot et Services pas encore fusionnés) |
+
+À la fusion d'un module, renseignez son lien, par exemple ``assistant: (pet) => `/assistant?pet=${pet.id}` ``.
 
 **Alerte intelligente de poids** : à chaque pesée ajoutée, corrigée ou supprimée, la dernière pesée est comparée aux pesées
 des 90 jours précédents. Règles, de la plus grave à la moins grave :
