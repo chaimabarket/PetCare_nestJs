@@ -38,6 +38,7 @@ par un canal privé.
 | `npm run test:rendez-vous` | Tester le module Rendez-vous et rappels : règles RG-12 à RG-21 et droits d'accès |
 | `npm test` | Tests rapides sans serveur : validation des animaux et alerte de poids |
 | `npm run test:pets` | Tester le module Mes animaux : routes `/api/pets`, droits, photos, pesées, archivage, alerte de poids |
+| `npm run seed:demo` | Comptes et données de démonstration (Lina, refuge, vétérinaires, toiletteur, animalerie…), mot de passe `DemoPetCare!2026` ; relançable, dates calculées à partir du jour même |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
 | `npm run deploy:rules` | Publier `firestore.rules`, qui ferme Firestore (inutilisé) — après `npx firebase-tools login` |
 
