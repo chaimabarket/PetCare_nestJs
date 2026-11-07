@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "deploy:rules": "npx --yes firebase-tools@14 deploy --only firestore:rules",
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo.mjs",
     "seed:notifications": "node --env-file=.env.local scripts/seed-notifications.mjs",
     "test:api": "node --env-file=.env.local scripts/test-api.mjs",
     "test:adoption": "node --env-file=.env.local scripts/test-adoption.mjs",
