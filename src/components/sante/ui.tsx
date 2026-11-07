@@ -152,23 +152,57 @@ export function ConfirmDialog({
 }
 
 /**
- * Nom de l'animal : module 1 (Firestore `pets`) en priorité, sinon le nom enregistré
- * avec les actes, sinon le paramètre `?nom=` (carnet créé avant le module Mes animaux).
+ * Fiche de l'animal (module Mes animaux) : nom, espèce, statut. `readOnly` : animal archivé, son carnet ne se
+ * modifie plus (l'API refuse aussi ces écritures). `loaded` passe à vrai une fois la fiche lue (ou introuvable).
  */
-export function usePet(petId: string, fallbackName?: string): { pet: PetInfo | null; name: string } {
+export function usePet(
+  petId: string,
+  fallbackName?: string,
+): { pet: PetInfo | null; name: string; loaded: boolean; readOnly: boolean } {
   const { user } = useAuth();
-  const [pet, setPet] = useState<PetInfo | null>(null);
+  const [state, setState] = useState<{ petId: string; pet: PetInfo | null } | null>(null);
 
   useEffect(() => {
     if (!user) return;
     let active = true;
-    getPet(petId).then((p) => active && setPet(p));
+    getPet(petId).then((pet) => active && setState({ petId, pet }));
     return () => {
       active = false;
     };
   }, [petId, user]);
 
-  return { pet, name: pet?.name || fallbackName || "Mon animal" };
+  const pet = state?.petId === petId ? state.pet : null;
+  return {
+    pet,
+    name: pet?.name || fallbackName || "Mon animal",
+    loaded: state?.petId === petId,
+    readOnly: Boolean(pet?.archived),
+  };
+}
+
+/** Bandeau des carnets d'animaux archivés. */
+export function ReadOnlyBanner({ name }: { name: string }) {
+  return (
+    <div role="status" className="flex items-start gap-space-sm rounded-xl bg-surface-container p-space-md font-body-md text-body-md text-on-surface-variant">
+      <Icon name="inventory_2" className="text-[20px] text-outline mt-0.5" />
+      <p>
+        <strong className="text-on-surface">Lecture seule.</strong> {name} est archivé : son carnet se consulte et
+        s&apos;exporte, mais ne peut plus être modifié. Restaurez sa fiche dans « Mes animaux » pour le compléter.
+      </p>
+    </div>
+  );
+}
+
+/** Photo de couverture de l'animal (miniature), ou icône. */
+export function PetThumb({ src, name, size = "w-14 h-14" }: { src?: string; name: string; size?: string }) {
+  return src ? (
+    // eslint-disable-next-line @next/next/no-img-element -- miniature en data URL (pas d'optimisation possible)
+    <img src={src} alt={name} className={`${size} shrink-0 rounded-2xl object-cover`} />
+  ) : (
+    <span className={`${size} shrink-0 rounded-2xl bg-primary-fixed/50 text-primary flex items-center justify-center`}>
+      <Icon name="pets" filled className="text-[28px]" />
+    </span>
+  );
 }
 
 export function petSubtitle(pet: PetInfo | null): string | undefined {

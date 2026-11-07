@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { RecordForm } from "@/components/sante/RecordForm";
@@ -21,8 +22,14 @@ function EditRecordContent({ petId, recordId }: { petId: string; recordId: strin
   const { user } = useAuth();
   const [record, setRecord] = useState<HealthRecord | null>(null);
   const [error, setError] = useState("");
-  const { name } = usePet(petId, record?.petName);
+  const router = useRouter();
+  const { name, loaded, readOnly } = usePet(petId, record?.petName);
   const back = carnetHref(petId, name);
+
+  // Carnet d'un animal archivé : lecture seule, retour au carnet.
+  useEffect(() => {
+    if (readOnly) router.replace(back);
+  }, [readOnly, router, back]);
 
   useEffect(() => {
     if (!user) return;
@@ -35,13 +42,13 @@ function EditRecordContent({ petId, recordId }: { petId: string; recordId: strin
     };
   }, [user, recordId]);
 
-  if (!record && !error) return <PageLoading label="Chargement de l'acte…" />;
+  if ((!record && !error) || !loaded || readOnly) return <PageLoading label="Chargement de l'acte…" />;
 
   return (
     <div className={`${pageClass} max-w-4xl`}>
       <Breadcrumb
         items={[
-          { label: "Carnets de santé", href: "/carnet-de-sante" },
+          { label: "Santé", href: "/carnet-de-sante" },
           { label: name, href: back },
           { label: "Modifier l'acte médical" },
         ]}

@@ -34,9 +34,9 @@ par un canal privé.
 | `npm run lint` | Vérifier le code |
 | `npm run test:api` | Tester les routes Utilisateurs et Notifications (serveur lancé ; comptes temporaires, supprimés à la fin) |
 | `npm run test:adoption` | Tester le module Adoption : règles d'accès et cycle complet d'une adoption |
-| `npm run test:health` | Tester le module Carnet de santé : validation, droits, pièces jointes, rappels de vaccin |
+| `npm run test:health` | Tester le module Carnet de santé : validation, droits sur l'animal, lecture seule des animaux archivés, pièces jointes, rappels de vaccin, onglet Santé, prises de traitement |
 | `npm run test:rendez-vous` | Tester le module Rendez-vous et rappels : règles RG-12 à RG-21 et droits d'accès |
-| `npm test` | Tests rapides sans serveur : validation des animaux et alerte de poids |
+| `npm test` | Tests rapides sans serveur : validation des animaux, alerte de poids, règles de l'onglet Santé, lecture des documents scannés |
 | `npm run test:pets` | Tester le module Mes animaux : routes `/api/pets`, droits, photos, pesées, archivage, alerte de poids |
 | `npm run seed:demo` | Comptes et données de démonstration (Lina, refuge, vétérinaires, toiletteur, animalerie…), mot de passe `DemoPetCare!2026` ; relançable, dates calculées à partir du jour même |
 | `npm run seed:notifications -- <UID>` | Ajouter des notifications de démonstration à un compte |
@@ -66,12 +66,14 @@ designs/stitch/          maquettes (capture + HTML exporté par écran)
 | Utilisateurs & notifications | `/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/profil`, `/notifications` | `/api/users/me`, `/api/notifications` | `users`, `notifications` |
 | Communauté (hub) | `/communaute` | (lit `/api/adoption/…`) | — |
 | Adoption | `/communaute/adoption/…` | `/api/adoption/…` | `adoptionListings`, `adoptionApplications`, `adoptionFavorites`, `happyTails`, `adoptionReports` |
-| Carnet de santé | `/carnet-de-sante`, `/animaux/[id]/carnet-de-sante/…` | `/api/health-records/…` | `health_records` |
+| Santé & carnet de santé | `/carnet-de-sante` (onglet Santé), `/animaux/[id]/carnet-de-sante/…` | `/api/health-records/…` (dont `/summary`, `/[id]/doses`, `/shares`), `/api/partage/[token]` | `health_records`, `treatment_doses`, `health_shares` |
 | Rendez-vous & rappels | `/rendez-vous`, `/rendez-vous/nouveau`, `/rendez-vous/[id]`, `/rappels` | `/api/appointments`, `/api/reminders` | `appointments`, `reminders` |
 | Mes animaux | `/animaux`, `/animaux/nouveau`, `/animaux/[id]`, `/animaux/[id]/modifier` | `/api/pets/…` | `pets`, `petWeights` |
 
 Pas encore développés : **Perdus & Trouvés** (carte « Bientôt disponible » du hub Communauté) et **Services**
-(`/services`) — le lien Services du menu mène pour l'instant à une page 404.
+(`/services` affiche pour l'instant une page provisoire « Bientôt disponible »).
+
+Menu (barre du haut sur ordinateur, barre du bas sur mobile) : Accueil · Mes animaux · Santé · Communauté · Services.
 
 ### Utilisateurs & notifications — à utiliser dans les autres modules
 
@@ -113,8 +115,46 @@ visibles sans compte. Photos compressées dans le navigateur (`src/lib/images.ts
 
 Actes médicaux par animal (visite, vaccin, examen, traitement, allergie, note) avec pièces jointes (PDF/JPG/PNG/WebP,
 2 Mo max, 3 par acte). Un vaccin avec date de rappel crée une notification 7 jours avant l'échéance (remplacée si
-l'acte change, supprimée avec l'acte). En attendant le module Mes animaux, un carnet est créé depuis
-`/carnet-de-sante` en indiquant le nom de l'animal (`listMyPets()` / `getPet()` à brancher sur ce module).
+l'acte change, supprimée avec l'acte). Chaque carnet appartient à un animal de « Mes animaux » : l'API vérifie que
+l'animal est à l'utilisateur (sinon 404). Pour un animal **archivé**, le carnet est en lecture seule : ajout,
+modification, suppression, pièces jointes et prises renvoient 409 ; la lecture et l'export PDF restent possibles.
+
+**Onglet Santé** (`/carnet-de-sante`, une seule requête `GET /api/health-records/summary?day=AAAA-MM-JJ`) :
+
+- Tableau de bord du jour : toutes les prises de traitement du jour, à cocher (`POST` / `DELETE
+  /api/health-records/{id}/doses`, jour même ou veille), vaccins en retard et vaccins des 30 prochains jours.
+- Une carte par animal actif : photo, statut vaccinal (« à jour », « bientôt » à 30 jours ou moins, « en retard »),
+  traitements en cours et prises du jour faites / prévues, dernière visite et allergies. Tri : retard de vaccin, prises
+  restantes, rappel proche, puis nom. Les animaux archivés sont dans une section repliée en bas.
+- Règles de calcul (fonctions pures, `src/lib/health-summary.ts`) : pour chaque vaccin (même titre, casse ignorée),
+  seule la dernière injection compte ; un traitement a des prises le jour J si `date ≤ J ≤ endDate` et
+  `(J − date) % doseEveryDays = 0`.
+- Prises : un traitement a des heures `doseTimes` (0 à 6, « HH:MM ») et un rythme `doseEveryDays` (1 à 30 jours),
+  saisis dans le formulaire. Les prises cochées sont dans `treatment_doses` (index unique traitement + jour + heure).
+  Elles ne sont pas recopiées en rappels : `/rappels` affiche seulement « Prises du jour : X/Y » vers l'onglet Santé.
+
+**Export PDF** (bouton du carnet) : profil, vétérinaire référent (téléphone compris), vaccins et rappels, visites et
+examens, allergies, traitements en cours et passés. Jamais l'e-mail ni le téléphone du propriétaire, ni les contacts
+de la fiche. Généré dans le navigateur avec **@react-pdf/renderer** (chargé seulement au clic), puis « Partager »
+(Web Share, si l'appareil le permet) ou « Enregistrer ». Choix : pdf-lib n'a pas de mise en page (pas de retour à la
+ligne ni de pagination automatiques) ; jsPDF demande de placer chaque ligne à la main ; @react-pdf/renderer est
+maintenu, compatible React 19, décrit le document en composants (pagination, en-têtes de tableau répétés) et ses
+polices standard affichent les accents français.
+
+**Partage sécurisé** (bouton « Partager » du carnet) : lien temporaire en lecture seule, avec QR code, pour un
+vétérinaire, un pet-sitter ou une urgence. Le propriétaire choisit ce qu'il montre (*carnet complet*, ou *fiche
+d'urgence* : allergies, traitements en cours, derniers vaccins, vétérinaire), la durée (24 h, 7 jours, 30 jours) et
+peut le désactiver à tout moment ; il voit le nombre et la date des consultations. Le lien s'ouvre sans compte sur
+`/partage/{jeton}`. Sécurité : jeton aléatoire de 256 bits affiché **une seule fois** (seule son empreinte SHA-256 est
+stockée dans `health_shares`), 404 si inconnu, 410 si expiré ou désactivé, 10 liens actifs maximum par animal, page et
+API non indexées et sans `Referer`. Jamais montrés : e-mail, téléphone ou nom du propriétaire, contacts de la fiche,
+pièces jointes. Permis aussi pour un animal archivé (le lien montre le carnet, il ne le modifie pas).
+
+**Scan d'ordonnance ou de vignette** (formulaire, types vaccin et traitement) : photo (appareil ou galerie), texte lu
+**dans le navigateur** avec **Tesseract.js** (gratuit, sans quota, modèle français téléchargé au premier usage puis
+gardé en cache), analyse heuristique (`src/lib/scan-parse.ts`) : intitulé, date (hors péremption et dates futures),
+numéro de lot, vétérinaire. Seuls les champs vides sont remplis, signalés « à vérifier » ; rien n'est enregistré
+automatiquement ; aucune posologie ni heure de prise n'est déduite. La photo compressée peut être jointe à l'acte.
 
 ### Rendez-vous & rappels
 
@@ -209,7 +249,7 @@ Côté navigateur, utilisez directement `listPets()`, `getPet(id)`, `listWeights
 
 | Bouton | Destination |
 |---|---|
-| Santé (liste), carte Carnet de santé (fiche) | `/animaux/{id}/carnet-de-sante?nom={nom}` |
+| Santé (liste), carte Carnet de santé (fiche) | `/animaux/{id}/carnet-de-sante?nom={nom}` (onglet Santé du menu : `/carnet-de-sante`) |
 | Rendez-vous (liste), carte Rendez-vous (fiche) | agenda filtré sur l'animal : `/rendez-vous?animal={nom}` |
 | « Prendre rendez-vous » du bandeau d'alerte de poids | `/rendez-vous/nouveau?animal={nom}` (animal prérempli) |
 | Carte Rappels (fiche) | `/rappels` |

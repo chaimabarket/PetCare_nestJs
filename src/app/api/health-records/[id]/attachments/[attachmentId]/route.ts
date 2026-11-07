@@ -1,5 +1,5 @@
 // Téléchargement d'une pièce jointe (propriétaire de l'acte uniquement).
-import { healthRecords, recordNotFound, recordObjectId } from "@/lib/server/health";
+import { healthRecords, recordNotFound, recordObjectId, requirePetAccess } from "@/lib/server/health";
 import { handle, HttpError, requireUser } from "@/lib/server/http";
 
 /** GET /api/health-records/:id/attachments/:attachmentId */
@@ -9,9 +9,10 @@ export async function GET(request: Request, ctx: RouteContext<"/api/health-recor
     const { id, attachmentId } = await ctx.params;
     const record = await (await healthRecords()).findOne(
       { _id: recordObjectId(id), ownerId: uid },
-      { projection: { attachments: 1 } },
+      { projection: { attachments: 1, petId: 1 } },
     );
     if (!record) throw recordNotFound();
+    await requirePetAccess(uid, record.petId);
     const attachment = record.attachments.find((a) => a._id.toHexString() === attachmentId);
     if (!attachment) throw new HttpError(404, "Pièce jointe introuvable.");
 

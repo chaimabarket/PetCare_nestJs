@@ -1,4 +1,5 @@
-// Module Carnet de santé côté serveur : collection MongoDB `health_records`, validation et rappels de vaccin.
+// Module Carnet de santé côté serveur : collections MongoDB `health_records` et `treatment_doses`,
+// accès à l'animal (module Mes animaux), validation et rappels de vaccin.
 import "server-only";
 import { Binary, ObjectId, type Collection } from "mongodb";
 import {
@@ -11,12 +12,13 @@ import {
 } from "@/lib/health-records";
 import { HttpError } from "./http";
 import { mongo, notifications } from "./mongo";
+import { pets, type PetDoc } from "./pets";
 
 export type AttachmentDoc = { _id: ObjectId; name: string; mimeType: string; size: number; data: Binary };
 
 /**
  * Un document par acte médical. `ownerId` = uid Firebase du propriétaire ;
- * `petId` = identifiant de l'animal (module Mes animaux, ou identifiant créé depuis /carnet-de-sante).
+ * `petId` = identifiant de l'animal dans la collection `pets` (module Mes animaux).
  */
 export type HealthRecordDoc = {
   _id: ObjectId;
@@ -33,26 +35,73 @@ export type HealthRecordDoc = {
   nextDueDate: Date | null;
   dosage: string;
   endDate: Date | null;
+  /** Traitement : heures des prises « HH:MM » (absent sur les actes créés avant le suivi des prises). */
+  doseTimes?: string[];
+  doseEveryDays?: number;
   attachments: AttachmentDoc[];
   createdAt: Date;
   updatedAt: Date;
 };
 
+/** Une prise de traitement cochée : au plus une par traitement, jour et heure. */
+export type TreatmentDoseDoc = {
+  _id: ObjectId;
+  ownerId: string;
+  recordId: string;
+  petId: string;
+  /** Jour de la prise chez l'utilisateur (AAAA-MM-JJ). */
+  day: string;
+  time: string;
+  takenAt: Date;
+};
+
 const cache = globalThis as unknown as { _petcareHealthIndexes?: Promise<void> };
 
-export async function healthRecords(): Promise<Collection<HealthRecordDoc>> {
+async function healthIndexes() {
   const db = await mongo();
-  // Carnet d'un animal, du plus récent au plus ancien.
-  cache._petcareHealthIndexes ??= db
-    .collection("health_records")
-    .createIndex({ ownerId: 1, petId: 1, date: -1 })
+  cache._petcareHealthIndexes ??= Promise.all([
+    // Carnet d'un animal, du plus récent au plus ancien.
+    db.collection("health_records").createIndex({ ownerId: 1, petId: 1, date: -1 }),
+    db.collection("treatment_doses").createIndex({ recordId: 1, day: 1, time: 1 }, { unique: true }),
+    db.collection("treatment_doses").createIndex({ ownerId: 1, day: 1 }),
+  ])
     .then(() => undefined)
     .catch((error) => {
       cache._petcareHealthIndexes = undefined;
       throw error;
     });
   await cache._petcareHealthIndexes;
-  return db.collection<HealthRecordDoc>("health_records");
+  return db;
+}
+
+export async function healthRecords(): Promise<Collection<HealthRecordDoc>> {
+  return (await healthIndexes()).collection<HealthRecordDoc>("health_records");
+}
+
+export async function treatmentDoses(): Promise<Collection<TreatmentDoseDoc>> {
+  return (await healthIndexes()).collection<TreatmentDoseDoc>("treatment_doses");
+}
+
+export const petNotFound = () => new HttpError(404, "Animal introuvable.");
+export const archivedPet = () => new HttpError(409, "Cet animal est archivé : son carnet est en lecture seule.");
+
+/**
+ * L'animal du carnet, s'il appartient à l'utilisateur (sinon 404, sans dire s'il existe).
+ * `write` : refuse toute écriture (409) quand l'animal est archivé ; la lecture et l'export restent permis.
+ */
+export async function requirePetAccess(
+  uid: string,
+  petId: string,
+  { write = false }: { write?: boolean } = {},
+): Promise<Pick<PetDoc, "_id" | "name" | "status">> {
+  if (!/^[0-9a-f]{24}$/.test(petId)) throw petNotFound();
+  const pet = await (await pets()).findOne(
+    { _id: new ObjectId(petId), ownerId: uid },
+    { projection: { name: 1, status: 1 } },
+  );
+  if (!pet) throw petNotFound();
+  if (write && pet.status === "archived") throw archivedPet();
+  return pet;
 }
 
 /** Champs lus pour l'affichage : le contenu des pièces jointes n'est chargé qu'au téléchargement. */
@@ -83,6 +132,8 @@ export function toHealthRecord(doc: Omit<HealthRecordDoc, "attachments"> & { att
     nextDueDate: isoDay(doc.nextDueDate),
     dosage: doc.dosage,
     endDate: isoDay(doc.endDate),
+    doseTimes: doc.type === "traitement" ? (doc.doseTimes ?? []) : [],
+    doseEveryDays: doc.type === "traitement" ? (doc.doseEveryDays ?? 1) : 1,
     attachments: doc.attachments.map((a) => ({ id: a._id.toHexString(), name: a.name, mimeType: a.mimeType, size: a.size })),
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),

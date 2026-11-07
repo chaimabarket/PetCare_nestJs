@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/Button";
 import { Alert, Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { TextArea, TextField } from "@/components/ui/TextField";
+import { ScanDocument } from "./ScanDocument";
 import {
   addMonthsIso,
   ATTACHMENT_MAX_BYTES,
   ATTACHMENT_TYPES,
   ATTACHMENTS_MAX_COUNT,
+  DOSE_EVERY_DAYS_MAX,
+  DOSE_TIMES_MAX,
   EMPTY_RECORD_INPUT,
   formatFileSize,
   NOTES_MAX_LENGTH,
@@ -28,7 +31,17 @@ import {
   HealthApiError,
   updateHealthRecord,
 } from "@/lib/health-records-api";
+import type { ScanSuggestion } from "@/lib/scan-parse";
 import { hasErrors, type FieldErrors } from "@/lib/validation";
+
+/** Heure proposée pour une nouvelle prise : 08:00, puis 20:00, puis 12:00… */
+const NEXT_DOSE_TIMES = ["08:00", "20:00", "12:00", "16:00", "22:00", "06:00"];
+const EVERY_CHOICES = [
+  { label: "Tous les jours", days: 1 },
+  { label: "Tous les 2 jours", days: 2 },
+  { label: "1× / semaine", days: 7 },
+  { label: "1× / mois", days: 30 },
+];
 
 const chip = (active: boolean) =>
   `h-8 px-space-md rounded-full font-label-md text-label-md transition-colors ${
@@ -65,6 +78,8 @@ export function RecordForm({
           nextDueDate: record.nextDueDate ?? "",
           dosage: record.dosage,
           endDate: record.endDate ?? "",
+          doseTimes: record.doseTimes,
+          doseEveryDays: record.doseEveryDays,
         }
       : { ...EMPTY_RECORD_INPUT, petId, petName, date: todayIso() },
   );
@@ -74,12 +89,50 @@ export function RecordForm({
   const [formError, setFormError] = useState("");
   const [fileError, setFileError] = useState("");
   const [saving, setSaving] = useState(false);
+  /** Champs pré-remplis par le scan, signalés « à vérifier » jusqu'à ce que l'utilisateur les modifie. */
+  const [scanned, setScanned] = useState<Set<HealthRecordField>>(() => new Set());
+  /** Photo du document scanné, proposée en pièce jointe. */
+  const [offeredPhoto, setOfferedPhoto] = useState<File | null>(null);
 
   const info = RECORD_TYPE_INFO[values.type];
   const set = <K extends HealthRecordField>(field: K, value: HealthRecordInput[K]) => {
     setValues((v) => ({ ...v, [field]: value }));
     setErrors((e) => ({ ...e, [field]: undefined }));
+    setScanned((current) => {
+      if (!current.has(field)) return current;
+      const next = new Set(current);
+      next.delete(field);
+      return next;
+    });
   };
+  const scanHelp = (field: HealthRecordField) => (scanned.has(field) ? "Lu sur le document : vérifiez cette valeur." : undefined);
+  const scanRing = (field: HealthRecordField) => (scanned.has(field) ? "rounded-lg ring-2 ring-tertiary-fixed-dim ring-offset-4 ring-offset-surface-container-lowest" : "");
+
+  /** Remplit uniquement les champs vides (la date du jour proposée par défaut compte comme vide). */
+  function applyScan(suggestion: ScanSuggestion, photo: File | null) {
+    const filled = new Set<HealthRecordField>();
+    const next = { ...values };
+    const fields = ["title", "date", "lotNumber", "veterinarian"] as const;
+    for (const field of fields) {
+      const value = suggestion[field];
+      if (!value || (field === "lotNumber" && values.type !== "vaccin")) continue;
+      const empty = !values[field] || (field === "date" && !record && values.date === todayIso());
+      if (!empty) continue;
+      next[field] = value;
+      filled.add(field);
+    }
+    setValues(next);
+    setScanned(filled);
+    if (photo && kept.length + files.length < ATTACHMENTS_MAX_COUNT) setOfferedPhoto(photo);
+  }
+
+  function setDoseTime(index: number, time: string) {
+    set("doseTimes", values.doseTimes.map((t, i) => (i === index ? time : t)));
+  }
+  function addDoseTime() {
+    const next = NEXT_DOSE_TIMES.find((t) => !values.doseTimes.includes(t)) ?? "08:00";
+    set("doseTimes", [...values.doseTimes, next]);
+  }
 
   function addFiles(list: FileList | null) {
     setFileError("");
@@ -184,6 +237,29 @@ export function RecordForm({
           )}
         </fieldset>
 
+        {(values.type === "vaccin" || values.type === "traitement") && (
+          <ScanDocument kind={values.type} onResult={applyScan} />
+        )}
+        {offeredPhoto && (
+          <div className="flex flex-wrap items-center gap-space-sm rounded-xl bg-surface-container-low p-space-sm font-body-sm text-body-sm">
+            <Icon name="attach_file" className="text-primary text-[18px]" />
+            <span className="flex-1 min-w-48">Joindre la photo du document à cet acte ?</span>
+            <button
+              type="button"
+              className={chip(true)}
+              onClick={() => {
+                setFiles((list) => [...list, offeredPhoto]);
+                setOfferedPhoto(null);
+              }}
+            >
+              Joindre
+            </button>
+            <button type="button" className={chip(false)} onClick={() => setOfferedPhoto(null)}>
+              Non merci
+            </button>
+          </div>
+        )}
+
         <div className="grid gap-space-lg md:grid-cols-2">
           <TextField
             label="Intitulé"
@@ -194,10 +270,13 @@ export function RecordForm({
             maxLength={120}
             onChange={(e) => set("title", e.target.value)}
             error={errors.title}
+            help={scanHelp("title")}
+            className={scanRing("title")}
           />
-          <div className="flex flex-col gap-space-xs">
+          <div className={`flex flex-col gap-space-xs ${scanRing("date")}`}>
             <TextField
               label="Date de l'acte"
+              help={scanHelp("date")}
               icon="calendar_today"
               hint="Requis"
               type="date"
@@ -224,6 +303,8 @@ export function RecordForm({
             maxLength={120}
             onChange={(e) => set("veterinarian", e.target.value)}
             error={errors.veterinarian}
+            help={scanHelp("veterinarian")}
+            className={scanRing("veterinarian")}
           />
           <TextField
             label="Lieu d'intervention / Cabinet"
@@ -253,6 +334,8 @@ export function RecordForm({
                 maxLength={120}
                 onChange={(e) => set("lotNumber", e.target.value)}
                 error={errors.lotNumber}
+                help={scanHelp("lotNumber")}
+                className={scanRing("lotNumber")}
               />
               <div className="flex flex-col gap-space-xs">
                 <TextField
@@ -314,6 +397,68 @@ export function RecordForm({
                 error={errors.endDate}
               />
             </div>
+
+            <fieldset className="flex flex-col gap-space-sm">
+              <legend className="font-label-lg text-label-lg text-on-surface mb-space-xs">
+                Suivi des prises <span className="font-label-sm text-label-sm text-on-surface-variant">(facultatif)</span>
+              </legend>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Indiquez les heures prescrites par votre vétérinaire : chaque prise apparaîtra dans l&apos;onglet Santé, à cocher.
+              </p>
+              <div className="flex flex-wrap items-center gap-space-sm">
+                {values.doseTimes.map((time, index) => (
+                  <span key={index} className="inline-flex items-center gap-1 rounded-full bg-surface-container-lowest pl-space-sm pr-1 py-1 shadow-sm">
+                    <Icon name="schedule" className="text-[18px] text-primary" />
+                    <input
+                      type="time"
+                      value={time}
+                      aria-label={`Heure de la prise ${index + 1}`}
+                      onChange={(e) => setDoseTime(index, e.target.value)}
+                      className="bg-transparent font-body-md text-body-md focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      aria-label={`Retirer la prise de ${time}`}
+                      onClick={() => set("doseTimes", values.doseTimes.filter((_, i) => i !== index))}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container"
+                    >
+                      <Icon name="close" className="text-[16px]" />
+                    </button>
+                  </span>
+                ))}
+                {values.doseTimes.length < DOSE_TIMES_MAX && (
+                  <button type="button" className={chip(false)} onClick={addDoseTime}>
+                    <span className="inline-flex items-center gap-1">
+                      <Icon name="add" className="text-[16px]" />
+                      Ajouter une heure
+                    </span>
+                  </button>
+                )}
+              </div>
+              {errors.doseTimes && <p className="font-body-sm text-body-sm text-error">{errors.doseTimes}</p>}
+              {values.doseTimes.length > 0 && (
+                <div className="flex flex-wrap items-center gap-space-xs">
+                  {EVERY_CHOICES.map(({ label, days }) => (
+                    <button key={days} type="button" className={chip(values.doseEveryDays === days)} onClick={() => set("doseEveryDays", days)}>
+                      {label}
+                    </button>
+                  ))}
+                  <label className="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+                    ou tous les
+                    <input
+                      type="number"
+                      min={1}
+                      max={DOSE_EVERY_DAYS_MAX}
+                      value={values.doseEveryDays}
+                      onChange={(e) => set("doseEveryDays", Number(e.target.value))}
+                      className="w-16 h-8 rounded-lg bg-surface-container-lowest px-2 text-center focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                    jours
+                  </label>
+                </div>
+              )}
+              {errors.doseEveryDays && <p className="font-body-sm text-body-sm text-error">{errors.doseEveryDays}</p>}
+            </fieldset>
           </section>
         )}
 

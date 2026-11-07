@@ -129,6 +129,7 @@ await Promise.all([
   col("appointments").deleteMany({ $or: [{ ownerId: { $in: uids } }, { providerId: { $in: uids } }] }),
   col("reminders").deleteMany({ ownerId: { $in: uids } }),
   col("health_records").deleteMany({ ownerId: { $in: uids } }),
+  col("treatment_doses").deleteMany({ ownerId: { $in: uids } }),
   col("pets").deleteMany({ ownerId: { $in: uids } }),
   col("petWeights").deleteMany({ ownerId: { $in: uids } }),
   col("notifications").deleteMany({ userId: { $in: uids } }),
@@ -186,12 +187,18 @@ const mimi = { id: mimiId.toHexString(), name: "Mimi", breed: "Européen roux" }
 const health = (p, type, title, date, extra = {}) => ({
   _id: new ObjectId(), ownerId: u.lina.uid, petId: p.id, petName: p.name, type, title, date,
   veterinarian: "", clinic: "", notes: "", lotNumber: "", nextDueDate: null, dosage: "", endDate: null,
-  attachments: [], createdAt: date, updatedAt: date, ...extra,
+  doseTimes: [], doseEveryDays: 1, attachments: [], createdAt: date, updatedAt: date, ...extra,
 });
 const sami = { veterinarian: "Dr Sami Trabelsi", clinic: "Clinique Vétérinaire El Menzah" };
 const ines = { veterinarian: "Dr Ines Hammami", clinic: "Cabinet Vétérinaire du Lac" };
 const rabies = health(rocky, "vaccin", "Vaccin CHPPiL + rage", day(-358), { ...sami, lotNumber: "RB-22871", nextDueDate: day(7), notes: "Rappel annuel. Bonne tolérance." });
 const typhus = health(mimi, "vaccin", "Vaccin typhus-coryza", day(-170), { ...ines, lotNumber: "TC-0912", nextDueDate: day(195) });
+// Onglet Santé : un vaccin en retard (Mimi), un traitement en cours avec prises à cocher (Rocky).
+const leucose = health(mimi, "vaccin", "Vaccin leucose (FeLV)", day(-370), { ...ines, lotNumber: "FL-5530", nextDueDate: day(-5), notes: "Rappel annuel à prévoir." });
+const dermatite = health(rocky, "traitement", "Dermatite – Apoquel", day(-3), {
+  ...sami, dosage: "1 comprimé", endDate: day(11), doseTimes: ["08:00", "20:00"], doseEveryDays: 1,
+  notes: "À donner pendant le repas.",
+});
 await col("health_records").insertMany([
   rabies,
   health(rocky, "visite", "Bilan annuel", day(-40), { ...sami, notes: "Poids 31 kg, bon état général. Surveiller l'oreille gauche." }),
@@ -199,6 +206,9 @@ await col("health_records").insertMany([
   health(rocky, "traitement", "Otite – gouttes auriculaires", day(-38), { ...sami, dosage: "5 gouttes matin et soir", endDate: day(-28) }),
   health(rocky, "allergie", "Allergie au poulet", day(-300), { notes: "Démangeaisons : croquettes sans poulet uniquement." }),
   typhus,
+  leucose,
+  dermatite,
+  health(rocky, "traitement", "Antiparasitaire (comprimé)", day(-21), { dosage: "1 comprimé", doseTimes: ["19:00"], doseEveryDays: 7 }),
   health(mimi, "visite", "Stérilisation", day(-150), { ...ines, notes: "Intervention sans complication. Fils retirés à J+10." }),
   health(mimi, "note", "Changement d'alimentation", day(-20), { notes: "Passage aux croquettes stérilisées, transition sur 7 jours." }),
 ]);

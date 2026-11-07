@@ -1,4 +1,4 @@
-// Carnet de santé : liste des actes d'un animal et ajout d'un acte. Chacun ne voit que ses propres actes.
+// Carnet de santé : liste des actes d'un animal et ajout d'un acte. Chacun ne voit que les carnets de ses animaux.
 import { ObjectId } from "mongodb";
 import { RECORD_TYPES, type RecordType } from "@/lib/health-records";
 import {
@@ -6,6 +6,7 @@ import {
   LIST_PROJECTION,
   parseNewAttachments,
   recordFields,
+  requirePetAccess,
   syncVaccineReminder,
   toHealthRecord,
   type HealthRecordDoc,
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
     const type = params.get("type");
     if (!petId) throw badRequest("Le paramètre petId est obligatoire.");
     if (type && !RECORD_TYPES.includes(type as RecordType)) throw badRequest("Type d'acte inconnu.");
+    await requirePetAccess(uid, petId);
 
     const docs = await (await healthRecords())
       .find({ ownerId: uid, petId, ...(type && { type: type as RecordType }) }, { projection: LIST_PROJECTION })
@@ -30,13 +32,16 @@ export async function GET(request: Request) {
   });
 }
 
-/** POST /api/health-records — ajoute un acte médical (et programme le rappel d'un vaccin). */
+/** POST /api/health-records — ajoute un acte médical (et programme le rappel d'un vaccin). Refusé si l'animal est archivé. */
 export async function POST(request: Request) {
   return handle(async () => {
     const { uid } = await requireUser(request);
     const body = await readJson(request);
     const fields = recordFields(body);
     const attachments = parseNewAttachments(body.newAttachments);
+    const pet = await requirePetAccess(uid, fields.petId, { write: true });
+    // Le nom affiché vient de la fiche de l'animal, pas du navigateur.
+    fields.petName = pet.name.slice(0, 60);
 
     const now = new Date();
     const record: HealthRecordDoc = { _id: new ObjectId(), ...fields, ownerId: uid, attachments, createdAt: now, updatedAt: now };
