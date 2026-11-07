@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ApiError, api } from "@/lib/api";
+import { listPets } from "@/lib/pets";
 import { addMinutes, formatTime } from "./format";
 import { findPetConflict } from "./rules";
 import type {
@@ -26,7 +27,7 @@ import type {
 export type RdvState = {
   appointments: Appointment[];
   reminders: Reminder[];
-  /** Animaux du module Mes animaux (pas encore disponible : les noms sont saisis dans les formulaires). */
+  /** Animaux actifs du module Mes animaux ; un autre nom peut toujours être saisi dans les formulaires. */
   pets: PetOption[];
   /** Démonstration : afficher le détail comme le client ou comme le prestataire. */
   viewAs: "client" | "provider";
@@ -85,12 +86,13 @@ function reviveReminder(raw: Record<string, unknown>): Reminder {
 
 async function load(uid: string) {
   try {
-    const [appointments, reminders] = await Promise.all([
+    const [appointments, reminders, pets] = await Promise.all([
       api<Record<string, unknown>[]>("/api/appointments"),
       api<Record<string, unknown>[]>("/api/reminders"),
+      activePets().catch(() => [] as PetOption[]),
     ]);
     if (loadedFor !== uid) return; // l'utilisateur a changé entre-temps
-    setState({ appointments: appointments.map(reviveAppointment), reminders: reminders.map(reviveReminder), pets: [], viewAs });
+    setState({ appointments: appointments.map(reviveAppointment), reminders: reminders.map(reviveReminder), pets, viewAs });
   } catch (error) {
     if (loadedFor !== uid) return;
     console.error("Chargement de l'agenda impossible :", error);
@@ -98,9 +100,30 @@ async function load(uid: string) {
   }
 }
 
+/** Animaux actifs du module Mes animaux (/api/pets), proposés dans les formulaires. */
+async function activePets(): Promise<PetOption[]> {
+  const pets = await listPets();
+  return pets
+    .filter((p) => p.status === "active")
+    .map((p) => ({ id: p.id, name: p.name, ...(p.breed && { breed: p.breed }) }));
+}
+
+/** Les animaux changent dans un autre module : liste relue à l'ouverture de chaque page de l'agenda. */
+async function refreshPets(uid: string) {
+  try {
+    const pets = await activePets();
+    if (loadedFor === uid) update(() => ({ pets }));
+  } catch {
+    // Liste précédente conservée ; le nom peut toujours être saisi.
+  }
+}
+
 /** Charge les données de cet utilisateur (une seule fois), ou un agenda vide pour un visiteur. */
 function ensureLoaded(uid: string | null) {
-  if (loadedFor === uid) return;
+  if (loadedFor === uid) {
+    if (uid && state) void refreshPets(uid);
+    return;
+  }
   loadedFor = uid;
   currentUserId = uid ?? "";
   if (!uid) {
