@@ -7,22 +7,35 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { Icon } from "@/components/ui/Icon";
 import { timeAgo } from "@/lib/dates";
 import { getListing, type AdoptionListing } from "@/lib/adoption";
+import { ApiError } from "@/lib/api";
+import { runAction } from "@/lib/assistant/action-runner";
+import {
+  actionFromCall,
+  actionProblem,
+  checkAction,
+  isActionReady,
+  type ActionStatus,
+  type AssistantAction,
+} from "@/lib/assistant/actions";
+import { buildDateContext, buildPetsListContext } from "@/lib/assistant/context";
 import {
   addMessage,
+  countMessage,
   createChat,
   deleteChat,
   listChats,
   listMessages,
-  rateMessage,
+  updateMessage,
   type AnswerRating,
   type AssistantChat as Chat,
   type AssistantMessage,
 } from "@/lib/assistant/history";
 import { buildListingContext, contextListings } from "@/lib/assistant/listing-context";
 import { parseAnswer, type ReminderSuggestion } from "@/lib/assistant/parser";
-import { buildPetContext, fetchHealthSummary, fetchLatestWeight, listMyPets, type AssistantPet } from "@/lib/assistant/pets";
-import { HISTORY_CHATS, isAdoptionQuestion, isoDay, recommendedQuestions } from "@/lib/assistant/prompt";
-import { AssistantError, countMessage, fetchAvailableListings, reply } from "@/lib/assistant/service";
+import { buildPetContext, fetchHealthSummary, listMyPets, type AssistantPet } from "@/lib/assistant/pets";
+import { HISTORY_CHATS, isAdoptionQuestion, recommendedQuestions } from "@/lib/assistant/prompt";
+import { AssistantError, fetchAvailableListings, reply, type AssistantReply } from "@/lib/assistant/service";
+import { ActionCard } from "./ActionCard";
 import {
   AssistantAvatar,
   AssistantBubble,
@@ -36,6 +49,26 @@ import {
 import { ReminderDialog } from "./ReminderDialog";
 
 type Streaming = { raw: string; knownIds: Set<string>; pet: AssistantPet | null };
+
+/** Actions valides (une carte chacune) et phrases pour celles qui sont incomplètes ou invalides. */
+function actionsFromCalls(calls: AssistantReply["calls"], pets: AssistantPet[]) {
+  const actions: AssistantAction[] = [];
+  const problems: string[] = [];
+  for (const call of calls.slice(0, 3)) {
+    const action = actionFromCall(call.name, call.args);
+    if (!action) continue;
+    const check = checkAction(action, pets);
+    if (isActionReady(check)) actions.push(action);
+    else problems.push(actionProblem(action, check));
+  }
+  return { actions, problems };
+}
+
+/** Message d'erreur affichable : ceux de l'assistant et de l'API sont déjà rédigés pour l'utilisateur. */
+const errorText = (error: unknown) =>
+  error instanceof AssistantError || error instanceof ApiError
+    ? error.message
+    : "L'assistant n'est pas disponible pour le moment. Réessayez plus tard.";
 
 /**
  * Assistant PetCare (maquettes Stitch W1 et W2).
@@ -60,14 +93,24 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
   const [createdReminders, setCreatedReminders] = useState<Record<number, Set<string>>>({});
   const [reminder, setReminder] = useState<{ index: number; suggestion: ReminderSuggestion } | null>(null);
   const [notice, setNotice] = useState("");
+  /** Actions en cours d'enregistrement et erreurs, par « message:action ». */
+  const [savingActions, setSavingActions] = useState<Set<string>>(new Set());
+  const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
   const stopped = useRef(false);
+  /** Messages affichés, lus après un `await` (l'état React de la fonction serait périmé). */
+  const messagesRef = useRef<AssistantMessage[]>([]);
+  const chatIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    messagesRef.current = messages;
+    chatIdRef.current = chatId;
+  }, [messages, chatId]);
   const endRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 
   const refreshChats = useCallback(async () => {
     if (!user) return;
     try {
-      setChats(await listChats(user.uid));
+      setChats(await listChats());
     } catch (error) {
       console.error("Historique indisponible :", error);
     }
@@ -75,8 +118,8 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
 
   useEffect(() => {
     if (!user) return;
-    void listMyPets(user.uid).then(setPets);
-    listChats(user.uid)
+    void listMyPets().then(setPets);
+    listChats()
       .then(setChats)
       .catch((error) => console.error("Historique indisponible :", error));
   }, [user]);
@@ -99,19 +142,18 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
 
       const selectedPet = user ? pet : null;
       let raw = "";
+      let calls: AssistantReply["calls"] = [];
       let knownIds = new Set<string>();
       let error: unknown = null;
       try {
-        if (user) await countMessage(user.uid);
+        if (user) await countMessage();
 
         const now = new Date();
-        let context = `DATE DU JOUR : ${isoDay(now)}`;
+        let context = buildDateContext(now);
+        if (user) context += `\n\n${buildPetsListContext(pets)}`;
         if (selectedPet) {
-          const [weight, health] = await Promise.all([
-            fetchLatestWeight(selectedPet.id),
-            fetchHealthSummary(selectedPet.id),
-          ]);
-          context += `\n\n${buildPetContext(selectedPet, { weight, health, now })}`;
+          const health = await fetchHealthSummary(selectedPet.id);
+          context += `\n\n${buildPetContext(selectedPet, { health, now })}`;
         }
         if (adoption || isAdoptionQuestion(question)) {
           try {
@@ -127,9 +169,10 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
         if (stopped.current) return;
 
         setStreaming({ raw: "", knownIds, pet: selectedPet });
-        for await (const partial of reply(history, question, context)) {
+        for await (const partial of reply(history, question, context, { withActions: Boolean(user) })) {
           if (stopped.current) break;
-          raw = partial;
+          raw = partial.text;
+          calls = partial.calls;
           setStreaming({ raw, knownIds, pet: selectedPet });
         }
       } catch (err) {
@@ -137,16 +180,17 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       } finally {
         const final: AssistantMessage[] = [];
         let answer: AssistantMessage | null = null;
-        if (raw.trim()) {
+        const { actions, problems } = actionsFromCalls(calls, pets);
+        if (raw.trim() || actions.length || problems.length) {
           const parsed = parseAnswer(raw, knownIds, { allowReminders: Boolean(selectedPet) });
-          answer = { fromUser: false, text: parsed.text, listingIds: parsed.listingIds, reminders: parsed.reminders };
+          // Une action incomplète ou invalide devient une question : l'utilisateur répond, le modèle réessaie.
+          const text =
+            [problems.length ? "" : parsed.text, ...problems].filter(Boolean).join("\n\n") ||
+            "Voici ce que je peux enregistrer. Vérifiez puis confirmez :";
+          answer = { fromUser: false, text, listingIds: parsed.listingIds, reminders: parsed.reminders, actions };
           final.push(answer);
         }
-        if (error) {
-          const message =
-            error instanceof AssistantError ? error.message : "L'assistant n'est pas disponible pour le moment. Réessayez plus tard.";
-          final.push({ fromUser: false, text: message, isError: true });
-        }
+        if (error) final.push({ fromUser: false, text: errorText(error), isError: true });
         setMessages([...next, ...final]);
         setStreaming(null);
         setBusy(false);
@@ -154,7 +198,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [busy, messages, pet, user, chatId],
+    [busy, messages, pet, pets, user, chatId],
   );
 
   /** Enregistre la question et la réponse dans l'historique (utilisateur connecté). */
@@ -162,12 +206,14 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
     if (!user) return;
     try {
       const petRef = selectedPet ? { id: selectedPet.id, name: selectedPet.name } : null;
-      const id =
-        chatId ?? (await createChat(user.uid, { firstQuestion: question, petId: selectedPet?.id, petName: selectedPet?.name }));
+      const id = chatId ?? (await createChat({ firstQuestion: question, petId: selectedPet?.id, petName: selectedPet?.name }));
       if (!chatId) setChatId(id);
-      await addMessage(user.uid, id, { fromUser: true, text: question }, petRef);
-      const answerId = await addMessage(user.uid, id, answer, petRef);
+      await addMessage(id, { fromUser: true, text: question }, petRef);
+      const answerId = await addMessage(id, answer, petRef);
       setMessages((current) => current.map((m, i) => (i === index ? { ...m, id: answerId } : m)));
+      // Une action confirmée avant la fin de l'enregistrement : son nouvel état est gardé aussi.
+      const current = messagesRef.current[index];
+      if (current?.actions?.some((a) => a.status !== "pending")) await updateMessage(id, answerId, { actions: current.actions });
       void refreshChats();
     } catch (error) {
       // L'historique n'est pas bloquant : la conversation continue.
@@ -191,15 +237,57 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
     setMessages((current) => current.map((m, i) => (i === index ? { ...m, rating } : m)));
     if (!user || !chatId || !message.id) return;
     try {
-      await rateMessage(user.uid, chatId, message.id, rating);
+      await updateMessage(chatId, message.id, { rating });
     } catch (error) {
       console.error("Avis non enregistré :", error);
+    }
+  }
+
+  function setActionStatus(index: number, actionIndex: number, status: ActionStatus) {
+    const message = messagesRef.current[index];
+    const actions = (message.actions ?? []).map((a, j) => (j === actionIndex ? { ...a, status } : a));
+    setMessages((current) => current.map((m, i) => (i === index ? { ...m, actions } : m)));
+    setActionErrors((current) => {
+      const next = { ...current };
+      delete next[`${index}:${actionIndex}`];
+      return next;
+    });
+    const id = chatIdRef.current;
+    if (user && id && message.id) {
+      updateMessage(id, message.id, { actions }).catch((error) => console.error("État de l'action non enregistré :", error));
+    }
+  }
+
+  /** « Confirmer » : nouvelle vérification (l'heure a pu passer), puis enregistrement par les routes habituelles. */
+  async function confirmAction(index: number, actionIndex: number) {
+    const key = `${index}:${actionIndex}`;
+    const action = messagesRef.current[index].actions![actionIndex];
+    const check = checkAction(action, pets);
+    if (!isActionReady(check)) {
+      setActionErrors((current) => ({ ...current, [key]: actionProblem(action, check) }));
+      return;
+    }
+    setSavingActions((current) => new Set(current).add(key));
+    try {
+      await runAction(action, check.pet!);
+      setActionStatus(index, actionIndex, "done");
+      if (action.type === "ajouter_pesee") void listMyPets().then(setPets);
+    } catch (error) {
+      setActionErrors((current) => ({ ...current, [key]: (error as Error).message }));
+    } finally {
+      setSavingActions((current) => {
+        const next = new Set(current);
+        next.delete(key);
+        return next;
+      });
     }
   }
 
   function newConversation() {
     setMessages([]);
     setCreatedReminders({});
+    setSavingActions(new Set());
+    setActionErrors({});
     setChatId(null);
     setHistoryOpen(false);
   }
@@ -208,7 +296,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
     if (!user) return;
     setHistoryOpen(false);
     try {
-      const loaded = await listMessages(user.uid, chat.id);
+      const loaded = await listMessages(chat.id);
       const ids = [...new Set(loaded.flatMap((m) => m.listingIds ?? []))].filter((id) => !listings[id]);
       const fetched = (await Promise.all(ids.map((id) => getListing(id).catch(() => null)))).filter(
         (l): l is AdoptionListing => Boolean(l),
@@ -216,6 +304,8 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       setListings((current) => ({ ...current, ...Object.fromEntries(fetched.map((l) => [l.id, l])) }));
       setMessages(loaded);
       setCreatedReminders({});
+      setSavingActions(new Set());
+      setActionErrors({});
       setChatId(chat.id);
       setPet(pets.find((p) => p.id === chat.petId) ?? null);
     } catch (error) {
@@ -227,7 +317,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
   async function removeChat(chat: Chat) {
     if (!user) return;
     try {
-      await deleteChat(user.uid, chat.id);
+      await deleteChat(chat.id);
       if (chat.id === chatId) newConversation();
       void refreshChats();
     } catch (error) {
@@ -360,6 +450,17 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
                     onCreateReminder={user ? (suggestion) => (pet ? setReminder({ index: i, suggestion }) : setNotice("Sélectionnez un animal pour créer un rappel.")) : undefined}
                     onRate={m.isError ? undefined : (rating) => rate(i, rating)}
                     onRetry={m.isError && i === messages.length - 1 && !busy ? () => send(lastQuestion, { retry: true }) : undefined}
+                    actionCards={(m.actions ?? []).map((a, j) => (
+                      <ActionCard
+                        key={j}
+                        action={a}
+                        pet={checkAction(a, pets).pet ?? null}
+                        saving={savingActions.has(`${i}:${j}`)}
+                        error={actionErrors[`${i}:${j}`]}
+                        onConfirm={() => confirmAction(i, j)}
+                        onCancel={() => setActionStatus(i, j, "cancelled")}
+                      />
+                    ))}
                   />
                 ),
               )}
@@ -392,7 +493,6 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
         <ReminderDialog
           suggestion={reminder.suggestion}
           pet={pet}
-          ownerId={user.uid}
           onClose={() => setReminder(null)}
           onCreated={() => {
             setCreatedReminders((current) => ({

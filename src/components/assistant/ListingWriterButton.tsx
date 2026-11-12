@@ -6,7 +6,9 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import type { ListingInput } from "@/lib/adoption";
-import { AssistantError, countMessage, writeListingDescription } from "@/lib/assistant/service";
+import { ApiError } from "@/lib/api";
+import { countMessage } from "@/lib/assistant/history";
+import { AssistantError, writeListingDescription } from "@/lib/assistant/service";
 
 /** « ✨ Rédiger avec l'IA » (maquette Stitch W4) : propose une description à partir du formulaire. */
 export function ListingWriterButton({ form, onUse }: { form: ListingInput; onUse: (text: string) => void }) {
@@ -21,10 +23,10 @@ export function ListingWriterButton({ form, onUse }: { form: ListingInput; onUse
     setError("");
     setText("");
     try {
-      if (user) await countMessage(user.uid);
+      if (user) await countMessage();
       setText(await writeListingDescription(form));
     } catch (err) {
-      setError(err instanceof AssistantError ? err.message : "L'IA n'a pas pu rédiger de description. Réessayez.");
+      setError(err instanceof AssistantError || err instanceof ApiError ? err.message : "L'IA n'a pas pu rédiger de description. Réessayez.");
     } finally {
       setLoading(false);
     }

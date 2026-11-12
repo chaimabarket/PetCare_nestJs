@@ -7,15 +7,25 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:firebase": "node scripts/test-firebase.mjs",
     "deploy:rules": "npx --yes firebase-tools@14 deploy --only firestore:rules",
-    "seed:notifications": "node scripts/seed-notifications.mjs"
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo.mjs",
+    "seed:notifications": "node --env-file=.env.local scripts/seed-notifications.mjs",
+    "test:api": "node --env-file=.env.local scripts/test-api.mjs",
+    "test:adoption": "node --env-file=.env.local scripts/test-adoption.mjs",
+    "test:health": "node --env-file=.env.local scripts/test-health.mjs",
+    "test:rendez-vous": "node --env-file=.env.local scripts/test-rendez-vous.mjs",
+    "test": "tsx --test tests/pets-models.test.ts tests/pet-weight-alert.test.ts tests/services-models.test.ts tests/assistant-actions.test.ts",
+    "test:services": "node --env-file=.env.local scripts/test-services.mjs",
+    "test:pets": "node --env-file=.env.local scripts/test-pets.mjs"
   },
   "dependencies": {
     "firebase": "^13.1.0",
+    "firebase-admin": "^14.5.0",
+    "mongodb": "^7.8.0",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
@@ -25,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

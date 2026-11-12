@@ -1,92 +1,111 @@
-import { doc, getDocs, collection, query, runTransaction, serverTimestamp, where } from "firebase/firestore";
-import { AIError, getAI, getGenerativeModel, GoogleAIBackend, type Content, type GenerativeModel } from "firebase/ai";
+import { AIError, getAI, getGenerativeModel, GoogleAIBackend, Schema, type Content, type FunctionCall, type GenerativeModel } from "firebase/ai";
 import { getApp } from "firebase/app";
-import { db } from "../firebase";
-import { ENERGY_LEVELS, PERSONALITY, SEXES, SIZES, SPECIES, type AdoptionListing, type ListingInput } from "../adoption";
-import type { AssistantMessage } from "./history";
-import { ASSISTANT_MODEL, DAILY_LIMIT, HISTORY_LENGTH, isoDay, LISTING_WRITER_PROMPT, SYSTEM_PROMPT } from "./prompt";
+import { ENERGY_LEVELS, listPublicListings, PERSONALITY, SEXES, SIZES, SPECIES, type AdoptionListing, type ListingInput } from "../adoption";
+import { byNewest } from "../adoption-models";
+import { auth } from "../firebase";
+import { ACTIONS, type ActionField, type ActionType } from "./actions";
+import { historyText, type AssistantMessage } from "./history";
+import { ACTIONS_PROMPT, ASSISTANT_MODEL, HISTORY_LENGTH, LISTING_WRITER_PROMPT, SYSTEM_PROMPT } from "./prompt";
 
 /** Erreur affichable telle quelle dans la conversation. */
 export class AssistantError extends Error {}
 
-export const LIMIT_REACHED = `Vous avez atteint vos ${DAILY_LIMIT} messages du jour. À demain ! 🐾`;
+/** Réponse en cours : texte cumulé et actions demandées par le modèle. */
+export type AssistantReply = { text: string; calls: FunctionCall[] };
+
+const schemaOf = (f: ActionField) =>
+  f.kind === "number"
+    ? Schema.number({ description: f.description })
+    : f.kind === "choice"
+      ? Schema.enumString({ enum: [...(f.options ?? [])], description: f.description })
+      : Schema.string({ description: f.description });
+
+/** Fonctions décrites au modèle : les champs obligatoires lui indiquent quoi demander. */
+const ACTION_TOOLS = [
+  {
+    functionDeclarations: (Object.keys(ACTIONS) as ActionType[]).map((name) => ({
+      name,
+      description: ACTIONS[name].description,
+      parameters: Schema.object({
+        properties: Object.fromEntries(ACTIONS[name].fields.map((f) => [f.key, schemaOf(f)])),
+        optionalProperties: ACTIONS[name].fields.filter((f) => !f.required).map((f) => f.key),
+      }),
+    })),
+  },
+];
 
 // GoogleAIBackend = Gemini Developer API, utilisable sur le plan gratuit. Ne pas passer à VertexAIBackend.
-let chatModel: GenerativeModel | null = null;
-let writerModel: GenerativeModel | null = null;
+let cached: { chat: GenerativeModel; actions: GenerativeModel; writer: GenerativeModel } | null = null;
 
 function models() {
-  if (!chatModel || !writerModel) {
-    db(); // initialise l'application Firebase
+  if (!cached) {
+    auth(); // initialise l'application Firebase
     const ai = getAI(getApp(), { backend: new GoogleAIBackend() });
-    chatModel = getGenerativeModel(ai, {
-      model: ASSISTANT_MODEL,
-      systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 700 },
-    });
-    writerModel = getGenerativeModel(ai, {
-      model: ASSISTANT_MODEL,
-      systemInstruction: LISTING_WRITER_PROMPT,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
-    });
+    cached = {
+      chat: getGenerativeModel(ai, {
+        model: ASSISTANT_MODEL,
+        systemInstruction: SYSTEM_PROMPT,
+        generationConfig: { temperature: 0.4, maxOutputTokens: 700 },
+      }),
+      // Même modèle avec les fonctions d'enregistrement : il prépare l'action, l'utilisateur la confirme.
+      actions: getGenerativeModel(ai, {
+        model: ASSISTANT_MODEL,
+        systemInstruction: `${SYSTEM_PROMPT}\n${ACTIONS_PROMPT}`,
+        generationConfig: { temperature: 0.2, maxOutputTokens: 700 },
+        tools: ACTION_TOOLS,
+      }),
+      writer: getGenerativeModel(ai, {
+        model: ASSISTANT_MODEL,
+        systemInstruction: LISTING_WRITER_PROMPT,
+        generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
+      }),
+    };
   }
-  return { chatModel, writerModel };
+  return cached;
 }
 
 /** Annonces disponibles, jointes aux questions d'adoption. */
 export async function fetchAvailableListings(): Promise<AdoptionListing[]> {
-  const snapshot = await getDocs(query(collection(db(), "adoptionListings"), where("status", "==", "disponible")));
-  const millis = (l: AdoptionListing) => (l.publishedAt ?? l.createdAt)?.toMillis() ?? 0;
-  return snapshot.docs
-    .map((d) => ({ id: d.id, ...d.data() }) as AdoptionListing)
-    .sort((a, b) => millis(b) - millis(a));
-}
-
-/** Compte un message dans `users/{uid}/assistantUsage/{jour}` ; refuse au-delà de la limite. */
-export async function countMessage(uid: string): Promise<void> {
-  const ref = doc(db(), "users", uid, "assistantUsage", isoDay(new Date()));
-  try {
-    await runTransaction(db(), async (tx) => {
-      const snapshot = await tx.get(ref);
-      const count = (snapshot.data()?.count as number | undefined) ?? 0;
-      if (count >= DAILY_LIMIT) throw new AssistantError(LIMIT_REACHED);
-      tx.set(ref, { count: count + 1, updatedAt: serverTimestamp() });
-    });
-  } catch (error) {
-    if (error instanceof AssistantError) throw error;
-    console.error("Compteur de l'assistant :", error);
-    const denied = (error as { code?: string }).code === "permission-denied";
-    throw new AssistantError(denied ? LIMIT_REACHED : "Impossible d'envoyer le message. Vérifiez votre connexion.");
-  }
+  const listings = await listPublicListings();
+  return listings.filter((l) => l.status === "disponible").sort(byNewest);
 }
 
 /**
- * Envoie la question avec les derniers messages ; renvoie la réponse au fur et à mesure (texte cumulé).
- * `context` (date du jour, animal sélectionné, annonces) est ajouté à la question sans être affiché.
+ * Envoie la question avec les derniers messages ; renvoie la réponse au fur et à mesure.
+ * `context` (date du jour, animaux, annonces) est ajouté à la question sans être affiché.
+ * `withActions` donne au modèle les fonctions d'enregistrement (utilisateur connecté).
  */
-export async function* reply(history: AssistantMessage[], question: string, context: string): AsyncGenerator<string> {
-  const previous = history.filter((m) => !m.isError && m.text);
+export async function* reply(
+  history: AssistantMessage[],
+  question: string,
+  context: string,
+  { withActions = false } = {},
+): AsyncGenerator<AssistantReply> {
+  const previous = history.filter((m) => !m.isError && historyText(m));
   const content = (fromUser: boolean, text: string): Content => ({
     role: fromUser ? "user" : "model",
     parts: [{ type: "text", text }],
   });
   const contents = [
-    ...previous.slice(-HISTORY_LENGTH).map((m) => content(m.fromUser, m.text)),
+    ...previous.slice(-HISTORY_LENGTH).map((m) => content(m.fromUser, m.fromUser ? m.text : historyText(m))),
     content(true, `${context}\n\nQUESTION : ${question}`),
   ];
   let answer = "";
+  const calls: FunctionCall[] = [];
   try {
-    const result = await models().chatModel.generateContentStream({ contents });
+    const model = withActions ? models().actions : models().chat;
+    const result = await model.generateContentStream({ contents });
     for await (const chunk of result.stream) {
+      const newCalls = chunk.functionCalls() ?? [];
+      calls.push(...newCalls);
       const text = chunk.text();
-      if (!text) continue;
-      answer += text;
-      yield answer;
+      if (text) answer += text;
+      if (text || newCalls.length) yield { text: answer, calls: [...calls] };
     }
   } catch (error) {
     throw toAssistantError(error);
   }
-  if (!answer) throw new AssistantError("Je ne peux pas répondre à cette question. Essayez de la reformuler.");
+  if (!answer && !calls.length) throw new AssistantError("Je ne peux pas répondre à cette question. Essayez de la reformuler.");
 }
 
 /** « Rédiger avec l'IA » : description d'annonce à partir des champs du formulaire. */
@@ -108,7 +127,7 @@ export async function writeListingDescription(form: ListingInput): Promise<strin
     form.story.trim() ? `Notes actuelles : ${form.story.trim()}` : null,
   ].filter(Boolean);
   try {
-    const result = await models().writerModel.generateContent(facts.join("\n"));
+    const result = await models().writer.generateContent(facts.join("\n"));
     const text = result.response.text().trim();
     if (!text) throw new AssistantError("L'IA n'a pas pu rédiger de description. Réessayez.");
     return text;

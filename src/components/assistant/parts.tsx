@@ -108,6 +108,7 @@ export function AssistantBubble({
   onRate,
   onRetry,
   writing = false,
+  actionCards,
 }: {
   message: AssistantMessage;
   listings?: AdoptionListing[];
@@ -116,6 +117,8 @@ export function AssistantBubble({
   onRate?: (rating: AnswerRating | null) => void;
   onRetry?: () => void;
   writing?: boolean;
+  /** Cartes de confirmation des actions préparées par l'assistant. */
+  actionCards?: React.ReactNode;
 }) {
   const urgent = message.text.startsWith("⚠️");
   const highlight = message.isError || urgent;
@@ -131,6 +134,7 @@ export function AssistantBubble({
           {message.text}
           {writing && <span className="animate-pulse"> ▍</span>}
         </p>
+        {actionCards}
         {message.reminders?.map((r) => (
           <ReminderButton
             key={r.title}

@@ -15,13 +15,11 @@ import { keysOf } from "@/lib/adoption";
 export function ReminderDialog({
   suggestion,
   pet,
-  ownerId,
   onClose,
   onCreated,
 }: {
   suggestion: ReminderSuggestion;
   pet: AssistantPet;
-  ownerId: string;
   onClose: () => void;
   onCreated: () => void;
 }) {
@@ -40,9 +38,7 @@ export function ReminderDialog({
     setError("");
     try {
       await createReminder({
-        ownerId,
         petName: pet.name,
-        petBreed: pet.breed,
         title,
         category,
         dueAt: new Date(y, m - 1, d, 9),

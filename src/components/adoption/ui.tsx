@@ -120,7 +120,7 @@ export function PersonalityBadges({
 
 /**
  * Photo d'annonce (data URL compressée). <img> plutôt que next/image :
- * les photos sont déjà redimensionnées et stockées dans Firestore.
+ * les photos sont déjà redimensionnées et stockées dans MongoDB.
  */
 export function Photo({ src, alt, className = "" }: { src?: string; alt: string; className?: string }) {
   if (!src) {

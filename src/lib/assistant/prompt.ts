@@ -2,8 +2,8 @@
  * Texte fixe de l'assistant IA : consignes du modèle, questions recommandées et détection
  * des questions d'adoption. Même contenu que la version Flutter.
  */
-import type { AssistantPet } from "./pets";
-import { isSenior, isYoung } from "./pets";
+import type { AssistantPet } from "./pets-model";
+import { isSenior, isYoung } from "./pets-model";
 
 /**
  * Modèle Gemini gratuit (Gemini Developer API, plan Spark).
@@ -11,15 +11,12 @@ import { isSenior, isYoung } from "./pets";
  */
 export const ASSISTANT_MODEL = "gemini-3.5-flash-lite";
 
-/** Messages par utilisateur connecté et par jour (protège le quota gratuit). Même valeur dans firestore.rules. */
-export const DAILY_LIMIT = 30;
+export { DAILY_LIMIT, HISTORY_CHATS } from "./limits";
 export const QUESTION_MAX_LENGTH = 500;
 /** Nombre de messages précédents envoyés au modèle. */
 export const HISTORY_LENGTH = 10;
 export const MAX_LISTING_SUGGESTIONS = 3;
 export const MAX_REMINDERS = 2;
-/** Conversations gardées dans l'historique. */
-export const HISTORY_CHATS = 10;
 
 export const SYSTEM_PROMPT = `Tu es « Assistant PetCare », l'assistant de l'application PetCare Community (Tunisie).
 Règles :
@@ -44,7 +41,33 @@ Règles :
   Si aucun ne correspond, dis-le et propose d'élargir les critères.
   Si aucune liste ANNONCES n'est fournie, ne propose aucun animal précis.
   Rappelle que la décision finale revient au refuge ou au propriétaire de l'annonce.
-- N'utilise pas de Markdown sauf des listes à puces avec « - ».`;
+- N'utilise pas de Markdown sauf des listes à puces avec « - ».
+- Tu ne modifies jamais toi-même les données de l'application. Ne dis jamais « c'est noté », « j'ai ajouté »
+  ou « c'est enregistré ». Si tu ne disposes pas de fonction pour le faire, explique où le faire dans
+  l'application : Mes animaux, Carnet de santé (soins, vaccins, allergies, traitements), Rendez-vous, Rappels.
+  Tu ne peux jamais supprimer ni modifier une donnée existante.`;
+
+/** Consignes ajoutées quand l'utilisateur est connecté : le modèle peut préparer des enregistrements. */
+export const ACTIONS_PROMPT = `Actions :
+- Tu disposes de fonctions pour préparer un enregistrement : ajouter_soin (carnet de santé : visite, vaccin,
+  examen, allergie, note), ajouter_traitement, creer_rendez_vous, ajouter_pesee, creer_rappel.
+- Appelle une fonction seulement si l'utilisateur demande clairement d'ajouter, noter, enregistrer,
+  programmer ou planifier quelque chose. Pour un simple conseil, réponds sans fonction.
+- N'invente jamais une valeur. Si une information obligatoire manque (animal, date, heure, type, posologie,
+  vétérinaire…), n'appelle pas la fonction : pose une seule question qui demande toutes les informations
+  manquantes. Une visite, un vaccin ou un examen demande aussi le nom du vétérinaire.
+  Ne complète jamais une heure, une date de rappel, une posologie ou un poids par une valeur « habituelle ».
+  Exemple : « Prends rendez-vous chez le véto pour Rex demain » → pas de fonction, réponds
+  « À quelle heure souhaitez-vous ce rendez-vous pour Rex ? ».
+- Calcule les dates relatives (« demain », « jeudi prochain ») à partir de la DATE DU JOUR et de l'HEURE.
+- L'animal est un nom de la liste ANIMAUX DE L'UTILISATEUR. « Il », « elle » ou « mon animal » désigne
+  l'ANIMAL SÉLECTIONNÉ.
+- Le carnet de santé note les soins déjà faits (date passée ou aujourd'hui) ; un soin à venir est un
+  rendez-vous ou un rappel.
+- Quand tu appelles une fonction, écris une phrase courte qui invite l'utilisateur à vérifier puis à
+  confirmer la carte. Rien n'est enregistré tant qu'il n'a pas confirmé.
+- L'historique peut contenir des lignes [Action …] : elles indiquent si une action a été confirmée,
+  annulée ou est encore en attente. Ne propose pas deux fois la même action.`;
 
 /** Consignes de « Rédiger avec l'IA » (formulaire d'annonce d'adoption). */
 export const LISTING_WRITER_PROMPT = `Tu rédiges la description d'une annonce d'adoption pour l'application PetCare Community.

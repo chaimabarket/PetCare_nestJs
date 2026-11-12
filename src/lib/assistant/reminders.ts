@@ -1,10 +1,6 @@
-import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { api } from "../api";
 
-/**
- * Rappels du module 3 (Rendez-vous et rappels), collection `reminders` : même format que
- * la version Flutter, pour que le module 3 web les affiche tels quels.
- */
+/** Rappels du module Rendez-vous et rappels (`POST /api/reminders`, MongoDB). */
 export type ReminderCategory = "medicament" | "soin" | "veterinaire" | "traitement" | "hygiene" | "controle";
 
 export const REMINDER_CATEGORIES: Record<ReminderCategory, string> = {
@@ -28,25 +24,20 @@ export function guessReminderCategory(title: string): ReminderCategory {
 }
 
 export async function createReminder(input: {
-  ownerId: string;
   petName: string;
-  petBreed?: string;
   title: string;
   category: ReminderCategory;
   dueAt: Date;
+  description?: string;
 }): Promise<void> {
-  await addDoc(collection(db(), "reminders"), {
-    ownerId: input.ownerId,
-    petName: input.petName.trim(),
-    petBreed: input.petBreed ?? null,
-    petPhotoUrl: null,
-    title: input.title.trim(),
-    description: "Conseillé par l'assistant PetCare",
-    detail: null,
-    category: input.category,
-    dueAt: Timestamp.fromDate(input.dueAt),
-    done: false,
-    doneAt: null,
-    createdAt: serverTimestamp(),
+  await api("/api/reminders", {
+    method: "POST",
+    body: {
+      petName: input.petName.trim(),
+      title: input.title.trim(),
+      description: input.description ?? "Conseillé par l'assistant PetCare",
+      category: input.category,
+      dueAt: input.dueAt.toISOString(),
+    },
   });
 }
