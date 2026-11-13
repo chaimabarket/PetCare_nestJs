@@ -126,6 +126,25 @@ export default function AdoptionFeedPage() {
           ))}
         </div>
 
+        {/* Assistant IA : suggestions d'animaux selon le mode de vie (maquette Stitch W3). */}
+        <Link
+          href="/assistant?adoption=1"
+          className="mb-space-lg flex items-center gap-space-md rounded-2xl bg-gradient-to-r from-primary-container to-primary-fixed/70 p-space-md md:p-space-lg shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="w-12 h-12 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shrink-0">
+            <Icon name="pets" filled className="text-[26px]" />
+          </span>
+          <span className="flex-1">
+            <span className="block font-headline-sm text-headline-sm text-on-primary">Pas sûr de quel animal adopter ?</span>
+            <span className="block font-body-md text-body-md text-on-primary-container">
+              Décrivez votre mode de vie, l&apos;assistant vous propose des animaux compatibles.
+            </span>
+          </span>
+          <span className="hidden sm:inline-flex items-center h-10 px-space-md rounded-full bg-surface-container-lowest text-primary font-label-lg text-label-lg">
+            Demander à l&apos;assistant
+          </span>
+        </Link>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
           <aside className="hidden lg:flex lg:col-span-3 flex-col gap-space-md bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm sticky top-20">
             <div className="flex items-center justify-between pb-space-sm border-b border-surface-container-high">

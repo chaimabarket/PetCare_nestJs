@@ -14,7 +14,7 @@
     "test:adoption": "node --env-file=.env.local scripts/test-adoption.mjs",
     "test:health": "node --env-file=.env.local scripts/test-health.mjs",
     "test:rendez-vous": "node --env-file=.env.local scripts/test-rendez-vous.mjs",
-    "test": "tsx --test tests/pets-models.test.ts tests/pet-weight-alert.test.ts tests/services-models.test.ts",
+    "test": "tsx --test tests/pets-models.test.ts tests/pet-weight-alert.test.ts tests/services-models.test.ts tests/assistant-actions.test.ts",
     "test:services": "node --env-file=.env.local scripts/test-services.mjs",
     "test:pets": "node --env-file=.env.local scripts/test-pets.mjs"
   },
