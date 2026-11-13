@@ -93,6 +93,8 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
   const [createdReminders, setCreatedReminders] = useState<Record<number, Set<string>>>({});
   const [reminder, setReminder] = useState<{ index: number; suggestion: ReminderSuggestion } | null>(null);
   const [notice, setNotice] = useState("");
+  /** Information neutre (ex. « Nouvelle conversation sur Rex. »). */
+  const [info, setInfo] = useState("");
   /** Actions en cours d'enregistrement et erreurs, par « message:action ». */
   const [savingActions, setSavingActions] = useState<Set<string>>(new Set());
   const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
@@ -100,6 +102,8 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
   /** Messages affichés, lus après un `await` (l'état React de la fonction serait périmé). */
   const messagesRef = useRef<AssistantMessage[]>([]);
   const chatIdRef = useRef<string | null>(null);
+  /** Change à chaque nouvelle conversation : un enregistrement en cours ne s'applique qu'à la sienne. */
+  const conversationKey = useRef(0);
   useEffect(() => {
     messagesRef.current = messages;
     chatIdRef.current = chatId;
@@ -137,6 +141,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       const next = retry ? base : [...base, { fromUser: true, text: question }];
       setMessages(next);
       setInput("");
+      setInfo("");
       setBusy(true);
       stopped.current = false;
 
@@ -206,7 +211,9 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
     if (!user) return;
     try {
       const petRef = selectedPet ? { id: selectedPet.id, name: selectedPet.name } : null;
+      const key = conversationKey.current;
       const id = chatId ?? (await createChat({ firstQuestion: question, petId: selectedPet?.id, petName: selectedPet?.name }));
+      if (key !== conversationKey.current) return;
       if (!chatId) setChatId(id);
       await addMessage(id, { fromUser: true, text: question }, petRef);
       const answerId = await addMessage(id, answer, petRef);
@@ -284,6 +291,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
   }
 
   function newConversation() {
+    conversationKey.current++;
     setMessages([]);
     setCreatedReminders({});
     setSavingActions(new Set());
@@ -292,9 +300,19 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
     setHistoryOpen(false);
   }
 
+  /** Une conversation porte sur un seul animal : en changer démarre une nouvelle conversation (sauf si elle est vide). */
+  function selectPet(next: AssistantPet | null) {
+    if (next?.id === pet?.id) return;
+    const hadMessages = messages.length > 0;
+    if (hadMessages) newConversation();
+    setPet(next);
+    setInfo(hadMessages ? (next ? `Nouvelle conversation sur ${next.name}.` : "Nouvelle conversation générale.") : "");
+  }
+
   async function openChat(chat: Chat) {
     if (!user) return;
     setHistoryOpen(false);
+    setInfo("");
     try {
       const loaded = await listMessages(chat.id);
       const ids = [...new Set(loaded.flatMap((m) => m.listingIds ?? []))].filter((id) => !listings[id]);
@@ -306,6 +324,7 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       setCreatedReminders({});
       setSavingActions(new Set());
       setActionErrors({});
+      conversationKey.current++;
       setChatId(chat.id);
       setPet(pets.find((p) => p.id === chat.petId) ?? null);
     } catch (error) {
@@ -404,7 +423,12 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
           )}
         </header>
         <Disclaimer />
-        {user && pets.length > 0 && <PetSelector pets={pets} selected={pet} onSelect={setPet} disabled={busy} />}
+        {user && pets.length > 0 && <PetSelector pets={pets} selected={pet} onSelect={selectPet} disabled={busy} />}
+        {info && (
+          <p role="status" className="self-center rounded-full bg-surface-container-low px-space-sm py-1 font-body-sm text-body-sm text-on-surface-variant">
+            {info}
+          </p>
+        )}
         {notice && (
           <p role="status" className="font-body-sm text-body-sm text-error">
             {notice}
