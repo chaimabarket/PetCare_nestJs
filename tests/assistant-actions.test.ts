@@ -13,6 +13,7 @@ import {
   isActionReady,
   type AssistantAction,
 } from "../src/lib/assistant/actions";
+import { parseAnswer } from "../src/lib/assistant/parser";
 import { buildDateContext, buildHealthSummary, buildPetsListContext } from "../src/lib/assistant/context";
 import type { AssistantPet } from "../src/lib/assistant/pets-model";
 
@@ -135,5 +136,36 @@ describe("affichage et historique", () => {
       "Traitement en cours : Milbemax (1 comprimé) jusqu'au 15/11/2026",
       "Dernière visite : Bilan annuel le 10/09/2026",
     ]);
+  });
+});
+
+describe("parseAnswer : action écrite en texte au lieu d'un appel de fonction", () => {
+  const ids = new Set<string>();
+  const RAW =
+    "Pour le rendez-vous chez le vétérinaire lundi (16/11/2026), à quelle heure souhaitez-vous le fixer ?\n" +
+    "Vérifiez et confirmez la carte ci-dessous :\n\n[[creer_rendez-vous:Rocky|Toilettage|toilettage|2026-11-16|15:00]]";
+
+  it("le tag n'est pas affiché et devient le même appel que la fonction", () => {
+    const parsed = parseAnswer(RAW, ids, { now: NOW });
+    assert.doesNotMatch(parsed.text, /\[\[|\]\]/);
+    assert.deepEqual(parsed.textCalls, [
+      { name: "creer_rendez_vous", args: { animal: "Rocky", titre: "Toilettage", type: "toilettage", date: "2026-11-16", heure: "15:00" } },
+    ]);
+    const a = call(parsed.textCalls[0].name, parsed.textCalls[0].args);
+    const pets: AssistantPet[] = [{ id: "r", name: "Rocky", species: "dog" }];
+    assert.ok(isActionReady(checkAction(a, pets, NOW)));
+  });
+
+  it("valeurs « clé=valeur », tag inconnu retiré, rappels et annonces inchangés", () => {
+    const parsed = parseAnswer(
+      "Ok [[ajouter_pesee:poids_kg=12.5|animal=Rex]] [[supprimer:Rex]] [[rappel:Vermifuger Rex|2026-12-01]] [[annonce:a1]]",
+      new Set(["a1"]),
+      { allowReminders: true, now: NOW },
+    );
+    assert.equal(parsed.text, "Ok");
+    assert.deepEqual(parsed.textCalls, [{ name: "ajouter_pesee", args: { poids_kg: "12.5", animal: "Rex" } }]);
+    assert.equal(parsed.reminders.length, 1);
+    assert.deepEqual(parsed.listingIds, ["a1"]);
+    assert.ok(isActionReady(checkAction(call("ajouter_pesee", parsed.textCalls[0].args), PETS, NOW)));
   });
 });

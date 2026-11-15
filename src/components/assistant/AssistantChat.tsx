@@ -51,7 +51,7 @@ import { ReminderDialog } from "./ReminderDialog";
 type Streaming = { raw: string; knownIds: Set<string>; pet: AssistantPet | null };
 
 /** Actions valides (une carte chacune) et phrases pour celles qui sont incomplètes ou invalides. */
-function actionsFromCalls(calls: AssistantReply["calls"], pets: AssistantPet[]) {
+function actionsFromCalls(calls: { name: string; args: object }[], pets: AssistantPet[]) {
   const actions: AssistantAction[] = [];
   const problems: string[] = [];
   for (const call of calls.slice(0, 3)) {
@@ -185,9 +185,10 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       } finally {
         const final: AssistantMessage[] = [];
         let answer: AssistantMessage | null = null;
-        const { actions, problems } = actionsFromCalls(calls, pets);
+        const parsed = parseAnswer(raw, knownIds, { allowReminders: Boolean(selectedPet) });
+        // Le modèle écrit parfois l'action en texte au lieu d'appeler la fonction : même carte, mêmes contrôles.
+        const { actions, problems } = actionsFromCalls(calls.length ? calls : parsed.textCalls, pets);
         if (raw.trim() || actions.length || problems.length) {
-          const parsed = parseAnswer(raw, knownIds, { allowReminders: Boolean(selectedPet) });
           // Une action incomplète ou invalide devient une question : l'utilisateur répond, le modèle réessaie.
           const text =
             [problems.length ? "" : parsed.text, ...problems].filter(Boolean).join("\n\n") ||

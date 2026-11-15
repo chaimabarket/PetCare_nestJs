@@ -76,6 +76,10 @@ export const ACTIONS_PROMPT = `Actions :
   l'ANIMAL SÉLECTIONNÉ.
 - Le carnet de santé note les soins déjà faits (date passée ou aujourd'hui) ; un soin à venir est un
   rendez-vous ou un rappel.
+- Une action se prépare UNIQUEMENT en appelant la fonction. N'écris jamais une action sous forme de tag
+  ([[creer_rendez_vous:…]] ou autre) : les seuls tags existants sont [[rappel:…]] et [[annonce:…]].
+- Plusieurs demandes dans un même message : appelle une fonction pour chaque demande complète et pose
+  une seule question pour les informations manquantes des autres.
 - Quand tu appelles une fonction, écris une phrase courte qui invite l'utilisateur à vérifier puis à
   confirmer la carte. Rien n'est enregistré tant qu'il n'a pas confirmé.
 - Après un conseil santé (hors simple question générale), termine par une phrase qui propose ce que tu
