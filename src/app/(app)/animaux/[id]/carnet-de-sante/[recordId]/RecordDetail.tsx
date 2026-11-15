@@ -4,12 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { Breadcrumb, ButtonLink, carnetHref, ConfirmDialog, PageLoading, pageClass, usePet } from "@/components/sante/ui";
+import { Breadcrumb, ButtonLink, carnetHref, ConfirmDialog, PageLoading, pageClass, ReadOnlyBanner, usePet } from "@/components/sante/ui";
 import { Button } from "@/components/ui/Button";
 import { Alert, Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { formatFileSize, formatRecordDate, RECORD_TYPE_INFO, type HealthRecord } from "@/lib/health-records";
 import { deleteHealthRecord, getHealthRecord, openAttachment } from "@/lib/health-records-api";
+import { doseScheduleLabel } from "@/lib/health-summary";
 
 export function RecordDetail({ petId, recordId }: { petId: string; recordId: string }) {
   return (
@@ -19,7 +20,7 @@ export function RecordDetail({ petId, recordId }: { petId: string; recordId: str
   );
 }
 
-/** Détail d'un acte médical, avec modification et suppression. */
+/** Détail d'un acte médical, avec modification et suppression (sauf si l'animal est archivé). */
 function RecordDetailContent({ petId, recordId }: { petId: string; recordId: string }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -27,7 +28,7 @@ function RecordDetailContent({ petId, recordId }: { petId: string; recordId: str
   const [error, setError] = useState("");
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const { name } = usePet(petId, record?.petName);
+  const { name, readOnly } = usePet(petId, record?.petName);
   const back = carnetHref(petId, name);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ function RecordDetailContent({ petId, recordId }: { petId: string; recordId: str
   const breadcrumb = (
     <Breadcrumb
       items={[
-        { label: "Carnets de santé", href: "/carnet-de-sante" },
+        { label: "Santé", href: "/carnet-de-sante" },
         { label: name, href: back },
         { label: record?.title ?? "Acte médical" },
       ]}
@@ -98,6 +99,7 @@ function RecordDetailContent({ petId, recordId }: { petId: string; recordId: str
     ["tag", "Numéro de lot", record.lotNumber || null],
     ["event_repeat", "Prochain rappel", record.nextDueDate ? formatRecordDate(record.nextDueDate) : null],
     ["pill", "Posologie", record.dosage || null],
+    ["schedule", "Prises", doseScheduleLabel(record) || null],
     ["event_available", "Fin du traitement", record.endDate ? formatRecordDate(record.endDate) : null],
   ];
 
@@ -116,6 +118,7 @@ function RecordDetailContent({ petId, recordId }: { petId: string; recordId: str
           </p>
         </div>
 
+        {readOnly && <ReadOnlyBanner name={name} />}
         {error && <Alert>{error}</Alert>}
 
         <dl className="grid gap-space-md sm:grid-cols-2">
@@ -165,14 +168,16 @@ function RecordDetailContent({ petId, recordId }: { petId: string; recordId: str
           <ButtonLink href={back} variant="secondary" icon="arrow_back">
             Retour au carnet
           </ButtonLink>
-          <div className="flex flex-col-reverse sm:flex-row gap-space-sm">
-            <Button type="button" variant="danger" onClick={() => setConfirming(true)}>
-              Supprimer
-            </Button>
-            <ButtonLink href={`/animaux/${encodeURIComponent(petId)}/carnet-de-sante/${record.id}/modifier`} icon="edit">
-              Modifier
-            </ButtonLink>
-          </div>
+          {!readOnly && (
+            <div className="flex flex-col-reverse sm:flex-row gap-space-sm">
+              <Button type="button" variant="danger" onClick={() => setConfirming(true)}>
+                Supprimer
+              </Button>
+              <ButtonLink href={`/animaux/${encodeURIComponent(petId)}/carnet-de-sante/${record.id}/modifier`} icon="edit">
+                Modifier
+              </ButtonLink>
+            </div>
+          )}
         </div>
       </Card>
 

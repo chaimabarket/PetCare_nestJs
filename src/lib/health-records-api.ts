@@ -1,7 +1,9 @@
 import { ApiError, api } from "./api";
 import { auth } from "./firebase";
 import type { HealthRecord, HealthRecordInput, NewAttachment, RecordType } from "./health-records";
-import { getPet as getPetSheet, listPets, type Pet } from "./pets";
+import type { CreatedShare, HealthShare, SharedHealthBook, ShareInput } from "./health-share";
+import type { HealthSummary } from "./health-summary";
+import { getPet as getPetSheet, type Pet } from "./pets";
 
 /**
  * Appels du navigateur vers l'API du carnet de santé (/api/health-records, données dans MongoDB).
@@ -71,12 +73,16 @@ export async function openAttachment(recordId: string, attachmentId: string): Pr
   }
 }
 
-export type HealthPetSummary = { petId: string; petName: string; count: number; lastDate: string };
+/** Onglet Santé : cartes des animaux et tableau de bord du jour `day` (jour local, AAAA-MM-JJ). */
+export async function getHealthSummary(day: string): Promise<HealthSummary> {
+  return api<HealthSummary>(`/api/health-records/summary?${new URLSearchParams({ day })}`);
+}
 
-/** Animaux qui ont déjà des actes dans le carnet. */
-export async function listPetsWithRecords(): Promise<HealthPetSummary[]> {
-  const { pets } = await api<{ pets: HealthPetSummary[] }>("/api/health-records/pets");
-  return pets;
+/** Note (taken = true) ou annule une prise de traitement. */
+export async function setDoseTaken(recordId: string, day: string, time: string, taken: boolean): Promise<void> {
+  const path = `/api/health-records/${encodeURIComponent(recordId)}/doses`;
+  if (taken) await api(path, { method: "POST", body: { day, time } });
+  else await api(`${path}?${new URLSearchParams({ day, time })}`, { method: "DELETE" });
 }
 
 /** Fichier choisi dans le formulaire → pièce jointe en base64. */
@@ -94,25 +100,25 @@ export function fileToAttachment(file: File): Promise<NewAttachment> {
 
 /* ---------- Animaux (module 1 « Mes animaux ») ---------- */
 
-export type PetInfo = { id: string; name: string; species?: string; breed?: string };
+export type PetInfo = { id: string; name: string; species?: string; breed?: string; archived: boolean; thumbnail: string };
 
-const toPetInfo = (p: Pet): PetInfo => ({ id: p.id, name: p.name, species: p.species,breed: p.breed || undefined });
+const toPetInfo = (p: Pet): PetInfo => ({
+  id: p.id,
+  name: p.name,
+  species: p.species,
+  breed: p.breed || undefined,
+  archived: p.status === "archived",
+  thumbnail: p.photos[0]?.thumbnail ?? "",
+});
 
-/**
- * Animaux de l'utilisateur (module 1 « Mes animaux », /api/pets), hors archivés.
- * Un carnet créé en saisissant seulement un nom (identifiant sans fiche) reste listé grâce à ses actes.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function listMyPets(uid: string): Promise<PetInfo[]> {
-  return (await listPets()).filter((p) => p.status !== "archived").map(toPetInfo);
-}
-
-/** Fiche du module 1, ou null si ce carnet n'est pas relié à une fiche (le nom vient alors du carnet). */
+/** Fiche de l'animal (module 1), ou null si elle est introuvable ou appartient à quelqu'un d'autre. */
 export async function getPet(petId: string): Promise<PetInfo | null> {
   if (!/^[0-9a-f]{24}$/.test(petId)) return null;
-  // Fiche absente, à quelqu'un d'autre ou serveur injoignable : le carnet affiche alors le nom enregistré.
   return getPetSheet(petId).then(toPetInfo, () => null);
 }
+
+/** Fiche complète (export PDF). */
+export const getFullPet = (petId: string): Promise<Pet> => getPetSheet(petId);
 
 export const SPECIES_LABELS: Record<string, string> = {
   dog: "Chien",
@@ -122,3 +128,25 @@ export const SPECIES_LABELS: Record<string, string> = {
   bird: "Oiseau",
   other: "Animal",
 };
+
+/* ---------- Partage sécurisé du carnet (lien + QR code) ---------- */
+
+export async function listShares(petId: string): Promise<HealthShare[]> {
+  const { shares } = await api<{ shares: HealthShare[] }>(`/api/health-records/shares?${new URLSearchParams({ petId })}`);
+  return shares;
+}
+
+/** Crée un lien : le jeton n'est renvoyé qu'une fois (il n'est pas stocké en clair). */
+export function createShare(petId: string, input: ShareInput): Promise<CreatedShare> {
+  return api<CreatedShare>("/api/health-records/shares", { method: "POST", body: { petId, ...input } });
+}
+
+export async function revokeShare(id: string): Promise<HealthShare> {
+  const { share } = await api<{ share: HealthShare }>(`/api/health-records/shares/${encodeURIComponent(id)}`, { method: "DELETE" });
+  return share;
+}
+
+/** Carnet ouvert depuis un lien de partage (sans compte). */
+export function getSharedBook(token: string): Promise<SharedHealthBook> {
+  return api<SharedHealthBook>(`/api/partage/${encodeURIComponent(token)}`, { public: true });
+}

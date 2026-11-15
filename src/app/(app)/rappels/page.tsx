@@ -18,6 +18,7 @@ import {
   pageClass,
   useToast,
 } from "@/components/rendez-vous/ui";
+import { DosesTodayCard } from "@/components/sante/DosesTodayCard";
 import { Icon } from "@/components/ui/Icon";
 import { Toggle } from "@/components/ui/Toggle";
 import { addDays, dayOnly, formatDayMonth, formatMonthYear, formatShortDayMonth, formatTime, isSameDay } from "@/lib/rendez-vous/format";
@@ -200,6 +201,8 @@ function Reminders({ data }: { data: RdvState }) {
         </div>
 
         <ProgressCard pets={todayPets} done={doneToday.length} total={todayItems.length + doneToday.length} />
+
+        <DosesTodayCard />
 
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <Chip

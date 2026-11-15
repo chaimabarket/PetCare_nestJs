@@ -40,6 +40,9 @@ async function run(a: AssistantAction, pet: AssistantPet): Promise<void> {
     nextDueDate: "",
     dosage: "",
     endDate: "",
+    // Pas d'horaire de prises (onglet Santé) : comme le formulaire par défaut, à compléter depuis le carnet.
+    doseTimes: [] as string[],
+    doseEveryDays: 1,
   };
 
   switch (a.type) {
