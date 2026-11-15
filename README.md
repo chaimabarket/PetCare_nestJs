@@ -165,6 +165,31 @@ dans le navigateur et par le serveur : pas deux rendez-vous du même animal sur 
 avant le début, « Terminé » après l'heure de fin, contrôle de version contre les modifications simultanées.
 Les réservations de prestataires (`providerId`) sont créées par le module Services (voir plus bas).
 
+### Assistant IA
+
+Page `/assistant` (bannière du fil d'adoption, carte de l'accueil). Gemini via **Firebase AI Logic**, Gemini Developer
+API gratuite (jamais Vertex AI) ; modèle dans `src/lib/assistant/prompt.ts`. Visiteur : questions générales et
+animaux à adopter proposés en cartes. Connecté : choix d'un animal (fiche et carnet de santé joints), questions
+recommandées, rappels proposés, historique, avis 👍 / 👎, « ✨ Rédiger avec l'IA » dans le formulaire d'annonce.
+
+Actions : l'assistant prépare un acte du carnet, un traitement, un rendez-vous, une pesée ou un rappel (appel de
+fonction Gemini). S'il manque une information obligatoire, il la demande ; sinon une carte s'affiche et rien n'est
+enregistré avant « Confirmer », qui passe par les mêmes routes que les formulaires (`/api/health-records`,
+`/api/appointments`, `/api/pets/{id}/weights`, `/api/reminders`). Code : `src/lib/assistant/actions.ts` (champs et
+vérifications, testé par `npm test`), `action-runner.ts`, `src/components/assistant/ActionCard.tsx`.
+
+Réservation d'un service (`reserver_service`) : quand la conversation parle d'un prestataire ou d'une réservation,
+les prestations publiées (annuaire Services, horaires compris) sont jointes à la question. Le modèle choisit une
+prestation de cette liste (il demande laquelle s'il y en a plusieurs) ; prestataire, prix et adresse sont repris du
+catalogue, jamais du modèle. Avant la carte, le créneau est vérifié avec `GET /api/services/providers/{id}/slots`
+(jour fermé ou créneau pris → l'assistant propose les créneaux libres). « Confirmer » appelle
+`POST /api/services/bookings`, comme la page de réservation : demande en attente, rendez-vous dans l'agenda,
+prestataire notifié. Code : `src/lib/assistant/service-catalog.ts`. Un rendez-vous personnel (`creer_rendez_vous`)
+reste une simple note d'agenda pour un rendez-vous pris en dehors de PetCare.
+
+Données (MongoDB) : `assistantUsage` (30 messages par jour, limite appliquée par le serveur), `assistantChats` et
+`assistantMessages` (10 dernières conversations) — routes `/api/assistant/usage` et `/api/assistant/chats/…`.
+
 ### Services
 
 #### Fonctionnalités réalisées
