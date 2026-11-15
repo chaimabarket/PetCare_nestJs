@@ -144,7 +144,6 @@ export function slotProblem(a: AssistantAction, freeSlots: string[], week: DayAv
     return `${provider} n'a plus de créneau libre le ${label} pour cette prestation. Voulez-vous un autre jour ?`;
   }
   const times = freeSlots.slice(0, 10).map((iso) => fromMinutes(zonedParts(new Date(iso)).minutes));
-  return `${a.args.heure} n'est pas disponible chez ${provider} le ${label}. Créneaux libres ce jour-là : ${times.join(", ")}${
-    freeSlots.length > times.length ? "…" : ""
-  }. Lequel souhaitez-vous ?`;
+  const list = `${times.join(", ")}${freeSlots.length > times.length ? "…" : "."}`;
+  return `${a.args.heure} n'est pas disponible chez ${provider} le ${label}. Créneaux libres ce jour-là : ${list} Lequel souhaitez-vous ?`;
 }
