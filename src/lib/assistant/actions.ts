@@ -3,9 +3,16 @@
  * Fichier sans Firebase (testé avec `npm test`) ; la description des fonctions envoyée à Gemini
  * est construite à partir de ces champs dans `service.ts`.
  */
+import { formatDuration, formatPrice } from "../services-models";
 import type { AssistantPet } from "./pets-model";
 
-export type ActionType = "ajouter_soin" | "ajouter_traitement" | "creer_rendez_vous" | "ajouter_pesee" | "creer_rappel";
+export type ActionType =
+  | "ajouter_soin"
+  | "ajouter_traitement"
+  | "creer_rendez_vous"
+  | "reserver_service"
+  | "ajouter_pesee"
+  | "creer_rappel";
 export type ActionStatus = "pending" | "done" | "cancelled";
 export type ActionArgs = Record<string, string | number>;
 export type AssistantAction = { type: ActionType; args: ActionArgs; status: ActionStatus };
@@ -18,14 +25,36 @@ export type ActionField = {
   kind: FieldKind;
   required: boolean;
   options?: readonly string[];
+  /** Rempli par l'application (jamais par le modèle) : prestataire, prix… d'une réservation. */
+  internal?: boolean;
+  /** Pas affiché sur la carte (identifiant). */
+  hidden?: boolean;
 };
 
 const field = (
   key: string,
   label: string,
   description: string,
-  { kind = "text", required = true, options }: { kind?: FieldKind; required?: boolean; options?: readonly string[] } = {},
-): ActionField => ({ key, label, description, kind, required, options });
+  {
+    kind = "text",
+    required = true,
+    options,
+    hidden,
+  }: { kind?: FieldKind; required?: boolean; options?: readonly string[]; hidden?: boolean } = {},
+): ActionField => ({ key, label, description, kind, required, options, ...(hidden && { hidden }) });
+
+/** Champ rempli par l'application à partir de la prestation choisie. */
+const internal = (key: string, label: string, kind: FieldKind = "text"): ActionField => ({
+  key,
+  label,
+  description: "",
+  kind,
+  required: false,
+  internal: true,
+});
+
+/** Champs que le modèle peut remplir (décrits à Gemini, dans cet ordre). */
+export const modelFields = (type: ActionType) => ACTIONS[type].fields.filter((f) => !f.internal);
 
 const HEALTH_TYPES = ["visite", "vaccin", "examen", "allergie", "note"] as const;
 /** Types d'acte du carnet qui demandent le nom du vétérinaire (formulaire du carnet de santé). */
@@ -96,6 +125,36 @@ export const ACTIONS: Record<ActionType, { label: string; goal: string; descript
       field("lieu", "Lieu", "Adresse, clinique ou lieu du rendez-vous.", { required: false }),
     ],
   },
+  reserver_service: {
+    label: "Réserver un service",
+    goal: "réserver ce service",
+    description:
+      "Prépare une demande de réservation chez un prestataire PetCare (vétérinaire, toiletteur, pension…) pour une prestation de la liste PRESTATIONS. Le prestataire l'accepte ou la refuse ensuite.",
+    fields: [
+      internal("prestataire", "Prestataire"),
+      internal("prestation", "Prestation"),
+      animal,
+      field(
+        "service_id",
+        "Prestation",
+        "Identifiant exact (id=…) d'une prestation de la liste PRESTATIONS. N'invente jamais d'identifiant. Si plusieurs prestations conviennent, n'appelle pas la fonction : demande laquelle choisir.",
+        { hidden: true },
+      ),
+      field("date", "Date", "Date souhaitée (AAAA-MM-JJ), dans le futur, donnée par l'utilisateur (« lundi » est accepté).", {
+        kind: "date",
+      }),
+      field(
+        "heure",
+        "Heure",
+        "Heure de début (HH:MM, sur 24 h), telle que l'utilisateur l'a donnée, dans les horaires du prestataire. Si l'utilisateur ne l'a pas donnée, n'appelle pas la fonction et demande-la.",
+        { kind: "time" },
+      ),
+      internal("duree", "Durée", "number"),
+      internal("prix", "Prix", "number"),
+      internal("adresse", "Adresse"),
+      field("notes", "Notes", "Information utile pour le prestataire, donnée par l'utilisateur.", { required: false }),
+    ],
+  },
   ajouter_pesee: {
     label: "Ajouter une pesée",
     goal: "ajouter cette pesée",
@@ -124,7 +183,8 @@ const isActionType = (name: string): name is ActionType => name in ACTIONS;
 /** Appel de fonction du modèle → action ; `null` si la fonction est inconnue. Champs inconnus ou vides retirés. */
 export function actionFromCall(name: string, args: object): AssistantAction | null {
   if (!isActionType(name)) return null;
-  const known = new Set(ACTIONS[name].fields.map((f) => f.key));
+  // Les champs remplis par l'application (prix, prestataire…) ne viennent jamais du modèle.
+  const known = new Set(modelFields(name).map((f) => f.key));
   const clean: ActionArgs = {};
   for (const [key, value] of Object.entries(args ?? {})) {
     if (!known.has(key) || value === null || value === undefined) continue;
@@ -206,7 +266,7 @@ export function checkAction(a: AssistantAction, pets: AssistantPet[], now = new 
 
   for (const f of fields) {
     const value = text(a, f.key);
-    if (!value) continue;
+    if (!value || f.internal) continue;
     const valid =
       f.kind === "date"
         ? Boolean(actionDate(a, f.key))
@@ -246,6 +306,13 @@ export function checkAction(a: AssistantAction, pets: AssistantPet[], now = new 
       else if (minutes !== undefined && (minutes < 5 || minutes > 24 * 60)) error = "La durée doit être entre 5 minutes et 24 heures.";
       break;
     }
+    case "reserver_service":
+      if (!text(a, "prestation")) {
+        error = "Je ne trouve pas cette prestation parmi les services PetCare. Laquelle souhaitez-vous réserver ?";
+      } else if (actionStartsAt(a)! <= now) {
+        error = "La réservation doit être dans le futur. Quelle date et quelle heure ?";
+      }
+      break;
     case "ajouter_pesee": {
       const kg = actionNumber(a, "poids_kg")!;
       if (kg <= 0 || kg > 500) error = "Le poids doit être compris entre 0 et 500 kg.";
@@ -282,9 +349,11 @@ const day = (d: Date) => `${String(d.getDate()).padStart(2, "0")}/${String(d.get
 /** Lignes « libellé : valeur » de la carte de confirmation. */
 export function describeAction(a: AssistantAction): [string, string][] {
   return ACTIONS[a.type].fields
-    .filter((f) => text(a, f.key))
+    .filter((f) => !f.hidden && text(a, f.key))
     .map((f) => {
       const value = text(a, f.key);
+      if (f.key === "prix") return [f.label, formatPrice(actionNumber(a, "prix") ?? 0)];
+      if (f.key === "duree") return [f.label, formatDuration(actionNumber(a, "duree") ?? 0)];
       if (f.kind === "date") return [f.label, actionDate(a, f.key) ? day(actionDate(a, f.key)!) : value];
       if (f.key === "poids_kg") return [f.label, `${value} kg`];
       if (f.key === "duree_minutes") return [f.label, `${value} min`];

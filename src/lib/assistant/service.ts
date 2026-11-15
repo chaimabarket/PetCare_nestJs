@@ -3,8 +3,10 @@ import { getApp } from "firebase/app";
 import { ENERGY_LEVELS, listPublicListings, PERSONALITY, SEXES, SIZES, SPECIES, type AdoptionListing, type ListingInput } from "../adoption";
 import { byNewest } from "../adoption-models";
 import { auth } from "../firebase";
-import { ACTIONS, type ActionField, type ActionType } from "./actions";
+import { getProvider, listProviders } from "../services";
+import { ACTIONS, modelFields, type ActionField, type ActionType } from "./actions";
 import { historyText, type AssistantMessage } from "./history";
+import { SERVICE_CONTEXT_MAX, type CatalogService } from "./service-catalog";
 import { ACTIONS_PROMPT, ASSISTANT_MODEL, HISTORY_LENGTH, LISTING_WRITER_PROMPT, SYSTEM_PROMPT } from "./prompt";
 
 /** Erreur affichable telle quelle dans la conversation. */
@@ -27,8 +29,10 @@ const ACTION_TOOLS = [
       name,
       description: ACTIONS[name].description,
       parameters: Schema.object({
-        properties: Object.fromEntries(ACTIONS[name].fields.map((f) => [f.key, schemaOf(f)])),
-        optionalProperties: ACTIONS[name].fields.filter((f) => !f.required).map((f) => f.key),
+        properties: Object.fromEntries(modelFields(name).map((f) => [f.key, schemaOf(f)])),
+        optionalProperties: modelFields(name)
+          .filter((f) => !f.required)
+          .map((f) => f.key),
       }),
     })),
   },
@@ -68,6 +72,45 @@ function models() {
 export async function fetchAvailableListings(): Promise<AdoptionListing[]> {
   const listings = await listPublicListings();
   return listings.filter((l) => l.status === "disponible").sort(byNewest);
+}
+
+let catalogCache: { at: number; list: CatalogService[] } | null = null;
+
+/**
+ * Prestations publiées de l'annuaire Services (mêmes routes /api/services que les pages), gardées 2 minutes :
+ * une conversation sur une réservation compte souvent plusieurs messages.
+ */
+export async function fetchServiceCatalog(): Promise<CatalogService[]> {
+  if (catalogCache && Date.now() - catalogCache.at < 120_000) return catalogCache.list;
+  const providers = await listProviders();
+  const details = await Promise.all(
+    providers
+      .filter((p) => p.serviceCount > 0)
+      .slice(0, 20)
+      .map((p) => getProvider(p.id).catch(() => null)),
+  );
+  const list = details
+    .flatMap((p) =>
+      p
+        ? p.services
+            .filter((s) => s.status === "published")
+            .map((s) => ({
+              id: s.id,
+              name: s.name,
+              durationMinutes: s.durationMinutes,
+              price: s.price,
+              providerId: p.id,
+              providerName: p.name,
+              category: p.category,
+              city: p.city,
+              address: p.address,
+              availability: p.availability,
+            }))
+        : [],
+    )
+    .slice(0, SERVICE_CONTEXT_MAX);
+  catalogCache = { at: Date.now(), list };
+  return list;
 }
 
 /**

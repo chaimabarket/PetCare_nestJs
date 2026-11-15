@@ -1,4 +1,4 @@
-import { ACTIONS } from "./actions";
+import { ACTIONS, modelFields, type ActionType } from "./actions";
 import { isoDay, MAX_LISTING_SUGGESTIONS, MAX_REMINDERS } from "./prompt";
 
 /** Rappel proposé par l'assistant, à confirmer par l'utilisateur. */
@@ -31,7 +31,7 @@ export function parseDay(value: string): Date | undefined {
 function textCall(name: string, body: string): TextCall | null {
   const type = name.toLowerCase().replace(/-/g, "_");
   if (!(type in ACTIONS)) return null;
-  const fields = ACTIONS[type as keyof typeof ACTIONS].fields;
+  const fields = modelFields(type as ActionType);
   const args: Record<string, string> = {};
   body.split("|").forEach((part, i) => {
     const named = /^\s*([a-z_]+)\s*[=:]\s*(.*)$/.exec(part);

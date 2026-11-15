@@ -2,10 +2,12 @@
 import { api, ApiError } from "../api";
 import { createHealthRecord } from "../health-records-api";
 import { addWeight } from "../pets";
+import { createBooking } from "../services";
 import { actionDate, actionNumber, actionStartsAt, type AssistantAction } from "./actions";
 import type { AssistantPet } from "./pets-model";
 import { isoDay } from "./prompt";
 import { createReminder, type ReminderCategory } from "./reminders";
+import { bookingStart } from "./service-catalog";
 
 const NOTE = "Ajouté depuis l'assistant PetCare";
 const REMINDER_CATEGORIES: ReminderCategory[] = ["medicament", "soin", "veterinaire", "traitement", "hygiene", "controle"];
@@ -75,6 +77,16 @@ async function run(a: AssistantAction, pet: AssistantPet): Promise<void> {
           reminderMinutes: 24 * 60,
           pushReminder: true,
         },
+      });
+      return;
+    case "reserver_service":
+      // Même route que la page de réservation : créneau revérifié, rendez-vous ajouté à l'agenda, prestataire notifié.
+      await createBooking({
+        serviceId: text("service_id"),
+        dateTime: bookingStart(a)!.toISOString(),
+        animalName: pet.name,
+        petId: pet.id,
+        notes: text("notes"),
       });
       return;
     case "ajouter_pesee":

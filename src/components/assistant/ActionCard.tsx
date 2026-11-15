@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { ACTIONS, describeAction, type AssistantAction } from "@/lib/assistant/actions";
+import { SERVICES_ROUTES } from "@/lib/services-models";
 
 const ICONS: Record<AssistantAction["type"], string> = {
   ajouter_soin: "medical_information",
   ajouter_traitement: "medication",
   creer_rendez_vous: "event_available",
+  reserver_service: "storefront",
   ajouter_pesee: "monitor_weight",
   creer_rappel: "alarm_add",
 };
@@ -15,6 +17,7 @@ const ICONS: Record<AssistantAction["type"], string> = {
 /** Page où retrouver l'enregistrement (`null` si l'animal n'existe plus). */
 function viewHref(action: AssistantAction, pet: { id: string; name: string } | null): string | null {
   if (action.type === "creer_rendez_vous") return "/rendez-vous";
+  if (action.type === "reserver_service") return SERVICES_ROUTES.myBookings;
   if (action.type === "creer_rappel") return "/rappels";
   if (!pet) return null;
   if (action.type === "ajouter_pesee") return `/animaux/${encodeURIComponent(pet.id)}`;
@@ -41,7 +44,7 @@ export function ActionCard({
   const done = action.status === "done";
   const cancelled = action.status === "cancelled";
   const href = done ? viewHref(action, pet) : null;
-  const title = done ? `${label} · enregistré` : cancelled ? `${label} · annulé` : `${label} ?`;
+  const title = done ? `${label} · ${action.type === "reserver_service" ? "demande envoyée" : "enregistré"}` : cancelled ? `${label} · annulé` : `${label} ?`;
 
   return (
     <div

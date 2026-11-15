@@ -34,7 +34,9 @@ import { buildListingContext, contextListings } from "@/lib/assistant/listing-co
 import { parseAnswer, type ReminderSuggestion } from "@/lib/assistant/parser";
 import { buildPetContext, fetchHealthSummary, listMyPets, type AssistantPet } from "@/lib/assistant/pets";
 import { HISTORY_CHATS, isAdoptionQuestion, recommendedQuestions } from "@/lib/assistant/prompt";
-import { AssistantError, fetchAvailableListings, reply, type AssistantReply } from "@/lib/assistant/service";
+import { AssistantError, fetchAvailableListings, fetchServiceCatalog, reply, type AssistantReply } from "@/lib/assistant/service";
+import { buildServiceContext, isServiceQuestion, slotProblem, withServiceDetails, type CatalogService } from "@/lib/assistant/service-catalog";
+import { getSlots } from "@/lib/services";
 import { ActionCard } from "./ActionCard";
 import {
   AssistantAvatar,
@@ -50,16 +52,38 @@ import { ReminderDialog } from "./ReminderDialog";
 
 type Streaming = { raw: string; knownIds: Set<string>; pet: AssistantPet | null };
 
-/** Actions valides (une carte chacune) et phrases pour celles qui sont incomplètes ou invalides. */
-function actionsFromCalls(calls: { name: string; args: object }[], pets: AssistantPet[]) {
+/**
+ * Actions valides (une carte chacune) et phrases pour celles qui sont incomplètes ou invalides.
+ * Une réservation reprend la prestation du catalogue, puis son créneau est vérifié comme sur la page de réservation.
+ */
+async function actionsFromCalls(calls: { name: string; args: object }[], pets: AssistantPet[], catalog: CatalogService[]) {
   const actions: AssistantAction[] = [];
   const problems: string[] = [];
   for (const call of calls.slice(0, 3)) {
-    const action = actionFromCall(call.name, call.args);
-    if (!action) continue;
+    const parsed = actionFromCall(call.name, call.args);
+    if (!parsed) continue;
+    const action = withServiceDetails(parsed, catalog);
     const check = checkAction(action, pets);
-    if (isActionReady(check)) actions.push(action);
-    else problems.push(actionProblem(action, check));
+    if (!isActionReady(check)) {
+      problems.push(actionProblem(action, check));
+      continue;
+    }
+    if (action.type === "reserver_service") {
+      const service = catalog.find((s) => s.id === action.args.service_id)!;
+      try {
+        const slots = await getSlots(service.providerId, service.id, String(action.args.date));
+        const problem = slotProblem(action, slots, service.availability);
+        if (problem) {
+          problems.push(problem);
+          continue;
+        }
+      } catch (error) {
+        console.error("Créneaux indisponibles :", error);
+        problems.push(`Je n'arrive pas à vérifier les disponibilités de ${service.providerName}. Réessayez dans un instant.`);
+        continue;
+      }
+    }
+    actions.push(action);
   }
   return { actions, problems };
 }
@@ -149,13 +173,20 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
       let raw = "";
       let calls: AssistantReply["calls"] = [];
       let knownIds = new Set<string>();
+      let catalog: CatalogService[] = [];
+      let myPets = pets;
       let error: unknown = null;
       try {
         if (user) await countMessage();
+        // Question envoyée avant la fin du chargement des animaux : on les attend (sinon « aucun animal »).
+        if (user && !myPets.length) {
+          myPets = await listMyPets();
+          if (myPets.length) setPets(myPets);
+        }
 
         const now = new Date();
         let context = buildDateContext(now);
-        if (user) context += `\n\n${buildPetsListContext(pets)}`;
+        if (user) context += `\n\n${buildPetsListContext(myPets)}`;
         if (selectedPet) {
           const health = await fetchHealthSummary(selectedPet.id);
           context += `\n\n${buildPetContext(selectedPet, { health, now })}`;
@@ -169,6 +200,15 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
           } catch (err) {
             // Sans les annonces, l'assistant répond quand même (sans proposer d'animal).
             console.error("Annonces indisponibles :", err);
+          }
+        }
+        // Réservation : la question ou les derniers messages parlent d'un service (« et lundi 10h ? » suit souvent).
+        if (isServiceQuestion([...history.slice(-4).map((m) => m.text), question].join("\n"))) {
+          try {
+            catalog = await fetchServiceCatalog();
+            context += `\n\n${buildServiceContext(catalog)}`;
+          } catch (err) {
+            console.error("Services indisponibles :", err);
           }
         }
         if (stopped.current) return;
@@ -187,7 +227,11 @@ export function AssistantChat({ startWithAdoption = false }: { startWithAdoption
         let answer: AssistantMessage | null = null;
         const parsed = parseAnswer(raw, knownIds, { allowReminders: Boolean(selectedPet) });
         // Le modèle écrit parfois l'action en texte au lieu d'appeler la fonction : même carte, mêmes contrôles.
-        const { actions, problems } = actionsFromCalls(calls.length ? calls : parsed.textCalls, pets);
+        const actionCalls = calls.length ? calls : parsed.textCalls;
+        if (!catalog.length && actionCalls.some((c) => c.name === "reserver_service")) {
+          catalog = await fetchServiceCatalog().catch(() => []);
+        }
+        const { actions, problems } = await actionsFromCalls(actionCalls, myPets, catalog);
         if (raw.trim() || actions.length || problems.length) {
           // Une action incomplète ou invalide devient une question : l'utilisateur répond, le modèle réessaie.
           const text =

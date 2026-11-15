@@ -14,6 +14,14 @@ import {
   type AssistantAction,
 } from "../src/lib/assistant/actions";
 import { parseAnswer } from "../src/lib/assistant/parser";
+import {
+  bookingStart,
+  buildServiceContext,
+  isServiceQuestion,
+  slotProblem,
+  withServiceDetails,
+  type CatalogService,
+} from "../src/lib/assistant/service-catalog";
 import { buildDateContext, buildHealthSummary, buildPetsListContext } from "../src/lib/assistant/context";
 import type { AssistantPet } from "../src/lib/assistant/pets-model";
 
@@ -167,5 +175,85 @@ describe("parseAnswer : action écrite en texte au lieu d'un appel de fonction",
     assert.equal(parsed.reminders.length, 1);
     assert.deepEqual(parsed.listingIds, ["a1"]);
     assert.ok(isActionReady(checkAction(call("ajouter_pesee", parsed.textCalls[0].args), PETS, NOW)));
+  });
+});
+
+describe("reserver_service : réservation chez un prestataire", () => {
+  const WEEK = [1, 2, 3, 4, 5, 6, 7].map((weekday) => ({
+    weekday,
+    enabled: weekday === 1,
+    ranges: weekday === 1 ? [{ start: "09:00", end: "12:00" }] : [],
+  }));
+  const CATALOG: CatalogService[] = [
+    {
+      id: "s1",
+      name: "Consultation générale",
+      durationMinutes: 30,
+      price: 45,
+      providerId: "p1",
+      providerName: "Clinique des Oliviers",
+      category: "Vétérinaires",
+      city: "Tunis",
+      address: "12 rue de Marseille",
+      availability: WEEK,
+    },
+  ];
+  const PETS_R: AssistantPet[] = [{ id: "r", name: "Rocky", species: "dog" }];
+  const booking = (args: object) => withServiceDetails(call("reserver_service", args), CATALOG);
+
+  it("le modèle ne peut pas fixer le prix ni le prestataire ; la carte reprend la prestation du catalogue", () => {
+    const a = booking({ animal: "Rocky", service_id: "s1", date: "2026-11-16", heure: "10:00", prix: 1, prestataire: "Faux" });
+    assert.equal(a.args.prix, 45);
+    assert.ok(isActionReady(checkAction(a, PETS_R, NOW)));
+    assert.deepEqual(describeAction(a), [
+      ["Prestataire", "Clinique des Oliviers"],
+      ["Prestation", "Consultation générale"],
+      ["Animal", "Rocky"],
+      ["Date", "16/11/2026"],
+      ["Heure", "10:00"],
+      ["Durée", "30 min"],
+      ["Prix", "45 DT"],
+      ["Adresse", "12 rue de Marseille, Tunis"],
+    ]);
+  });
+
+  it("prestation inconnue ou heure manquante : une question, pas de carte", () => {
+    const unknown = checkAction(booking({ animal: "Rocky", service_id: "zz", date: "2026-11-16", heure: "10:00" }), PETS_R, NOW);
+    assert.match(unknown.error ?? "", /Je ne trouve pas cette prestation/);
+    const noTime = checkAction(booking({ animal: "Rocky", service_id: "s1", date: "2026-11-16" }), PETS_R, NOW);
+    assert.deepEqual(noTime.missing, ["heure"]);
+  });
+
+  it("créneau : heure de Tunis, créneaux libres proposés sinon", () => {
+    const a = booking({ animal: "Rocky", service_id: "s1", date: "2026-11-16", heure: "10:00" });
+    // 10:00 à Tunis (UTC+1) = 09:00 UTC.
+    assert.equal(bookingStart(a)?.toISOString(), "2026-11-16T09:00:00.000Z");
+    assert.equal(slotProblem(a, ["2026-11-16T08:00:00.000Z", "2026-11-16T09:00:00.000Z"]), undefined);
+    assert.match(slotProblem(a, ["2026-11-16T08:00:00.000Z", "2026-11-16T08:30:00.000Z"]) ?? "", /Créneaux libres ce jour-là : 09:00, 09:30/);
+    assert.match(slotProblem(a, []) ?? "", /plus de créneau libre le 16\/11/);
+    // Mardi 17/11 : fermé (seul le lundi est ouvert).
+    const tuesday = booking({ animal: "Rocky", service_id: "s1", date: "2026-11-17", heure: "10:00" });
+    assert.equal(
+      slotProblem(tuesday, [], WEEK),
+      "Clinique des Oliviers est fermé le mardi (ouvert : lundi). Quel autre jour vous convient ?",
+    );
+  });
+
+  it("bloc PRESTATIONS et détection des questions de service", () => {
+    assert.equal(
+      buildServiceContext(CATALOG),
+      "PRESTATIONS (services PetCare réservables, heures de Tunis) :\n" +
+        "- id=s1 | Consultation générale | Clinique des Oliviers (Vétérinaires, Tunis) | 30 min | 45 DT | horaires : lun 09:00-12:00 ; fermé mar, mer, jeu, ven, sam, dim",
+    );
+    assert.ok(isServiceQuestion("Je veux réserver un toilettage pour Rocky"));
+    assert.ok(isServiceQuestion("book a vet monday"));
+    assert.ok(!isServiceQuestion("Combien de croquettes pour Rocky ?"));
+  });
+
+  it("tag écrit en texte : champs du modèle seulement, dans l'ordre", () => {
+    const parsed = parseAnswer("[[reserver_service:Rocky|s1|2026-11-16|10:00]]", new Set(), { now: NOW });
+    assert.deepEqual(parsed.textCalls, [
+      { name: "reserver_service", args: { animal: "Rocky", service_id: "s1", date: "2026-11-16", heure: "10:00" } },
+    ]);
   });
 });
