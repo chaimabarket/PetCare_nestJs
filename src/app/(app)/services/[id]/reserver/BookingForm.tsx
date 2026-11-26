@@ -276,54 +276,45 @@ function BookingContent({ id }: { id: string }) {
               <h2 className="font-headline-sm text-headline-sm text-on-surface">Quel compagnon vient au rendez-vous ?</h2>
               {animalName && <span className="font-label-sm text-label-sm text-primary">1 sélectionné</span>}
             </div>
-            <div className="flex gap-space-sm overflow-x-auto pb-1">
-              {pets.map((p) => {
-                const selected = petId === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => setPetId(p.id)}
-                    className={`relative shrink-0 w-56 bg-surface-container-lowest rounded-2xl p-3 shadow-sm flex items-center gap-3 text-left transition-all ${
-                      selected ? "ring-2 ring-primary" : "hover:shadow-md"
-                    }`}
-                  >
-                    <PetAvatar pet={p} className="w-14 h-14" />
-                    <span className="flex flex-col min-w-0">
-                      <span className="font-label-lg text-label-lg text-on-surface truncate">{p.name}</span>
-                      <span className="font-body-sm text-body-sm text-on-surface-variant truncate">{speciesLine(p)}</span>
-                      {p.birthDate && <span className="font-label-sm text-label-sm text-primary">{ageLabel(p.birthDate, localDay())}</span>}
-                    </span>
-                    {selected && <Icon name="check_circle" filled className="absolute top-2 right-2 text-primary text-[20px]" />}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                aria-pressed={petId === ""}
-                onClick={() => setPetId("")}
-                className={`shrink-0 w-56 bg-surface-container-lowest rounded-2xl p-3 shadow-sm flex items-center gap-3 text-left ${
-                  petId === "" ? "ring-2 ring-primary" : "hover:shadow-md"
-                }`}
+            <label className="flex flex-col gap-1">
+              <span className="font-label-md text-label-md text-on-surface">Animal</span>
+              <select
+                value={petId}
+                onChange={(event) => setPetId(event.target.value)}
+                aria-label="Choisir un animal"
+                className="h-12 rounded-lg bg-surface-container-lowest shadow-sm px-3 font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
-                <span className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
-                  <Icon name="add" className="text-[26px]" />
+                {pets.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} — {speciesLine(p)}
+                  </option>
+                ))}
+                <option value="">Autre animal</option>
+              </select>
+            </label>
+            {pet ? (
+              <div className="flex items-center gap-3 rounded-xl bg-surface-container-lowest p-3 shadow-sm">
+                <PetAvatar pet={pet} className="w-12 h-12" />
+                <span className="flex flex-col">
+                  <span className="font-label-lg text-label-lg text-on-surface">{pet.name}</span>
+                  <span className="font-body-sm text-body-sm text-on-surface-variant">{speciesLine(pet)}</span>
+                  {pet.birthDate && <span className="font-label-sm text-label-sm text-primary">{ageLabel(pet.birthDate, localDay())}</span>}
                 </span>
-                <span className="font-label-lg text-label-lg text-on-surface">Autre animal</span>
-              </button>
-            </div>
-            {petId === "" && (
+              </div>
+            ) : (
               <input
                 type="text"
                 maxLength={60}
                 value={otherAnimal}
                 onChange={(e) => setOtherAnimal(e.target.value)}
                 aria-label="Nom de l'animal"
-                placeholder={pets.length ? "Nom de l'animal" : "Nom de l'animal (ajoutez-le aussi dans « Mes animaux »)"}
+                placeholder="Nom de l'animal"
                 className="h-11 rounded-lg bg-surface-container-lowest shadow-sm px-3 font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             )}
+            <Link href="/animaux/nouveau" className="font-label-sm text-label-sm text-primary hover:underline w-fit">
+              Ajouter un animal à « Mes animaux »
+            </Link>
           </section>
 
           {/* Date */}
