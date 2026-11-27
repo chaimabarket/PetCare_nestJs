@@ -97,6 +97,10 @@ export type HealthRecord = {
   dosage: string;
   /** Traitement : date de fin. */
   endDate: string | null;
+  /** Traitement : heures des prises (« HH:MM », triées) ; vide = pas de suivi des prises. */
+  doseTimes: string[];
+  /** Traitement : une prise tous les N jours (1 = tous les jours), à partir de la date de début. */
+  doseEveryDays: number;
   attachments: AttachmentInfo[];
   createdAt: string;
   updatedAt: string;
@@ -116,6 +120,8 @@ export type HealthRecordInput = {
   nextDueDate: string;
   dosage: string;
   endDate: string;
+  doseTimes: string[];
+  doseEveryDays: number;
 };
 
 export type HealthRecordField = keyof HealthRecordInput;
@@ -131,7 +137,18 @@ export const EMPTY_RECORD_INPUT: Omit<HealthRecordInput, "petId" | "petName"> = 
   nextDueDate: "",
   dosage: "",
   endDate: "",
+  doseTimes: [],
+  doseEveryDays: 1,
 };
+
+/** Suivi des prises d'un traitement. */
+export const DOSE_TIMES_MAX = 6;
+export const DOSE_EVERY_DAYS_MAX = 30;
+const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+export function isValidTime(value: string): boolean {
+  return timePattern.test(value);
+}
 
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -180,6 +197,8 @@ export function validateHealthRecord(
     nextDueDate: type === "vaccin" ? str(data.nextDueDate) : "",
     dosage: type === "traitement" ? str(data.dosage) : "",
     endDate: type === "traitement" ? str(data.endDate) : "",
+    doseTimes: [],
+    doseEveryDays: 1,
   };
   const errors: FieldErrors<HealthRecordField> = {};
 
@@ -210,6 +229,20 @@ export function validateHealthRecord(
     else if (isValidIsoDate(value.date) && date < value.date) {
       errors[field] = field === "nextDueDate" ? "Le rappel doit être après la date de l'acte." : "La fin doit être après le début.";
     }
+  }
+
+  if (type === "traitement") {
+    const rawTimes = Array.isArray(data.doseTimes) ? data.doseTimes : [];
+    const times = [...new Set(rawTimes.map(str).filter(Boolean))].sort();
+    if (times.some((t) => !isValidTime(t))) errors.doseTimes = "Heure invalide (format HH:MM).";
+    else if (times.length > DOSE_TIMES_MAX) errors.doseTimes = `${DOSE_TIMES_MAX} prises par jour maximum.`;
+    value.doseTimes = times;
+
+    const every = data.doseEveryDays === undefined || data.doseEveryDays === "" ? 1 : Number(data.doseEveryDays);
+    if (!Number.isInteger(every) || every < 1 || every > DOSE_EVERY_DAYS_MAX) {
+      errors.doseEveryDays = `Entre 1 et ${DOSE_EVERY_DAYS_MAX} jours.`;
+    }
+    value.doseEveryDays = Number.isInteger(every) ? Math.min(Math.max(every, 1), DOSE_EVERY_DAYS_MAX) : 1;
   }
 
   return { value, errors };

@@ -5,11 +5,26 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { Breadcrumb, ButtonLink, carnetHref, ConfirmDialog, PageLoading, pageClass, petSubtitle, usePet } from "@/components/sante/ui";
+import { ExportPdfButton } from "@/components/sante/ExportPdfButton";
+import { ShareDialog } from "@/components/sante/ShareDialog";
+import { Button } from "@/components/ui/Button";
+import {
+  Breadcrumb,
+  ButtonLink,
+  carnetHref,
+  ConfirmDialog,
+  PageLoading,
+  pageClass,
+  PetThumb,
+  petSubtitle,
+  ReadOnlyBanner,
+  usePet,
+} from "@/components/sante/ui";
 import { Alert, Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { formatRecordDate, RECORD_TYPE_INFO, RECORD_TYPES, todayIso, type HealthRecord, type RecordType } from "@/lib/health-records";
 import { deleteHealthRecord, listHealthRecords, openAttachment } from "@/lib/health-records-api";
+import { doseScheduleLabel } from "@/lib/health-summary";
 
 const SUCCESS_MESSAGES: Record<string, string> = {
   ajoute: "L'acte médical a été ajouté au carnet.",
@@ -34,6 +49,7 @@ function HealthBookContent({ petId }: { petId: string }) {
   const [filter, setFilter] = useState<RecordType | "all">("all");
   const [search, setSearch] = useState("");
   const [toDelete, setToDelete] = useState<HealthRecord | null>(null);
+  const [sharing, setSharing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState("");
   const [success, setSuccess] = useState(() => {
@@ -41,7 +57,7 @@ function HealthBookContent({ petId }: { petId: string }) {
     return key ? SUCCESS_MESSAGES[key] : "";
   });
 
-  const { pet, name } = usePet(petId, records?.[0]?.petName || searchParams.get("nom") || undefined);
+  const { pet, name, readOnly } = usePet(petId, records?.[0]?.petName || searchParams.get("nom") || undefined);
   const selfHref = carnetHref(petId, name);
 
   const load = useCallback(async () => {
@@ -66,6 +82,8 @@ function HealthBookContent({ petId }: { petId: string }) {
   }, [searchParams, router, selfHref]);
 
   const closeDialog = useCallback(() => setToDelete(null), []);
+  // Fonction stable : la fenêtre (Modal) réinstalle son écoute d'Échap à chaque changement de onClose.
+  const closeShare = useCallback(() => setSharing(false), []);
 
   async function confirmDelete() {
     if (!toDelete) return;
@@ -111,13 +129,11 @@ function HealthBookContent({ petId }: { petId: string }) {
 
   return (
     <div className={pageClass}>
-      <Breadcrumb items={[{ label: "Carnets de santé", href: "/carnet-de-sante" }, { label: name }, { label: "Carnet de santé" }]} />
+      <Breadcrumb items={[{ label: "Santé", href: "/carnet-de-sante" }, { label: name }, { label: "Carnet de santé" }]} />
 
       <Card className="flex flex-col md:flex-row md:items-center justify-between gap-space-lg mb-space-xl">
         <div className="flex items-center gap-space-md min-w-0">
-          <span className="w-16 h-16 shrink-0 rounded-2xl bg-primary-fixed/50 text-primary flex items-center justify-center">
-            <Icon name="pets" filled className="text-[32px]" />
-          </span>
+          <PetThumb src={pet?.thumbnail} name={name} size="w-16 h-16" />
           <div className="min-w-0 flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-space-sm">
               <h1 className="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight truncate">{name}</h1>
@@ -133,12 +149,21 @@ function HealthBookContent({ petId }: { petId: string }) {
             </span>
           </div>
         </div>
-        <ButtonLink href={addHref} icon="add" className="shrink-0">
-          Ajouter un soin
-        </ButtonLink>
+        <div className="flex flex-col sm:flex-row gap-space-sm shrink-0">
+          <Button type="button" variant="secondary" icon="share" disabled={!pet} onClick={() => setSharing(true)}>
+            Partager
+          </Button>
+          <ExportPdfButton petId={petId} records={records} disabled={!pet} />
+          {!readOnly && (
+            <ButtonLink href={addHref} icon="add">
+              Ajouter un soin
+            </ButtonLink>
+          )}
+        </div>
       </Card>
 
       <div className="flex flex-col gap-space-sm mb-space-lg empty:hidden">
+        {readOnly && <ReadOnlyBanner name={name} />}
         {success && <Alert tone="success">{success}</Alert>}
         {actionError && <Alert>{actionError}</Alert>}
         {loadError && <Alert>{loadError}</Alert>}
@@ -204,10 +229,12 @@ function HealthBookContent({ petId }: { petId: string }) {
               </p>
               <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
                 {records.length === 0
-                  ? `Ajoutez le premier acte médical de ${name} : vaccin, consultation, traitement…`
+                  ? readOnly
+                    ? `Aucun acte n'a été enregistré pour ${name}.`
+                    : `Ajoutez le premier acte médical de ${name} : vaccin, consultation, traitement…`
                   : "Modifiez la recherche ou choisissez une autre section."}
               </p>
-              {records.length === 0 && (
+              {records.length === 0 && !readOnly && (
                 <ButtonLink href={addHref} icon="add" className="mt-space-sm">
                   Ajouter un soin
                 </ButtonLink>
@@ -220,6 +247,7 @@ function HealthBookContent({ petId }: { petId: string }) {
                   key={record.id}
                   record={record}
                   petId={petId}
+                  readOnly={readOnly}
                   onDelete={() => setToDelete(record)}
                   onOpenAttachment={(attachmentId) => handleOpenAttachment(record.id, attachmentId)}
                 />
@@ -240,6 +268,7 @@ function HealthBookContent({ petId }: { petId: string }) {
             {activeTreatments.map((r) => (
               <SideItem key={r.id} href={`/animaux/${encodeURIComponent(petId)}/carnet-de-sante/${r.id}`} title={r.title} tone="bg-surface-container-low">
                 {r.dosage || "Posologie non précisée"}
+                {r.doseTimes.length > 0 && ` · ${doseScheduleLabel(r)}`}
                 {r.endDate && ` · jusqu'au ${formatRecordDate(r.endDate, { dateStyle: "medium" })}`}
               </SideItem>
             ))}
@@ -253,6 +282,8 @@ function HealthBookContent({ petId }: { petId: string }) {
           </SidePanel>
         </aside>
       </div>
+
+      {sharing && <ShareDialog petId={petId} petName={name} onClose={closeShare} />}
 
       <ConfirmDialog
         open={toDelete !== null}
@@ -272,11 +303,13 @@ function HealthBookContent({ petId }: { petId: string }) {
 function RecordCard({
   record,
   petId,
+  readOnly,
   onDelete,
   onOpenAttachment,
 }: {
   record: HealthRecord;
   petId: string;
+  readOnly: boolean;
   onDelete: () => void;
   onOpenAttachment: (attachmentId: string) => void;
 }) {
@@ -309,6 +342,11 @@ function RecordCard({
             <strong className="text-on-surface">Posologie :</strong> {record.dosage}
           </p>
         )}
+        {record.doseTimes.length > 0 && (
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            <strong className="text-on-surface">Prises :</strong> {doseScheduleLabel(record)}
+          </p>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
           <p className="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
             <Icon name="person" className="text-[16px]" />
@@ -333,14 +371,18 @@ function RecordCard({
             <Icon name="visibility" className="text-[18px]" />
             Détails
           </Link>
-          <Link href={`${base}/modifier`} className="inline-flex items-center gap-1 h-9 px-space-md rounded-full font-label-md text-label-md text-primary hover:bg-surface-container-low">
-            <Icon name="edit" className="text-[18px]" />
-            Modifier
-          </Link>
-          <button type="button" onClick={onDelete} className="inline-flex items-center gap-1 h-9 px-space-md rounded-full font-label-md text-label-md text-error hover:bg-error-container/40">
-            <Icon name="delete" className="text-[18px]" />
-            Supprimer
-          </button>
+          {!readOnly && (
+            <>
+              <Link href={`${base}/modifier`} className="inline-flex items-center gap-1 h-9 px-space-md rounded-full font-label-md text-label-md text-primary hover:bg-surface-container-low">
+                <Icon name="edit" className="text-[18px]" />
+                Modifier
+              </Link>
+              <button type="button" onClick={onDelete} className="inline-flex items-center gap-1 h-9 px-space-md rounded-full font-label-md text-label-md text-error hover:bg-error-container/40">
+                <Icon name="delete" className="text-[18px]" />
+                Supprimer
+              </button>
+            </>
+          )}
         </div>
       </Card>
     </li>

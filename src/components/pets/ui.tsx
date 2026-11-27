@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { WEIGHT_ALERT_INFO } from "@/lib/pet-weight-alert";
 import { SPECIES_INFO, type Pet, type PetWeightAlertState } from "@/lib/pets";
+import { SERVICES_ROUTES } from "@/lib/services-models";
 import { errorMessage } from "@/lib/users";
 
 /**
@@ -24,8 +25,8 @@ export const LINKED_MODULES: Record<
   bookAppointment: (pet) => `/rendez-vous/nouveau?animal=${encodeURIComponent(pet.name)}`,
   reminders: () => "/rappels",
   assistant: null,
-  /** Annuaire des vétérinaires (module Services). */
-  vets: null,
+  /** Annuaire ouvert sur la catégorie Vétérinaires (module Services). */
+  vets: () => SERVICES_ROUTES.category("Vétérinaires"),
 };
 
 export const COMING_SOON = "Bientôt disponible";

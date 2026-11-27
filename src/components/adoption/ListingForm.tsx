@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { ListingWriterButton } from "@/components/assistant/ListingWriterButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Card";
@@ -327,6 +328,7 @@ export function ListingForm({ listing }: { listing?: AdoptionListing }) {
             placeholder="D'où vient-il ? Comment se comporte-t-il au quotidien ?"
             error={errors.story}
           />
+          <ListingWriterButton form={form} onUse={(text) => update("story", text.slice(0, STORY_MAX_LENGTH))} />
           <Field label="Personnalité">
             {keysOf(PERSONALITY).map((t) => (
               <Chip

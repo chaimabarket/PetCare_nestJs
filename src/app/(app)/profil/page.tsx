@@ -37,7 +37,7 @@ type Message = { tone: "error" | "success"; text: string };
 
 // Pages des autres modules (à garder alignées avec leurs routes).
 const accountLinks = [
-  { href: "/communaute/mes-annonces", label: "Mes annonces", icon: "campaign", coral: false },
+  { href: "/communaute/adoption/mes-annonces", label: "Mes annonces", icon: "campaign", coral: false },
   { href: "/communaute/adoption/mes-candidatures", label: "Mes candidatures", icon: "assignment", coral: false },
   { href: "/communaute/adoption/favoris", label: "Mes favoris", icon: "favorite", coral: true },
   { href: "/notifications", label: "Centre de notifications", icon: "notifications_active", coral: false },

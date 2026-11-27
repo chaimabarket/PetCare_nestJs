@@ -31,7 +31,8 @@ Elle se déploie en un seul bloc. Deux services externes :
                    MongoDB Atlas (petcare)        Firebase Auth
 
 Partagé navigateur + serveur (sans dépendance) : types, constantes, règles métier
-  src/lib/models.ts, src/lib/adoption-models.ts, src/lib/health-records.ts, src/lib/rendez-vous/{types,rules,format}.ts
+  src/lib/models.ts, src/lib/adoption-models.ts, src/lib/health-records.ts, src/lib/health-summary.ts,
+  src/lib/scan-parse.ts, src/lib/rendez-vous/{types,rules,format}.ts
 ```
 
 C'est une organisation **de type MVC** : la *Vue* est en React (dans le navigateur), les *Contrôleurs* sont les
@@ -140,9 +141,20 @@ Exemple : un refuge accepte une candidature.
   transactions. Les listes n'envoient que la photo de couverture (`LIST_PROJECTION`).
 
 ### Carnet de santé
-- Modèle `src/lib/server/health.ts` ; types et validation partagés `src/lib/health-records.ts`.
+- Modèle `src/lib/server/health.ts` (collections `health_records` et `treatment_doses`) ; types et validation
+  partagés `src/lib/health-records.ts` ; règles de l'onglet Santé `src/lib/health-summary.ts`.
 - Routes : `GET/POST /api/health-records`, `GET/PUT/DELETE /api/health-records/[id]`,
-  `GET …/[id]/attachments/[attachmentId]` (téléchargement), `GET …/pets` (résumé par animal).
+  `GET …/[id]/attachments/[attachmentId]` (téléchargement), `GET …/summary?day=` (onglet Santé : cartes des animaux,
+  prises du jour, vaccins en retard et à 30 jours), `POST …/[id]/doses` et `DELETE …/[id]/doses?day=&time=` (prises).
+- Chaque route appelle `requirePetAccess(uid, petId, { write })` : animal de l'utilisateur dans `pets` (sinon 404),
+  et pour une écriture, animal non archivé (sinon 409). Le nom enregistré avec l'acte vient de la fiche de l'animal.
+- Partage : modèle `src/lib/server/health-share.ts` (collection `health_shares`, index unique sur `tokenHash`),
+  règles partagées `src/lib/health-share.ts` (portées, durées, données montrées). Routes propriétaire
+  `GET/POST /api/health-records/shares`, `DELETE /api/health-records/shares/[id]` ; route publique sans compte
+  `GET /api/partage/[token]` (empreinte SHA-256 du jeton, 404 / 410, journal des consultations). Page `/partage/[token]`
+  hors du groupe `(app)` (pas de menu), `noindex` et `no-referrer` (`next.config.ts` et métadonnées).
+- Export PDF (`src/components/sante/HealthPdf.tsx`, @react-pdf/renderer) et scan (`ScanDocument.tsx`, Tesseract.js) :
+  dans le navigateur uniquement, chargés par `import()` au moment de l'action.
 - Pièces jointes stockées en binaire dans le document, exclues des lectures (`attachments.data`), servies avec
   `Content-Disposition` et `nosniff`. Rappel de vaccin = notification `rappel` gérée par le serveur.
 
@@ -166,6 +178,25 @@ Exemple : un refuge accepte une candidature.
 - Alerte de poids recalculée par le serveur à chaque pesée ajoutée, corrigée ou supprimée ; notification `sante` via
   `notifyUsers(…, { includeSelf: true })`, une par épisode. Liens vers les autres modules : `LINKED_MODULES`
   (`src/components/pets/ui.tsx`).
+
+### Communauté (hub)
+- Page `src/app/(app)/communaute/page.tsx` (maquette `designs/stitch/communaut_petcare_community`), sans route ni
+  collection propre : elle lit les annonces, les Happy Tails et le nombre d'adoptions via `src/lib/adoption.ts`.
+- Liens : fil d'adoption, publication, Happy Tails ; la carte Perdus & Trouvés reste « Bientôt disponible ».
+  Chiffres affichés = données réelles (aucun chiffre de la maquette).
+### Services
+- Modèle `src/lib/server/services.ts` ; types, validation, créneaux (heure de Tunis) et transitions partagés
+  `src/lib/services-models.ts` ; client `src/lib/services.ts`.
+- Collections : `serviceCategories` (catégories par défaut tant que l'admin n'en a pas enregistré), `serviceProviders`
+  (un profil par prestataire, `status` `pending` / `published` / `rejected`), `providerServices` (`published` /
+  `archived`), `providerAvailability` (`_id` = `{providerId}_{weekday}`), `serviceBookings` (`pending` / `confirmed` /
+  `declined` / `cancelled`, `appointmentId`).
+- Routes `/api/services/…` : `categories` (écriture admin), `providers` (annuaire, `?status=pending` admin, `me`,
+  `me/services`, `me/availability`, `[id]`, `[id]/status` admin, `[id]/slots`), `bookings` (`?as=client|provider`,
+  `[id]/status`). Rôles vérifiés par le serveur (`requireProviderRole`, `requireAdmin`).
+- Réservation = transaction : `serviceBookings` + rendez-vous `planned` dans `appointments` (module Rendez-vous, non
+  modifié) ; confirmer / refuser / annuler met à jour le rendez-vous, et une action faite depuis l'agenda est reprise
+  à la lecture des réservations (`syncFromAgenda`). Notifications `service` via `notifyUsers`.
 
 ## 6. Ajouter un module
 
@@ -193,21 +224,20 @@ Exemple : un refuge accepte une candidature.
 |---|---|
 | `npm run test:api` | 40 — profils, notifications, droits |
 | `npm run test:adoption` | 72 — annonces, candidatures (cycle complet), favoris, Happy Tails, signalements |
-| `npm run test:health` | 33 — validation, droits, pièces jointes, rappels de vaccin |
+| `npm run test:health` | validation, droits sur l'animal, animal archivé en lecture seule, pièces jointes, rappels de vaccin, onglet Santé, prises, liens de partage (portées, révocation, expiration, données masquées) |
 | `npm run test:rendez-vous` | 53 — règles RG-12 à RG-21, versions, réservations prestataire, rappels de soins |
 | `npm run test:pets` | 93 — validation, droits, photos, contacts, pesées, brouillon, archivage, chaque règle de l'alerte de poids |
-| `npm test` | 36 — tests unitaires sans serveur : validation des animaux, âge, alerte de poids |
+| `npm run test:services` | 102 — catégories, rôles, cycle de validation d'un profil, prestations, plages horaires, créneaux, réservations et agenda |
+| `npm test` | tests unitaires sans serveur : validation des animaux, âge, alerte de poids, services (validation, créneaux, transitions), onglet Santé (statut vaccinal, prises, tri), lecture des documents scannés, partage du carnet |
 
 Chaque script crée des comptes Firebase temporaires, appelle l'API d'un serveur lancé, puis supprime comptes et
 données. À lancer avant chaque fusion dans `main`, contre `npm run dev` ou, mieux, un build de production.
 
 ## 9. Limites connues et prochaines étapes
 
-- Modules **Communauté** (perdus/trouvés) et **Services** à développer : les liens du menu
-  mènent à une 404 ; le carnet de santé et l'agenda saisissent encore le nom de l'animal (à relier à Mes animaux) ; les
+- Module **Perdus & Trouvés** à développer (carte « Bientôt disponible » du hub `/communaute`) ; le carnet de santé
+  et l'agenda proposent les animaux de Mes animaux (un autre nom reste saisissable) ; les
   boutons « Carnet santé » de l'agenda affichent « arrive avec le module Santé » (à relier au carnet existant).
-- Le lien « Mes annonces » du profil pointe vers `/communaute/mes-annonces` (page inexistante ; l'adoption utilise
-  `/communaute/adoption/mes-annonces`) — à aligner selon le futur module Communauté.
 - Photos et pièces jointes stockées dans les documents MongoDB (limite de 16 Mo par document) : un service de
   fichiers serait préférable à grande échelle.
 - Notifications par interrogation toutes les 20 s (pas de temps réel) ; e-mails non gérés (hors réinitialisation

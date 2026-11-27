@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { NotificationsProvider } from "@/components/notifications/NotificationsProvider";
 
-/** Pages de l'application avec la navigation commune (Accueil, Mes animaux, Communauté, Services). */
+/** Pages de l'application avec la navigation commune (Accueil, Mes animaux, Santé, Communauté, Services). */
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <NotificationsProvider>
