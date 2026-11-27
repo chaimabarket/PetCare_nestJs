@@ -1,10 +1,65 @@
 # PetCare Community — application web (Next.js)
 
-Application pour gérer ses animaux, trouver des services, publier des annonces perdus/trouvés et faciliter les adoptions.
-Stack : **Next.js 16** (App Router), **React 19**, **TypeScript**, **Tailwind CSS 4**, **Firebase Authentication**
-(comptes et connexion) et **MongoDB Atlas** (toutes les données, via les routes `/api`).
+PetCare Community est une plateforme communautaire pour les propriétaires d'animaux en Tunisie. Elle permet de
+suivre la santé de ses animaux, de gérer ses rendez-vous et rappels de soins, de trouver et réserver des
+prestataires (vétérinaires, toiletteurs, pensions…), de faciliter les adoptions et de poser ses questions à un
+assistant IA. Projet réalisé en équipe de six personnes, un module chacune.
 
-➡️ Architecture technique détaillée (couches, conventions, sécurité, ajout d'un module) : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+| Module | Contenu |
+|---|---|
+| Utilisateurs & notifications | Inscription, connexion, mot de passe oublié, profil, déconnexion, centre de notifications et préférences d'alerte |
+| Mes animaux | Fiches des animaux, photos, suivi du poids et alerte intelligente de poids, archivage |
+| Carnet de santé | Vaccins, visites, traitements, onglet Santé du jour, export PDF, partage sécurisé par QR code, scan d'ordonnance |
+| Rendez-vous & rappels | Agenda, rendez-vous, rappels de soins |
+| Communauté & adoption | Annonces d'adoption, candidatures, favoris, Happy Tails |
+| Services | Annuaire des prestataires, réservation de créneaux, espace prestataire, administration |
+| Assistant IA | Chatbot (Gemini) qui connaît les animaux de l'utilisateur et peut préparer des actions (rappel, pesée, réservation…) |
+
+## Architecture
+
+Une seule application **Next.js** contient l'interface (React) et l'API REST (routes `/api`) : c'est un
+**monolithe modulaire**, organisé en couches de type **MVC**.
+
+```
+ Navigateur  ── Vue : pages src/app/(auth|app)/…  +  composants src/components/<module>
+             ── Client : fonctions src/lib/<module>.ts  →  api() ajoute le jeton Firebase
+                     │  HTTP /api/…   Authorization: Bearer <jeton>
+ Serveur     ── Contrôleur : routes src/app/api/<module>/…  (vérifie le jeton, valide, contrôle les droits)
+             ── Modèle : src/lib/server/<module>.ts  (règles métier, accès aux collections)
+                     │
+             MongoDB Atlas (données)        Firebase Auth (comptes)        Gemini (assistant)
+```
+
+- Le navigateur n'accède **jamais** directement à la base : toutes les lectures et écritures passent par l'API, qui
+  vérifie l'identité (jeton Firebase) et les droits de l'utilisateur.
+- Les types et les règles de validation (`src/lib/*-models.ts`, `src/lib/models.ts`) sont **partagés** entre le
+  navigateur et le serveur : un formulaire et l'API appliquent exactement les mêmes règles.
+- Chaque module a ses propres dossiers à chaque couche : les six membres de l'équipe travaillent en parallèle
+  sans se gêner.
+
+➡️ Détails (parcours d'une requête, conventions, sécurité, ajout d'un module) : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Technologies et raisons de leur choix
+
+| Technologie | Rôle dans le projet | Pourquoi ce choix |
+|---|---|---|
+| **Next.js 16** (App Router) | Framework de l'application : pages et API | Un seul projet pour le front-end et le back-end : une seule base de code, un seul déploiement, pas de configuration CORS. Routage par dossiers (un dossier = une page), groupes de routes pour séparer les pages publiques `(auth)` des pages connectées `(app)`, rendu côté serveur pour des pages rapides. Hébergement natif sur Vercel. |
+| **React 19** | Construction de l'interface | Bibliothèque d'interface la plus répandue : composants réutilisables (boutons, champs, cartes) partagés par tous les modules, grand écosystème, et c'est la base de Next.js. |
+| **TypeScript** | Langage de tout le code | Les erreurs (champ mal nommé, mauvais type) sont détectées avant l'exécution. Indispensable à six : les types `UserProfile`, `Pet`, `AppNotification`… servent de contrat entre les modules et entre le navigateur et le serveur. |
+| **Tailwind CSS 4** | Mise en forme | Les maquettes réalisées avec **Stitch** sont exportées en HTML Tailwind : on les reprend presque telles quelles. Les couleurs et typographies du design system sont définies une seule fois (`@theme` dans `globals.css`), ce qui garantit une apparence identique dans tous les modules. |
+| **Material Symbols** | Icônes | Ce sont les icônes utilisées par les maquettes Stitch ; plus de 3 000 icônes chargées comme une police. |
+| **Firebase Authentication** | Comptes, connexion, mot de passe oublié, sessions | La sécurité des mots de passe est confiée à Google : l'application ne stocke jamais de mot de passe. Fournit sans développement supplémentaire l'e-mail de réinitialisation, la session persistante (« rester connecté ») et la protection contre les tentatives répétées. Gratuit, et utilisable aussi par la version Flutter de l'application. |
+| **firebase-admin** | Vérification de l'identité côté serveur | Chaque requête à l'API porte un jeton Firebase signé ; le serveur vérifie sa signature pour connaître l'utilisateur de façon fiable. On ne fait jamais confiance à un identifiant envoyé par le navigateur. |
+| **MongoDB Atlas** | Base de données de toutes les données | Base orientée documents : un animal avec ses photos, contacts et vétérinaire est un seul document JSON, proche des objets TypeScript. Schéma souple, adapté à six modules qui évoluent en parallèle. Requêtes riches (filtres, tris, recherche), index et transactions (ex. accepter une candidature d'adoption et réserver l'animal en une seule opération). Hébergé dans le cloud avec une offre gratuite. Firestore, utilisé au début, a été remplacé : ses requêtes sont plus limitées et la sécurité reposait sur des règles côté client, alors qu'avec MongoDB toute la logique d'accès est centralisée dans l'API. |
+| **Firebase AI Logic + Gemini** | Assistant IA (chatbot) | Réutilise le projet Firebase déjà en place : pas de clé d'API d'IA à gérer sur un serveur. Offre gratuite (Gemini Developer API), réponses en continu, et appels de fonctions qui permettent à l'assistant de préparer des actions (rappel, pesée, réservation) que l'utilisateur confirme. Limite de 30 messages par jour et par utilisateur, appliquée par le serveur. |
+| **@react-pdf/renderer** | Export PDF du carnet de santé | Génère le PDF dans le navigateur à partir de composants React : pagination automatique, tableaux, accents français. Plus simple que pdf-lib ou jsPDF, qui demandent de placer chaque ligne à la main. |
+| **Tesseract.js** | Lecture d'une ordonnance ou d'une vignette de vaccin | Reconnaissance de texte (OCR) gratuite, sans quota, exécutée dans le navigateur : la photo ne quitte pas l'appareil de l'utilisateur. |
+| **qrcode** | QR code du partage sécurisé du carnet | Petite bibliothèque sans dépendance pour afficher le lien de partage en QR code (vétérinaire, pet-sitter, urgence). |
+| **ESLint** (`eslint-config-next`) | Qualité du code | Règles officielles de Next.js et React : détecte les erreurs courantes et garde un style homogène entre les six membres. |
+| **node:test + tsx**, scripts `test-*.mjs` | Tests | Tests unitaires des règles métier sans aucune configuration, et tests d'API de bout en bout de chaque module sur un vrai serveur (comptes temporaires supprimés à la fin). |
+| **Git + GitHub** | Travail en équipe | Une branche par module (`Users`, `services`, `chatbot`…), fusionnées dans `main` après vérification. |
+| **Vercel** | Hébergement | Plateforme conçue pour Next.js : déploiement automatique depuis GitHub, HTTPS et routes API sans serveur à administrer. |
+| **Node.js 24** | Environnement d'exécution | Version LTS exigée par Firebase 13 et firebase-admin. |
 
 ## Installation
 
@@ -24,6 +79,21 @@ npm run dev                         # http://localhost:3000
 
 `.env.local` contient des secrets : il n'est **jamais** versionné (`.gitignore`). Demandez les valeurs à l'équipe
 par un canal privé.
+
+### Comptes de démonstration
+
+`npm run seed:demo` crée des comptes déjà remplis (profil, animaux, carnets de santé, rendez-vous, rappels,
+annonces d'adoption, prestataires et notifications). Mot de passe de tous les comptes : `DemoPetCare!2026`.
+
+| Rôle | E-mail |
+|---|---|
+| Propriétaire (compte le plus complet : Rocky et Mimi) | `lina.demo@example.com` |
+| Autres propriétaires | `youssef.demo@example.com`, `amira.demo@example.com`, `karim.demo@example.com` |
+| Refuge | `refuge.demo@example.com` |
+| Prestataires | `vet.demo@example.com`, `vet2.demo@example.com`, `toilettage.demo@example.com`, `animalerie.demo@example.com`, `garde.demo@example.com`, `pension.oliviers.demo@example.com` (en attente de validation) |
+| Administrateur | `admin.petcare.demo@example.com` |
+
+Les dates sont calculées à partir du jour du lancement : relancez le script la veille d'une démonstration.
 
 ## Commandes
 
